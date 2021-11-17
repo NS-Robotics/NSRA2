@@ -1,0 +1,15 @@
+[submodule "image_common"]
+	path = image_common
+	url = git@github.com:ros-perception/image_common.git
+	branch = ros2
+[submodule "robot_ws/src/vision_opencv"]
+	path = robot_ws/src/vision_opencv
+	url = git@github.com:ros-perception/vision_opencv.git
+[submodule "NSSC_private_libs"]
+	path = NSSC_private_libs
+	url = git@github.com:Noothless/NSSC_private_libs.git
+	branch = master
+[submodule "robot_ws/src/image_transport_plugins"]
+	path = robot_ws/src/image_transport_plugins
+	url = git@github.com:ros-perception/image_transport_plugins.git
+	branch = ros2

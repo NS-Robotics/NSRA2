@@ -1,2 +1,2 @@
-# NSRA2
-NS-RobotArm V2 based on ROS2 Foxy
+# NS-Robotics 2021
+NS-RobotArm port to ROS2 Foxy

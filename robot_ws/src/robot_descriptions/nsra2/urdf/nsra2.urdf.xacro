@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="nsra2_base">
+  <xacro:arg name="prefix" default="" />
+
+  <!-- Import NSRA2 macro -->
+  <xacro:include filename="$(find robot_descriptions)/nsra2/urdf/nsra2_descriptions.urdf.xacro" />
+
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find robot_descriptions)/nsra2/gazebo/nsra2.materials.xacro" />
+
+  <!-- Import NSRA2 ros2_control description -->
+  <xacro:include filename="$(find robot_descriptions)/nsra2/ros2_control/nsra2_system_position.ros2_control.xacro" />
+
+  <!-- Used for fixing robot -->
+  <link name="world"/>
+  <gazebo reference="world">
+    <static>true</static>
+  </gazebo>
+
+  <xacro:nsra2 parent="world" prefix="$(arg prefix)">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:nsra2>
+
+  <xacro:nsra2_system_position
+    name="NSRA2SystemPosition" prefix="$(arg prefix)" />
+
+</robot>

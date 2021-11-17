@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="nsra2_base">
+  <xacro:arg name="use_sim" default="false" />
+
+  <!-- Enable setting arguments from the launch file -->
+  <xacro:arg name="use_fake_hardware" default="false" />
+  <xacro:arg name="fake_sensor_commands" default="false" />
+  <xacro:arg name="prefix" default="" />
+  <xacro:arg name="slowdown" default="2.0" />
+
+  <!-- Import NSRA2 macro -->
+  <xacro:include filename="$(find robot_descriptions)/nsra2/urdf/nsra2_descriptions.urdf.xacro" />
+
+  <!-- Import Rviz colors -->
+  <xacro:include filename="$(find robot_descriptions)/nsra2/gazebo/nsra2.materials.xacro" />
+
+  <!-- Import NSRA2 ros2_control description -->
+  <xacro:include filename="$(find robot_descriptions)/nsra2/ros2_control/nsra2_system_position.ros2_control.xacro" />
+
+  <!-- Used for fixing robot -->
+  <link name="world"/>
+  <gazebo reference="world">
+    <static>true</static>
+  </gazebo>
+
+  <xacro:nsra2 parent="world" prefix="$(arg prefix)">
+    <origin xyz="0.220772 -0.475604 0.5" rpy="1.5708 0 3.1415" />
+  </xacro:nsra2>
+
+  <xacro:nsra2_system_position
+    name="NSRA2SystemPosition" prefix="$(arg prefix)"
+    use_fake_hardware="$(arg use_fake_hardware)"
+    fake_sensor_commands="$(arg fake_sensor_commands)"
+    slowdown="$(arg slowdown)" />
+
+</robot>

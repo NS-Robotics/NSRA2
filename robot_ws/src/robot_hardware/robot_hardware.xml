@@ -1,0 +1,9 @@
+<library path="robot_hardware">
+  <class name="robot_hardware/RobotSystemPositionOnlyHardware"
+         type="robot_hardware::RobotSystemPositionOnlyHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      NSRA2 hardware.
+    </description>
+  </class>
+</library>
