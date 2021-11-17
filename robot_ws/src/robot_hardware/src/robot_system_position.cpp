@@ -35,8 +35,11 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
   hw_start_sec_ = stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
   hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
   hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
+  hw_type = stod(info_.hardware_parameters["hardware_type"]);
   hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+
+  hw_interface = commonHardwareInterface::make_hardware_interface(hw_type);
 
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
   {
@@ -164,7 +167,11 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::stop()
 
 hardware_interface::return_type RobotSystemPositionOnlyHardware::read()
 {
+  hardware_interface::return_type hw_return;
 
+  hw_return = hw_interface->read(&hw_states_);
+
+  /*
   for (uint i = 0; i < hw_states_.size(); i++)
   {
     // Simulate RRBot's movement
@@ -173,8 +180,9 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::read()
     //   rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "Got state %.5f for joint %d!",
     //   hw_states_[i], i);
   }
+  */
 
-  return hardware_interface::return_type::OK;
+  return hw_return;
 }
 
 hardware_interface::return_type RobotSystemPositionOnlyHardware::write()

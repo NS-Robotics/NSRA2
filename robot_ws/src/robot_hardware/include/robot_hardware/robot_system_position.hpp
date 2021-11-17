@@ -30,10 +30,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "robot_descriptions/msg/init.hpp"
-#include "robot_descriptions/msg/pos.hpp"
-#include "robot_descriptions/msg/vel.hpp"
-#include "robot_descriptions/msg/stop.hpp"
+#include "common_hardware_interface.h"
 
 namespace robot_hardware
 {
@@ -65,10 +62,13 @@ public:
   hardware_interface::return_type write() override;
 
 private:
+  // Hardware Interface
+  commonHardwareInterface* hw_interface;
   // Parameters for the RRBot simulation
   double hw_start_sec_;
   double hw_stop_sec_;
   double hw_slowdown_;
+  HARDWARE_TYPE hw_type;
 
   // Store the command for the simulated robot
   std::vector<double> hw_commands_;
