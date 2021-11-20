@@ -12,59 +12,35 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(hardware_interface REQUIRED)
-find_package(pluginlib REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
-find_package(robot_descriptions REQUIRED)
 
-
-## COMPILE
-add_library(
-  ${PROJECT_NAME}
-  SHARED
-  src/robot_system_position.cpp
-)
-
-target_include_directories(
-  ${PROJECT_NAME}
-  PRIVATE
-  include
-)
-
-ament_target_dependencies(
-  ${PROJECT_NAME}
-  hardware_interface
-  pluginlib
-  rclcpp
-  rclcpp_lifecycle
-  robot_descriptions
-)
+add_subdirectory(nsra2)
 
 pluginlib_export_plugin_description_file(hardware_interface robot_hardware.xml)
 
 # INSTALL
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS nsra2
   DESTINATION lib
 )
 
-install(
-  DIRECTORY include/
-  DESTINATION include
-)
+#install(
+#  DIRECTORY include/
+#  DESTINATION include
+#)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 endif()
 
 ## EXPORTS
-ament_export_include_directories(
-  include
-)
+#ament_export_include_directories(
+#  include
+#)
+
 ament_export_libraries(
-  ${PROJECT_NAME}
+  nsra2
 )
+
 ament_export_dependencies(
   hardware_interface
   pluginlib

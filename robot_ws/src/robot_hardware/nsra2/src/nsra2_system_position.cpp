@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "robot_hardware/robot_system_position.hpp"
+#include "nsra2_hardware/nsra2_system_position.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -22,9 +22,9 @@
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 
-namespace robot_hardware
+namespace nsra2_hardware
 {
-hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
+hardware_interface::return_type NSRA2SystemPositionHardware::configure(
   const hardware_interface::HardwareInfo & info)
 {
   if (configure_default(info) != hardware_interface::return_type::OK)
@@ -35,19 +35,15 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
   hw_start_sec_ = stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
   hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
   hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
-  hw_type = stod(info_.hardware_parameters["hardware_type"]);
   hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-  hw_interface = commonHardwareInterface::make_hardware_interface(hw_type);
-
   for (const hardware_interface::ComponentInfo & joint : info_.joints)
   {
-    // RRBotSystemPositionOnly has exactly one state and command interface on each joint
     if (joint.command_interfaces.size() != 1)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RobotSystemPositionOnlyHardware"),
+        rclcpp::get_logger("NSRA2SystemPositionHardware"),
         "Joint '%s' has %d command interfaces found. 1 expected.", joint.name.c_str(),
         joint.command_interfaces.size());
       return hardware_interface::return_type::ERROR;
@@ -56,7 +52,7 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
     if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RobotSystemPositionOnlyHardware"),
+        rclcpp::get_logger("NSRA2SystemPositionHardware"),
         "Joint '%s' have %s command interfaces found. '%s' expected.", joint.name.c_str(),
         joint.command_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
       return hardware_interface::return_type::ERROR;
@@ -65,7 +61,7 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
     if (joint.state_interfaces.size() != 1)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RobotSystemPositionOnlyHardware"),
+        rclcpp::get_logger("NSRA2SystemPositionHardware"),
         "Joint '%s' has %d state interface. 1 expected.", joint.name.c_str(),
         joint.state_interfaces.size());
       return hardware_interface::return_type::ERROR;
@@ -74,7 +70,7 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
     if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
     {
       RCLCPP_FATAL(
-        rclcpp::get_logger("RobotSystemPositionOnlyHardware"),
+        rclcpp::get_logger("NSRA2SystemPositionHardware"),
         "Joint '%s' have %s state interface. '%s' expected.", joint.name.c_str(),
         joint.state_interfaces[0].name.c_str(), hardware_interface::HW_IF_POSITION);
       return hardware_interface::return_type::ERROR;
@@ -86,7 +82,7 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::configure(
 }
 
 std::vector<hardware_interface::StateInterface>
-RobotSystemPositionOnlyHardware::export_state_interfaces()
+NSRA2SystemPositionHardware::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
   for (uint i = 0; i < info_.joints.size(); i++)
@@ -99,7 +95,7 @@ RobotSystemPositionOnlyHardware::export_state_interfaces()
 }
 
 std::vector<hardware_interface::CommandInterface>
-RobotSystemPositionOnlyHardware::export_command_interfaces()
+NSRA2SystemPositionHardware::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
   for (uint i = 0; i < info_.joints.size(); i++)
@@ -111,15 +107,15 @@ RobotSystemPositionOnlyHardware::export_command_interfaces()
   return command_interfaces;
 }
 
-hardware_interface::return_type RobotSystemPositionOnlyHardware::start()
+hardware_interface::return_type NSRA2SystemPositionHardware::start()
 {
-  RCLCPP_INFO(rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "Starting ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Starting ...please wait...");
 
   for (int i = 0; i < hw_start_sec_; i++)
   {
     rclcpp::sleep_for(std::chrono::seconds(1));
     RCLCPP_INFO(
-      rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "%.1f seconds left...",
+      rclcpp::get_logger("NSRA2SystemPositionHardware"), "%.1f seconds left...",
       hw_start_sec_ - i);
   }
 
@@ -140,58 +136,53 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::start()
   status_ = hardware_interface::status::STARTED;
 
   RCLCPP_INFO(
-    rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "System Successfully started!");
+    rclcpp::get_logger("NSRA2SystemPositionHardware"), "System Successfully started!");
 
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type RobotSystemPositionOnlyHardware::stop()
+hardware_interface::return_type NSRA2SystemPositionHardware::stop()
 {
-  RCLCPP_INFO(rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "Stopping ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Stopping ...please wait...");
 
   for (int i = 0; i < hw_stop_sec_; i++)
   {
     rclcpp::sleep_for(std::chrono::seconds(1));
     RCLCPP_INFO(
-      rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "%.1f seconds left...",
+      rclcpp::get_logger("NSRA2SystemPositionHardware"), "%.1f seconds left...",
       hw_stop_sec_ - i);
   }
 
   status_ = hardware_interface::status::STOPPED;
 
   RCLCPP_INFO(
-    rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "System successfully stopped!");
+    rclcpp::get_logger("NSRA2SystemPositionHardware"), "System successfully stopped!");
 
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type RobotSystemPositionOnlyHardware::read()
+hardware_interface::return_type NSRA2SystemPositionHardware::read()
 {
-  hardware_interface::return_type hw_return;
 
-  hw_return = hw_interface->read(&hw_states_);
-
-  /*
   for (uint i = 0; i < hw_states_.size(); i++)
   {
     // Simulate RRBot's movement
     hw_states_[i] = hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
     // RCLCPP_INFO(
-    //   rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "Got state %.5f for joint %d!",
+    //   rclcpp::get_logger("NSRA2SystemPositionHardware"), "Got state %.5f for joint %d!",
     //   hw_states_[i], i);
   }
-  */
 
-  return hw_return;
+  return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type RobotSystemPositionOnlyHardware::write()
+hardware_interface::return_type NSRA2SystemPositionHardware::write()
 {
   for (uint i = 0; i < hw_commands_.size(); i++)
   {
     // Simulate sending commands to the hardware
     RCLCPP_INFO(
-      rclcpp::get_logger("RobotSystemPositionOnlyHardware"), "Got command %.5f for joint %d!",
+      rclcpp::get_logger("NSRA2SystemPositionHardware"), "Got command %.5f for joint %d!",
       hw_commands_[i], i);
   }
   auto message = robot_descriptions::msg::Pos();
@@ -208,9 +199,9 @@ hardware_interface::return_type RobotSystemPositionOnlyHardware::write()
   return hardware_interface::return_type::OK;
 }
 
-}  // namespace robot_hardware
+}  // namespace nsra2_hardware
 
 #include "pluginlib/class_list_macros.hpp"
 
 PLUGINLIB_EXPORT_CLASS(
-  robot_hardware::RobotSystemPositionOnlyHardware, hardware_interface::SystemInterface)
+  nsra2_hardware::NSRA2SystemPositionHardware, hardware_interface::SystemInterface)

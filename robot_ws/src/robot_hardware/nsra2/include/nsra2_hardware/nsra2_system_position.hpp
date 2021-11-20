@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROBOT_HARDWARE__ROBOT_SYSTEM_POSITION_ONLY_HPP_
-#define ROBOT_HARDWARE__ROBOT_SYSTEM_POSITION_ONLY_HPP_
+#ifndef NSRA2_HARDWARE__NSRA2_SYSTEM_POSITION_ONLY_HPP_
+#define NSRA2_HARDWARE__NSRA2_SYSTEM_POSITION_ONLY_HPP_
 
 #include <memory>
 #include <string>
@@ -26,49 +26,44 @@
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "hardware_interface/types/hardware_interface_status_values.hpp"
 #include "rclcpp/macros.hpp"
-#include "robot_hardware/visibility_control.h"
+#include "nsra2_hardware/visibility_control.h"
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "common_hardware_interface.h"
-
-namespace robot_hardware
+namespace nsra2_hardware
 {
-class RobotSystemPositionOnlyHardware
+class NSRA2SystemPositionHardware
 : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>
 {
 public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(RobotSystemPositionOnlyHardware);
+  RCLCPP_SHARED_PTR_DEFINITIONS(NSRA2SystemPositionHardware);
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   hardware_interface::return_type configure(const hardware_interface::HardwareInfo & info) override;
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   hardware_interface::return_type start() override;
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   hardware_interface::return_type stop() override;
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   hardware_interface::return_type read() override;
 
-  ROBOT_HARDWARE_PUBLIC
+  NSRA2_HARDWARE_PUBLIC
   hardware_interface::return_type write() override;
 
 private:
-  // Hardware Interface
-  commonHardwareInterface* hw_interface;
   // Parameters for the RRBot simulation
   double hw_start_sec_;
   double hw_stop_sec_;
   double hw_slowdown_;
-  HARDWARE_TYPE hw_type;
 
   // Store the command for the simulated robot
   std::vector<double> hw_commands_;
@@ -76,6 +71,6 @@ private:
 
 };
 
-}  // namespace robot_hardware
+}  // namespace nsra2_hardware
 
-#endif  // ROBOT_HARDWARE__ROBOT_SYSTEM_POSITION_ONLY_HPP_
+#endif  // NSRA2_HARDWARE__NSRA2_SYSTEM_POSITION_ONLY_HPP_

@@ -19,38 +19,38 @@
  * library cannot have, but the consuming code must have inorder to link.
  */
 
-#ifndef ROBOT_HARDWARE__VISIBILITY_CONTROL_H_
-#define ROBOT_HARDWARE__VISIBILITY_CONTROL_H_
+#ifndef NSRA2_HARDWARE__VISIBILITY_CONTROL_H_
+#define NSRA2_HARDWARE__VISIBILITY_CONTROL_H_
 
 // This logic was borrowed (then namespaced) from the examples on the gcc wiki:
 //     https://gcc.gnu.org/wiki/Visibility
 
 #if defined _WIN32 || defined __CYGWIN__
 #ifdef __GNUC__
-#define ROBOT_HARDWARE_EXPORT __attribute__((dllexport))
-#define ROBOT_HARDWARE_IMPORT __attribute__((dllimport))
+#define NSRA2_HARDWARE_EXPORT __attribute__((dllexport))
+#define NSRA2_HARDWARE_IMPORT __attribute__((dllimport))
 #else
-#define ROBOT_HARDWARE_EXPORT __declspec(dllexport)
-#define ROBOT_HARDWARE_IMPORT __declspec(dllimport)
+#define NSRA2_HARDWARE_EXPORT __declspec(dllexport)
+#define NSRA2_HARDWARE_IMPORT __declspec(dllimport)
 #endif
-#ifdef ROBOT_HARDWARE_BUILDING_DLL
-#define ROBOT_HARDWARE_PUBLIC ROBOT_HARDWARE_EXPORT
+#ifdef NSRA2_HARDWARE_BUILDING_DLL
+#define NSRA2_HARDWARE_PUBLIC NSRA2_HARDWARE_EXPORT
 #else
-#define ROBOT_HARDWARE_PUBLIC ROBOT_HARDWARE_IMPORT
+#define NSRA2_HARDWARE_PUBLIC NSRA2_HARDWARE_IMPORT
 #endif
-#define ROBOT_HARDWARE_PUBLIC_TYPE ROBOT_HARDWARE_PUBLIC
-#define ROBOT_HARDWARE_LOCAL
+#define NSRA2_HARDWARE_PUBLIC_TYPE NSRA2_HARDWARE_PUBLIC
+#define NSRA2_HARDWARE_LOCAL
 #else
-#define ROBOT_HARDWARE_EXPORT __attribute__((visibility("default")))
-#define ROBOT_HARDWARE_IMPORT
+#define NSRA2_HARDWARE_EXPORT __attribute__((visibility("default")))
+#define NSRA2_HARDWARE_IMPORT
 #if __GNUC__ >= 4
-#define ROBOT_HARDWARE_PUBLIC __attribute__((visibility("default")))
-#define ROBOT_HARDWARE_LOCAL __attribute__((visibility("hidden")))
+#define NSRA2_HARDWARE_PUBLIC __attribute__((visibility("default")))
+#define NSRA2_HARDWARE_LOCAL __attribute__((visibility("hidden")))
 #else
-#define ROBOT_HARDWARE_PUBLIC
-#define ROBOT_HARDWARE_LOCAL
+#define NSRA2_HARDWARE_PUBLIC
+#define NSRA2_HARDWARE_LOCAL
 #endif
-#define ROBOT_HARDWARE_PUBLIC_TYPE
+#define NSRA2_HARDWARE_PUBLIC_TYPE
 #endif
 
-#endif  // ROBOT_HARDWARE__VISIBILITY_CONTROL_H_
+#endif  // NSRA2_HARDWARE__VISIBILITY_CONTROL_H_
