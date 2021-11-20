@@ -185,16 +185,6 @@ hardware_interface::return_type NSRA2SystemPositionHardware::write()
       rclcpp::get_logger("NSRA2SystemPositionHardware"), "Got command %.5f for joint %d!",
       hw_commands_[i], i);
   }
-  auto message = robot_descriptions::msg::Pos();
-
-  message.axis1 = hw_commands_[0];
-  message.axis2 = hw_commands_[1];
-  message.axis3 = hw_commands_[2];
-  message.axis4 = hw_commands_[3];
-  message.axis5 = hw_commands_[4];
-  message.axis6 = hw_commands_[5];
-
-  publisher_->publish(message);
 
   return hardware_interface::return_type::OK;
 }
