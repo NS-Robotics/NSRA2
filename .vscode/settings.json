@@ -101,5 +101,6 @@
         "xxatomic": "cpp",
         "xtree": "c"
     },
-    "C_Cpp.errorSquiggles": "Enabled"
+    "C_Cpp.errorSquiggles": "Enabled",
+    "cmake.configureOnOpen": false
 }
