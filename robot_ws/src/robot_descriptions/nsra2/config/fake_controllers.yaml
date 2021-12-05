@@ -1,0 +1,18 @@
+controller_names:
+  - fake_panda_arm_controller
+  - fake_hand_controller
+fake_robot_controller:
+    joints:
+      - Rev1
+      - Rev2
+      - Rev3
+      - Rev4
+      - Rev5
+      - Rev6
+fake_hand_controller:
+    joints:
+      - Slider8
+      - Slider9
+initial:  
+  - group: nsra
+    pose: home
