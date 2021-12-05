@@ -7,5 +7,6 @@ robot_ws/src/image_transport/
 aarch64/
 .DS_Store
 images/.DS_Store
-.vscode/
+.vscode/settings.json
 .idea/
+.vscode/settings.json
