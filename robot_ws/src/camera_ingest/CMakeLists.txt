@@ -184,7 +184,7 @@ ament_target_dependencies(main_node rclcpp)
 target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi)
 
 install(
-  TARGETS camera ros_node ndi_send nssc_errors camera_manager #nssc_image_transport
+  TARGETS camera ndi_send nssc_errors camera_manager #nssc_image_transport
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
