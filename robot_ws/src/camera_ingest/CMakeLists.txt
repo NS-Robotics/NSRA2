@@ -156,7 +156,7 @@ target_include_directories(
 
 target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference)
 
-ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
+ament_target_dependencies(ndi_send rclcpp OpenCV CUDA)
 
 #add_library(
 #  nssc_image_transport
