@@ -16,7 +16,7 @@ typedef enum NSSC_FRAME_TYPES
 struct globalConfig
 {
 public:
-    NSSC_FRAME_TYPE g_type  = NSSC_FRAME_I420;
+    NSSC_FRAME_TYPE g_type  = NSSC_FRAME_RGBA;
     short cam_x_res         = 3088;
     short cam_y_res         = 2064;
 
