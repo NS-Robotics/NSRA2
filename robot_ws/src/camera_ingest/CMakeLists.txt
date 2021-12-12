@@ -17,7 +17,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 #find_package(image_transport REQUIRED)
 find_package(OpenCV 4.5.3 REQUIRED)
-#find_package(cv_bridge REQUIRED)
+find_package(cv_bridge REQUIRED)
 #find_package(compressed_image_transport REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(jetson-utils REQUIRED)
@@ -156,7 +156,7 @@ target_include_directories(
 
 target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference)
 
-ament_target_dependencies(ndi_send rclcpp OpenCV CUDA)
+ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
 
 #add_library(
 #  nssc_image_transport
