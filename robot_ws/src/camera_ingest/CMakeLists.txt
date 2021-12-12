@@ -38,7 +38,7 @@ set(ndi5_LIBRARY ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/lib/libndi/lib
 set(ndi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/libndi)
 
 add_library(libndi SHARED IMPORTED)
-set_target_properties(libndi PROPERTIES IMPORTED_LOCATION ${ndi_LIBRARY})
+set_target_properties(libndi PROPERTIES IMPORTED_LOCATION ${ndi5_LIBRARY})
 
 set(jutils_LIBRARY ${PROJECT_SOURCE_DIR}/../../../aarch64/lib/libjetson-utils.so)
 set(jinference_LIBRARY ${PROJECT_SOURCE_DIR}/../../../aarch64/lib/libjetson-inference.so)
