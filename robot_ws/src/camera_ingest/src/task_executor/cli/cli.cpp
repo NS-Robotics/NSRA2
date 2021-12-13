@@ -79,7 +79,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
                 ret = boost::lexical_cast<int>(arg);
                 return NSSC_STATUS_SUCCESS;
             }
-            catch(bad_lexical_cast &)
+            catch(boost::bad_lexical_cast &)
             {
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             }
