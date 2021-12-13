@@ -92,6 +92,7 @@ target_include_directories(
   include/task_executor/cli
   include/errors
   ${readline_INCLUDES}
+  ${gxi_INCLUDES}
 )
 
 target_link_libraries(task_executor readline ros_node)
