@@ -1,6 +1,4 @@
-#include "camera_manager.h"
 #include "node.h"
-#include "ndi.h"
 #include "nssc_errors.h"
 #include "executor.h"
 
@@ -17,24 +15,11 @@ int main(int argc, char **argv)
 
     Executor executor(node, node_executor);
 
-    auto camManager = std::make_shared<cameraManager>(node);
-    NODE_VERIFY_EXIT(camManager->init());
-
-    NDI ndi(node, camManager);
-    NODE_VERIFY_EXIT(ndi.init());
-
-    NODE_VERIFY_EXIT(camManager->loadCameras());
-
-    NODE_VERIFY_EXIT(ndi.startStream());
-
-    executor.CLI::openCLI();
+    executor.init();
 
     node_executor->spin();
 
-    executor.CLI::closeCLI();
-
-    NODE_VERIFY_EXIT(ndi.endStream());
-    NODE_VERIFY_EXIT(camManager->closeCameras());
+    executor.exit();
 
     rclcpp::shutdown();
 }

@@ -8,5 +8,37 @@ Executor::Executor(std::shared_ptr<NSSC>& node, std::shared_ptr<rclcpp::executor
 
 void Executor::exit()
 {
+    if(this->rawNDIstream)
+    {
+        this->ndi->endStream();
+    }
+    if(this->initialized)
+    {
+        this->camManager->closeCameras();
+    }
+    if(CLI::cliON.load())
+    {
+        CLI::closeCLI();
+    }
     this->node_executor->cancel();
+}
+
+void Executor::init()
+{
+    this->camManager = std::make_shared<cameraManager>(this->node);
+    this->camManager->init();
+    this->camManager->loadCameras();
+
+    this->ndi = std::make_shared<NDI>(this->node, this->camManager);
+    this->ndi->init();
+
+    CLI::openCLI();
+
+    this->initialized = true;
+}
+
+void Executor::rawNDI()
+{
+    this->ndi->startStream();
+    this->rawNDIstream = true;
 }

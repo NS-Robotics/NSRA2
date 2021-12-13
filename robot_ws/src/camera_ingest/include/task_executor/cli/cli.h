@@ -19,9 +19,10 @@ class CLI
 
         virtual void exit() = 0;
 
+        std::atomic<bool> cliON{false};
+        
     private:
         std::thread CLIThread;
-        std::atomic<bool> streamON{false};
 };
 
 #endif  // NSSC_TASK_EXECUTOR_CLI_

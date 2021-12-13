@@ -4,7 +4,7 @@ void CLI::CLIFunc()
 {
     char *buf;
 
-    while ((buf = readline("[NSSC client] ")) != nullptr && this->streamON.load())
+    while ((buf = readline("[NSSC client] ")) != nullptr && this->cliON.load())
     {
         if (strlen(buf) > 0)
         {
@@ -18,24 +18,24 @@ void CLI::CLIFunc()
             printf("hello!\n");
         } else if(strcmp(buf, "exit") == 0)
         {
-            this->streamON = false;
+            this->cliON = false;
+            exit();
             break;
         }
 
         
         free(buf);
     }
-    exit();
 }
 
 void CLI::openCLI()
 {
-    this->streamON = true;
+    this->cliON = true;
     this->CLIThread = std::thread(&CLI::CLIFunc, this);
 }
 
 void CLI::closeCLI()
 {
-    this->streamON = false;
+    this->cliON = false;
     this->CLIThread.join();
 }
