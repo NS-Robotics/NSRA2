@@ -17,7 +17,7 @@ class CLI
         void openCLI();
         void closeCLI();
 
-        virtual void exit();
+        virtual void exit() = 0;
 
     private:
         std::thread CLIThread;
