@@ -80,26 +80,6 @@ target_link_libraries(nssc_errors ros_node gxiapi)
 ament_target_dependencies(nssc_errors rclcpp)
 
 add_library(
-  task_executor
-  src/task_executor/executor.cpp
-  src/task_executor/cli/cli.cpp
-)
-
-target_include_directories(
-  task_executor
-  PUBLIC
-  include/task_executor
-  include/task_executor/cli
-  include/errors
-  ${readline_INCLUDES}
-  ${gxi_INCLUDES}
-)
-
-target_link_libraries(task_executor readline ros_node)
-
-ament_target_dependencies(task_executor rclcpp)
-
-add_library(
   frame
   src/frame/mono_frame.cpp
   src/frame/stereo_frame.cpp
@@ -201,6 +181,29 @@ ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
 #target_link_libraries(nssc_image_transport ros_node camera_manager ndi_send)
 
 #ament_target_dependencies(nssc_image_transport rclcpp image_transport compressed_image_transport OpenCV cv_bridge)
+
+add_library(
+  task_executor
+  src/task_executor/executor.cpp
+  src/task_executor/cli/cli.cpp
+)
+
+target_include_directories(
+  task_executor
+  PUBLIC
+  include/task_executor
+  include/task_executor/cli
+  include/errors
+  include/camera_manager
+  include/ndi
+  ${readline_INCLUDES}
+  ${gxi_INCLUDES}
+)
+
+target_link_libraries(task_executor readline ros_node ndi_send camera_manager)
+
+ament_target_dependencies(task_executor rclcpp)
+
 
 add_executable(main_node src/main_node.cpp)
 
