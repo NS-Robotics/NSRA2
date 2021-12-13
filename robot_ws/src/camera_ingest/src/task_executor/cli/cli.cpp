@@ -117,7 +117,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
         {
             char *arg;
             arg = strtok(cmd[i], arg_del);
-            arg = strtok(NULL, del);
+            arg = strtok(NULL, arg_del);
             while (arg[strlen(arg) - 1] == ' ')
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
