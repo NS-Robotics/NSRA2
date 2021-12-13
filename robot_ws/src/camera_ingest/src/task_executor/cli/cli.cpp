@@ -36,6 +36,7 @@ void CLI::CLIFunc()
                         numtoken[strlen(numtoken) - 1] = '\0';
 
                     char *out;
+                    std::cout << token << std::endl;
                     std::strcat(out, token);
                     std::cout << out << std::endl;
                     std::strcat(out, " -");
