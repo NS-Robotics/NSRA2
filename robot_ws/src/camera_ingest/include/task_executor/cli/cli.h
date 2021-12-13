@@ -26,7 +26,7 @@ class CLI
     private:
         std::thread CLIThread;
 
-        char *getArg(std::vector<char*> cmd, char *par);
+        char *getArg(std::vector<char*> cmd, char par);
         const char del[2] = "-";
         const char arg_del[2] = " ";
 };
