@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
     executor.startCLI();
 
-    node_executor->spin()
+    node_executor->spin();
 
     executor.stopCLI();
 
