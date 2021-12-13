@@ -23,11 +23,12 @@ void CLI::CLIFunc()
 
         if(strcmp(buf, hello) == 0)
         {
-            printf("hello!");
+            printf("hello!\n");
         } else if(strcmp(buf, exit) == 0)
         {
-            printf("closing CLI!");
+            printf("closing CLI!\n");
             this->streamON = false;
+            break;
         }
 
         

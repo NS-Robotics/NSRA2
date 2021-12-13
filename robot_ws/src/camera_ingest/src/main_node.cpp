@@ -25,6 +25,8 @@ int main(int argc, char **argv)
 
     rclcpp::spin(node);
 
+    node->closeCLI();
+
     NODE_VERIFY_EXIT(ndi.endStream());
     NODE_VERIFY_EXIT(camManager->closeCameras());
 
