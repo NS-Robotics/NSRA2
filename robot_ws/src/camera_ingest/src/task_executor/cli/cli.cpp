@@ -41,6 +41,8 @@ void CLI::CLIFunc()
                     arg = strtok(NULL, del);
                     while(arg[strlen(arg) - 1] == ' ')
                         arg[strlen(arg) - 1] = '\0';
+                    while(arg[0] == ' ')
+                        arg++;
                     std::cout << arg << std::endl;
                 }   
             }
