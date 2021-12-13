@@ -31,7 +31,7 @@ void CLI::CLIFunc()
         }
         else
         {
-            printf("\033[31m[Executor] Error: Unknown command!\033[0m\n");
+            printf("\033[1;31m[Executor] Error: Unknown command!\033[0m\n");
         }
         
         free(buf);
