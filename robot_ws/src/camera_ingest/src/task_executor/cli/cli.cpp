@@ -33,8 +33,7 @@ void CLI::CLIFunc()
             printf("\033[1;34m[Executor] \033[0mUsage:\n \
                     NDI - Toggle raw NDI stream\n \
                     exit - Close Application\n \
-                    ingest - Start calibration capture\n \
-                   ");
+                    ingest - Start calibration capture\n");
         }
         else
         {
