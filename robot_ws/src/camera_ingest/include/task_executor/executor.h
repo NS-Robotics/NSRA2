@@ -15,6 +15,8 @@ class Executor : public NSSC_ERRORS
     private:
         std::shared_ptr<NSSC> node;
         std::unique_ptr<CLI> cli;
+
+        std::string msgCaller = "Executor";
 };
 
 #endif  //NSSC_TASK_EXECUTOR_
