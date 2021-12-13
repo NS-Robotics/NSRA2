@@ -1,7 +1,8 @@
 #include "cli.h"
 
-CLI::CLI()
+CLI::CLI(std::shared_ptr<Executor>& executor)
 {
+    this->executor = executor;
     this->streamON = true;
     this->CLIThread = std::thread(&CLI::CLIFunc, this);
 }
@@ -32,6 +33,7 @@ void CLI::CLIFunc()
         
         free(buf);
     }
+    this->executor->exit();
 }
 
 void CLI::stopCLI()

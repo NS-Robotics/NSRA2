@@ -17,3 +17,9 @@ void Executor::stopCLI()
     this->cli->stopCLI();
     this->node->printInfo(this->msgCaller, "CLI stopped!");
 }
+
+void Executor::exit()
+{
+    stopCLI();
+    this->node_executor->cancel();
+}
