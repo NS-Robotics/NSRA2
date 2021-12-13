@@ -21,6 +21,8 @@ public:
     NSSC_STATUS startStream();
     NSSC_STATUS endStream();
 
+    NSSC_STATUS closeNDI();
+
 private:
     globalConfig g_config;
     

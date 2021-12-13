@@ -67,10 +67,16 @@ NSSC_STATUS NDI::endStream()
 {
     this->streamON = false;
     this->sThread.join();
+    this->node->printInfo(this->msgCaller, "Stream ended");
 
+    return NSSC_STATUS_SUCCESS;
+}
+
+NSSC_STATUS NDI::closeNDI()
+{
     NDIlib_send_destroy(this->pNDI_send);
     NDIlib_destroy();
-    this->node->printInfo(this->msgCaller, "stream ended");
+    this->node->printInfo(this->msgCaller, "NDI closed");
 
     return NSSC_STATUS_SUCCESS;
 }

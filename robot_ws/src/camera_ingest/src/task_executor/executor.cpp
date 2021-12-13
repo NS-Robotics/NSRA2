@@ -15,6 +15,7 @@ void Executor::exit()
     if(this->initialized)
     {
         this->camManager->closeCameras();
+        this->ndi->closeNDI();
     }
     if(CLI::cliON.load())
     {
