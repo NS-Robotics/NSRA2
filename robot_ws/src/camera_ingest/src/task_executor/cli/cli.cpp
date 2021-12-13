@@ -23,20 +23,17 @@ void CLI::CLIFunc()
 
         while (token != NULL)
         {
-            if(token[strlen(token) - 1] == ' ')
+            while(token[strlen(token) - 1] == ' ')
                 token[strlen(token) - 1] = '\0';
             cmd.push_back(token);
             token = strtok(NULL, del);
         }
-        /*
-        for(int i = 0; i < cmd.size(); i++)
-            std::cout << cmd[i] << ' ';
-        */
+
         if(strcmp(cmd[0], "NDI") == 0)
         {
-            if(cmd.size() > 1)
+            if(cmd.size() > 1 && cmd[1][0] == 'r');
             {
-                std::cout << cmd[1] << std::endl;
+                cmd
             }
 
             rawNDI();
