@@ -19,7 +19,7 @@ void CLI::CLIFunc()
         char *token;
         token = strtok(buf, del);
 
-        std::vector<std::string> cmd = {};
+        std::vector<char*> cmd = {};
 
         while (token != NULL)
         {
@@ -32,6 +32,11 @@ void CLI::CLIFunc()
         */
         if(strcmp(cmd[0], "NDI") == 0)
         {
+            if(cmd.size() > 1)
+            {
+                std::cout << cmd[1] << std::endl;
+            }
+
             rawNDI();
         }
         else if(strcmp(cmd[0], "ingest") == 0)
