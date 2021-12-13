@@ -19,17 +19,17 @@ void CLI::CLIFunc()
         char *token;
         token = strtok(buf, del);
 
-        std::vector<std::string> cmd = {token};
+        std::vector<std::string> cmd = {};
 
         while (token != NULL)
         {
-            token = strtok(NULL, del);
             cmd.push_back(token);
+            token = strtok(NULL, del);
         }
-        /*
+        
         for(int i = 0; i < cmd.size(); i++)
             std::cout << cmd[i] << ' ';
-        */
+        
         if(strcmp(buf, "NDI") == 0)
         {
             rawNDI();
