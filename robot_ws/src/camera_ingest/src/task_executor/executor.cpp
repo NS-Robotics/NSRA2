@@ -8,7 +8,7 @@ Executor::Executor(std::shared_ptr<NSSC>& node, std::shared_ptr<rclcpp::executor
 
 void Executor::startCLI()
 {
-    this->cli = std::make_unique<CLI>();
+    this->cli = std::make_unique<CLI>(this);
     this->node->printInfo(this->msgCaller, "CLI init!");
 }
 
