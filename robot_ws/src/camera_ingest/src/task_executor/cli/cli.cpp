@@ -23,13 +23,13 @@ void CLI::CLIFunc()
 
         while (token != NULL)
         {
-            std::cout << token << std::endl;
+            /*
             if(token == NULL)
             {
                 arg_status = NSSC_CLI_ARGUMENT_TYPE_ERROR;
                 break;
             }
-
+            */
             while(token[strlen(token) - 1] == ' ')
                 token[strlen(token) - 1] = '\0';
             
