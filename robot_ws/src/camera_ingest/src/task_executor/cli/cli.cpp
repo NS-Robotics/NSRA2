@@ -23,6 +23,7 @@ void CLI::CLIFunc()
 
         while (token != NULL)
         {
+            std::cout << token << std::endl;
             while(token[strlen(token) - 1] == ' ')
                 token[strlen(token) - 1] = '\0';
             if(token == "")
