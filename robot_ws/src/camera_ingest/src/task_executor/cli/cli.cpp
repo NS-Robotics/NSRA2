@@ -25,13 +25,13 @@ void CLI::CLIFunc()
         }
         else if(strcmp(buf, "help") == 0)
         {
-            printf("[Executor] Usage:\n \
+            printf("\033[1;34m[Executor] \033[0mUsage:\n \
                     NDI - Open raw NDI stream\n \
                     exit - Close Application\n");
         }
         else
         {
-            printf("\033[1;31m[Executor] Error: Unknown command!\033[0m\n");
+            printf("\033[1;34m[Executor] \033[1;31mError: Unknown command!\033[0m\n");
         }
         
         free(buf);
