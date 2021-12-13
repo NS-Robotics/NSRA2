@@ -163,7 +163,7 @@ target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference)
 
 ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
 
-add_lirary(
+add_library(
   ingest
   src/ingest/ingest.cpp
 )
