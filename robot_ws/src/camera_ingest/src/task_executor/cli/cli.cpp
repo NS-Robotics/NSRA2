@@ -9,9 +9,10 @@ void CLI::CLIFunc()
         if (strlen(buf) > 0)
         {
             add_history(buf);
+        } else
+        {
+            continue;
         }
-
-        //printf("[%s]\n", buf);
 
         if(strcmp(buf, "NDI") == 0)
         {
