@@ -2,9 +2,9 @@ find_package(rclcpp REQUIRED)
 find_package(fastcdr REQUIRED)
 find_package(foonathan_memory REQUIRED)
 find_package(fastrtps REQUIRED)
-find_package(Readline REQUIRED)
 
 set(ndi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/libndi)
+set(readline_INCLUDES /usr/include/readline)
 
 add_library(
     ros_node
@@ -17,6 +17,7 @@ target_include_directories(
     PUBLIC
     include
     ${ndi_INCLUDES}
+    ${readline_INCLUDES}
 )
 
 ament_target_dependencies(ros_node rclcpp)
