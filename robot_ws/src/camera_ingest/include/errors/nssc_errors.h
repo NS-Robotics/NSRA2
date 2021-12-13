@@ -45,6 +45,9 @@ typedef enum NSSC_STATUS_LIST
     // NDI error codes
     NSSC_NDI_STATUS_SENDER_INIT_ERROR   = -30,                              // Error creating NDI sender
 
+    //CLI error codes
+    NSSC_CLI_ARGUMENT_TYPE_ERROR        = -40,                              // Invalid argument
+
 } NSSC_STATUS_LIST;
 
 class NSSC_ERRORS

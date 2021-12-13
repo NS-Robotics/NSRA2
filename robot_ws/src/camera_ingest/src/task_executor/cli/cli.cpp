@@ -29,7 +29,9 @@ void CLI::CLIFunc()
 
         if(strcmp(cmd[0], "NDI") == 0)
         {
-            getArg(cmd, 'r');
+            int ret;
+            NSSC_STATUS status = getIntArg(cmd, 'r', &ret);
+            std::cout << ret << std::endl;
 
             rawNDI();
         }
@@ -59,7 +61,7 @@ void CLI::CLIFunc()
     }
 }
 
-char *CLI::getArg(std::vector<char*> cmd, char par)
+NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& arg)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
@@ -72,8 +74,15 @@ char *CLI::getArg(std::vector<char*> cmd, char par)
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
                 arg++;
-            std::cout << arg << std::endl;
-            return arg;
+            try
+            {
+                arg = boost::lexical_cast<int>(arg);
+                return NSSC_STATUS_SUCCESS;
+            }
+            catch(bad_lexical_cast &)
+            {
+                return NSSC_CLI_ARGUMENT_TYPE_ERROR;
+            }
         }
     }
 }

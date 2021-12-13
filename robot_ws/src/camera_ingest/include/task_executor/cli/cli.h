@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include "node.h"
+#include "nssc_errors.h"
 
 class CLI
 {
@@ -26,7 +27,7 @@ class CLI
     private:
         std::thread CLIThread;
 
-        char *getArg(std::vector<char*> cmd, char par);
+        NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& arg);
         const char del[2] = "-";
         const char arg_del[2] = " ";
 };
