@@ -27,11 +27,11 @@ int main(int argc, char **argv)
 
     NODE_VERIFY_EXIT(ndi.startStream());
 
-    executor.startCLI();
+    executor.openCLI();
 
     node_executor->spin();
 
-    executor.stopCLI();
+    executor.closeCLI();
 
     NODE_VERIFY_EXIT(ndi.endStream());
     NODE_VERIFY_EXIT(camManager->closeCameras());

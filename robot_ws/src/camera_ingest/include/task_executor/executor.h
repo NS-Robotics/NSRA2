@@ -5,18 +5,15 @@
 #include "nssc_errors.h"
 #include "node.h"
 
-class Executor : public NSSC_ERRORS
+class Executor : public NSSC_ERRORS, public CLI
 {
     public:
         Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
-        void startCLI();
-        void stopCLI();
         void exit();
     
     private:
         std::shared_ptr<NSSC> node;
         std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
-        std::unique_ptr<CLI> cli;
 
         std::string msgCaller = "Executor";
 };

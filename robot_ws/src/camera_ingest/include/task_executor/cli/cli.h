@@ -13,14 +13,15 @@
 class CLI
 {
     public:
-        CLI(std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
         void CLIFunc();
-        void stopCLI();
+        void openCLI();
+        void closeCLI();
+
+        virtual void exit();
 
     private:
         std::thread CLIThread;
         std::atomic<bool> streamON{false};
-        std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
 };
 
 #endif  // NSSC_TASK_EXECUTOR_CLI_

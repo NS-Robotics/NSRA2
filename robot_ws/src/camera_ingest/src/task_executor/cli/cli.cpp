@@ -1,12 +1,5 @@
 #include "cli.h"
 
-CLI::CLI(std::shared_ptr<rclcpp::executors::SingleThreadedExecutor>& node_executor)
-{
-    this->node_executor = node_executor;
-    this->streamON = true;
-    this->CLIThread = std::thread(&CLI::CLIFunc, this);
-}
-
 void CLI::CLIFunc()
 {
     char *buf;
@@ -25,7 +18,6 @@ void CLI::CLIFunc()
             printf("hello!\n");
         } else if(strcmp(buf, "exit") == 0)
         {
-            printf("closing CLI!\n");
             this->streamON = false;
             break;
         }
@@ -33,10 +25,16 @@ void CLI::CLIFunc()
         
         free(buf);
     }
-    this->node_executor->cancel();
+    exit();
 }
 
-void CLI::stopCLI()
+void CLI::openCLI()
+{
+    this->streamON = true;
+    this->CLIThread = std::thread(&CLI::CLIFunc, this);
+}
+
+void CLI::closeCLI()
 {
     this->streamON = false;
     this->CLIThread.join();
