@@ -30,7 +30,7 @@ void CLI::CLIFunc()
         if(strcmp(cmd[0], "NDI") == 0)
         {
             int ret;
-            NSSC_STATUS status = getIntArg(cmd, 'r', &ret);
+            NSSC_STATUS status = getIntArg(cmd, 'r', ret);
             std::cout << ret << std::endl;
 
             rawNDI();
