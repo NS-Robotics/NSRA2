@@ -38,4 +38,5 @@ void CLI::CLIFunc()
 void CLI::stopCLI()
 {
     this->streamON = false;
+    this->CLIThread.join();
 }

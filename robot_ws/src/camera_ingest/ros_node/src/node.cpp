@@ -3,13 +3,17 @@
 NSSC::NSSC() : Node("NSSC") 
 {
     RCLCPP_INFO(this->get_logger(), "[Node] initialized!");
-    this->cli = std::make_unique<CLI>();
-    RCLCPP_INFO(this->get_logger(), "[Node] CLI opened!");
 }
 
 NSSC::~NSSC()
 {
     this->cli->stopCLI();
+}
+
+void NSSC::openCLI()
+{
+    this->cli = std::make_unique<CLI>();
+    RCLCPP_INFO(this->get_logger(), "[Node] CLI opened!");
 }
 
 void NSSC::printInfo(std::string caller, std::string msg)

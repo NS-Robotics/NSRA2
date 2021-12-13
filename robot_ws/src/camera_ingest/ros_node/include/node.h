@@ -11,6 +11,7 @@ public:
     NSSC();
     ~NSSC();
     void printInfo(std::string caller, std::string msg);
+    void openCLI();
 
 private:
     std::unique_ptr<CLI> cli;

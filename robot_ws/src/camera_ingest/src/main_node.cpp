@@ -21,6 +21,8 @@ int main(int argc, char **argv)
 
     NODE_VERIFY_EXIT(ndi.startStream());
 
+    node->openCLI();
+
     rclcpp::spin(node);
 
     NODE_VERIFY_EXIT(ndi.endStream());
