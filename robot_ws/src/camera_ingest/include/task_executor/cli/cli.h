@@ -8,6 +8,8 @@
 #include <atomic>
 #include <string.h>
 
+#include "node.h"
+
 class CLI
 {
     public:
