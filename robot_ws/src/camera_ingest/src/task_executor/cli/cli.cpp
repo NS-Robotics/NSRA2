@@ -20,7 +20,7 @@ void CLI::CLIFunc()
         token = strtok(buf, del);
         while (token != NULL)
         {
-            printf(" %s\n", token);
+            printf("%s\n", token);
 
             token = strtok(NULL, del);
         }
