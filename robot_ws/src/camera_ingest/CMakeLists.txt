@@ -204,6 +204,7 @@ add_library(
   task_executor
   src/task_executor/executor.cpp
   src/task_executor/cli/cli.cpp
+  src/task_executor/cli/cli_args.cpp
 )
 
 target_include_directories(
