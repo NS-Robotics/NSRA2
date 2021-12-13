@@ -19,6 +19,7 @@ void NSSC::openCLI()
 void NSSC::closeCLI()
 {
     this->cli->stopCLI();
+    RCLCPP_INFO(this->get_logger(), "[Node] CLI closed!");
 }
 
 void NSSC::printInfo(std::string caller, std::string msg)
