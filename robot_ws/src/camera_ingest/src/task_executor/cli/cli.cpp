@@ -32,7 +32,7 @@ void CLI::CLIFunc()
             int ret;
             if(getIntArg(cmd, 'r', ret) != NSSC_STATUS_SUCCESS)
             {
-                printError("Bad argument!");
+                this->printError("Bad argument!");
             } else
             {
                 std::cout << ret << std::endl;
@@ -58,7 +58,7 @@ void CLI::CLIFunc()
         }
         else
         {
-            printError("Unknown command!");
+            this->printError("Unknown command!");
         }
         
         free(buf);
@@ -91,7 +91,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
     }
 }
 
-void CLI::printError(const std::string message)
+void CLI::printError(const char* message)
 {
     printf("\033[1;34m[Executor] \033[1;31mError: %s\033[0m\n", message);
 }
