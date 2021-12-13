@@ -19,12 +19,25 @@ void CLI::CLIFunc()
 
         std::vector<char*> cmd = {};
 
+        NSSC_STATUS arg_status = NSSC_STATUS_SUCCESS;
+
         while (token != NULL)
         {
             while(token[strlen(token) - 1] == ' ')
                 token[strlen(token) - 1] = '\0';
+            if(token == "")
+            {
+                arg_status = NSSC_CLI_ARGUMENT_TYPE_ERROR;
+                break;
+            }
             cmd.push_back(token);
             token = strtok(NULL, del);
+        }
+
+        if(arg_status != NSSC_STATUS_SUCCESS)
+        {
+            this->printError("Bad argument!");
+            continue;
         }
 
         if(strcmp(cmd[0], "NDI") == 0)
