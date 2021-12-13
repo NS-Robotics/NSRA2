@@ -26,25 +26,25 @@ void CLI::CLIFunc()
             cmd.push_back(token);
             token = strtok(NULL, del);
         }
-        
+        /*
         for(int i = 0; i < cmd.size(); i++)
             std::cout << cmd[i] << ' ';
-        
-        if(strcmp(buf, "NDI") == 0)
+        */
+        if(strcmp(cmd[0], "NDI") == 0)
         {
             rawNDI();
         }
-        else if(strcmp(buf, "ingest") == 0)
+        else if(strcmp(cmd[0], "ingest") == 0)
         {
             ingest();
         }
-        else if(strcmp(buf, "exit") == 0)
+        else if(strcmp(cmd[0], "exit") == 0)
         {
             this->cliON = false;
             exit();
             break;
         }
-        else if(strcmp(buf, "help") == 0)
+        else if(strcmp(cmd[0], "help") == 0)
         {
             printf("\033[1;34m[Executor] \033[0mUsage:\n"
                    "  NDI [-r resize frame]             - Toggle raw NDI stream\n"
