@@ -5,6 +5,7 @@
 #include <readline/history.h>
 
 #include <thread>
+#include <atomic>
 
 class CLI
 {
