@@ -26,10 +26,10 @@ void CLI::CLIFunc()
             token = strtok(NULL, del);
             cmd.push_back(token);
         }
-
+        /*
         for(int i = 0; i < cmd.size(); i++)
             std::cout << cmd[i] << ' ';
-
+        */
         if(strcmp(buf, "NDI") == 0)
         {
             rawNDI();
