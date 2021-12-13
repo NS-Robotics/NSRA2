@@ -1,8 +1,8 @@
 #include "cli.h"
 
-CLI::CLI(std::shared_ptr<Executor>& executor)
+CLI::CLI(std::shared_ptr<rclcpp::executors::SingleThreadedExecutor>& node_executor)
 {
-    this->executor = executor;
+    this->node_executor = node_executor;
     this->streamON = true;
     this->CLIThread = std::thread(&CLI::CLIFunc, this);
 }
@@ -33,7 +33,7 @@ void CLI::CLIFunc()
         
         free(buf);
     }
-    this->executor->exit();
+    this->node_executor->cancel();
 }
 
 void CLI::stopCLI()

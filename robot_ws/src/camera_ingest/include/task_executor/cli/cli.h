@@ -8,19 +8,17 @@
 #include <atomic>
 #include <string.h>
 
-#include "executor.h"
-
 class CLI
 {
     public:
-        CLI(std::shared_ptr<Executor> &executor);
+        CLI(std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
         void CLIFunc();
         void stopCLI();
 
     private:
         std::thread CLIThread;
         std::atomic<bool> streamON{false};
-        std::shared_ptr<Executor> executor;
+        std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
 };
 
 #endif  // NSSC_TASK_EXECUTOR_CLI_
