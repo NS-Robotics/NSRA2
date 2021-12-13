@@ -2,4 +2,4 @@
 
 git pull origin main
 cd robot_ws/
-colcon build --packages-select camera_ingest cv_bridge
+colcon build --packages-select camera_ingest
