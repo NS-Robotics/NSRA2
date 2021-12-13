@@ -61,7 +61,7 @@ void CLI::CLIFunc()
     }
 }
 
-NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& arg)
+NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
@@ -76,7 +76,7 @@ NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& arg)
                 arg++;
             try
             {
-                arg = boost::lexical_cast<int>(arg);
+                ret = boost::lexical_cast<int>(arg);
                 return NSSC_STATUS_SUCCESS;
             }
             catch(bad_lexical_cast &)
