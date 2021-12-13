@@ -28,6 +28,8 @@ class CLI
     private:
         std::thread CLIThread;
 
+        void printError(const std::string message);
+
         NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& arg);
         const char del[2] = "-";
         const char arg_del[2] = " ";
