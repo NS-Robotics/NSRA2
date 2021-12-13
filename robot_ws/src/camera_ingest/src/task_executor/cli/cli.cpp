@@ -30,6 +30,7 @@ void CLI::CLIFunc()
             {
                 char *numtoken;
                 numtoken = strtok(NULL, del);
+                std::cout << numtoken << std::endl;
                 if(isdigit(numtoken[0]))
                 {
                     while(numtoken[strlen(numtoken) - 1] == ' ')
