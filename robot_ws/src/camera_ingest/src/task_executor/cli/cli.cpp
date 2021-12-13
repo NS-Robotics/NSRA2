@@ -30,7 +30,7 @@ void CLI::CLIFunc()
             {
                 char *numtoken;
                 numtoken = strtok(NULL, del);
-                if(isdigit(numtoken[0]))
+                if(numtoken != NULL && isdigit(numtoken[0]))
                 {
                     while(numtoken[strlen(numtoken) - 1] == ' ')
                         numtoken[strlen(numtoken) - 1] = '\0';
@@ -41,15 +41,22 @@ void CLI::CLIFunc()
                     std::strcat(out, numtoken);
 
                     std::cout << out << std::endl;
+
+                    cmd.push_back(out);
+                    
+                    token = strtok(NULL, del);
+                    if(token == NULL) break;
                     
                 } else
                 {
                     arg_status = NSSC_CLI_ARGUMENT_TYPE_ERROR;
                     break;
                 }
+            } else
+            {
+                cmd.push_back(token);
+                token = strtok(NULL, del);
             }
-            cmd.push_back(token);
-            token = strtok(NULL, del);
         }
 
         if(arg_status != NSSC_STATUS_SUCCESS)
