@@ -30,8 +30,7 @@ void CLI::CLIFunc()
         if(strcmp(cmd[0], "NDI") == 0)
         {
             int ret;
-            NSSC_STATUS status = getIntArg(cmd, 'r', ret);
-            if(status != NSSC_STATUS_SUCCESS || ret > 1 || ret < 0)
+            if(getIntArg(cmd, 'r', ret) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
             } else
@@ -82,6 +81,32 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
             try
             {
                 ret = boost::lexical_cast<int>(arg);
+                return NSSC_STATUS_SUCCESS;
+            }
+            catch(boost::bad_lexical_cast &)
+            {
+                return NSSC_CLI_ARGUMENT_TYPE_ERROR;
+            }
+        }
+    }
+}
+
+NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
+{
+    for (int i = 1; i < cmd.size(); i++)
+    {
+        if (cmd[i][0] == par)
+        {
+            char *arg;
+            arg = strtok(cmd[i], arg_del);
+            arg = strtok(NULL, del);
+            while (arg[strlen(arg) - 1] == ' ')
+                arg[strlen(arg) - 1] = '\0';
+            while (arg[0] == ' ')
+                arg++;
+            try
+            {
+                ret = boost::lexical_cast<bool>(arg);
                 return NSSC_STATUS_SUCCESS;
             }
             catch(boost::bad_lexical_cast &)

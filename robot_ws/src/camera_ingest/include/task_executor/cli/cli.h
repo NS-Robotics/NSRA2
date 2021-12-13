@@ -30,7 +30,8 @@ class CLI
 
         void printError(const char* message);
 
-        NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& arg);
+        NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& ret);
+        NSSC_STATUS getBoolArg(std::vector<char*> cmd, char par, bool& ret);
         const char del[2] = "-";
         const char arg_del[2] = " ";
 };
