@@ -4,7 +4,7 @@ void CLI::CLIFunc()
 {
     char *buf;
 
-    while ((buf = readline("[NSSC client] ")) != nullptr && this->cliON.load())
+    while ((buf = readline("[NSSC client] >> ")) != nullptr && this->cliON.load())
     {
         if (strlen(buf) > 0)
         {
