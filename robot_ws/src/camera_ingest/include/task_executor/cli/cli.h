@@ -18,9 +18,10 @@ class CLI
         void closeCLI();
 
         virtual void exit() = 0;
+        virtual void rawNDI() = 0;
 
         std::atomic<bool> cliON{false};
-        
+
     private:
         std::thread CLIThread;
 };

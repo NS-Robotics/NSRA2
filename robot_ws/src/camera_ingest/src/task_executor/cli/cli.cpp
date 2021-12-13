@@ -13,10 +13,11 @@ void CLI::CLIFunc()
 
         //printf("[%s]\n", buf);
 
-        if(strcmp(buf, "hello") == 0)
+        if(strcmp(buf, "NDI") == 0)
         {
-            printf("hello!\n");
-        } else if(strcmp(buf, "exit") == 0)
+            rawNDI();
+        } 
+        else if(strcmp(buf, "exit") == 0)
         {
             this->cliON = false;
             exit();
