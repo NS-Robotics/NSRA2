@@ -8,11 +8,14 @@ int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
 
+    auto node_executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+
     auto node = std::make_shared<NSSC>();
+    node_executor->add_node(node);
 
     NSSC_ERRORS eHandler(node);
 
-    Executor executor(node);
+    Executor executor(node, node_executor);
 
     auto camManager = std::make_shared<cameraManager>(node);
     NODE_VERIFY_EXIT(camManager->init());
@@ -26,7 +29,7 @@ int main(int argc, char **argv)
 
     executor.startCLI();
 
-    rclcpp::spin(node);
+    node_executor->spin()
 
     executor.stopCLI();
 

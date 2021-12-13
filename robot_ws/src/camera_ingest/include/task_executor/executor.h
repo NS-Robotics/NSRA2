@@ -8,12 +8,13 @@
 class Executor : public NSSC_ERRORS
 {
     public:
-        Executor(std::shared_ptr<NSSC> &node);
+        Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
         void startCLI();
         void stopCLI();
     
     private:
         std::shared_ptr<NSSC> node;
+        std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
         std::unique_ptr<CLI> cli;
 
         std::string msgCaller = "Executor";
