@@ -35,6 +35,8 @@ void CLI::CLIFunc()
                 {
                     while(numtoken[strlen(numtoken) - 1] == ' ')
                         numtoken[strlen(numtoken) - 1] = '\0';
+
+                    std::cout << numtoken << std::endl;
                     
                     std::strcat(token, " -");
                     std::strcat(token, numtoken);
