@@ -30,10 +30,14 @@ void CLI::CLIFunc()
         if(strcmp(cmd[0], "NDI") == 0)
         {
             int ret;
-            NSSC_STATUS status = getIntArg(cmd, 'r', ret);
-            std::cout << ret << std::endl;
-
-            rawNDI();
+            if(getIntArg(cmd, 'r', ret) != NSSC_STATUS_SUCCESS)
+            {
+                printf("\033[1;34m[Executor] \033[1;31mError: Bad argument!\033[0m\n");
+            } else
+            {
+                std::cout << ret << std::endl;
+                rawNDI();
+            }
         }
         else if(strcmp(cmd[0], "ingest") == 0)
         {
