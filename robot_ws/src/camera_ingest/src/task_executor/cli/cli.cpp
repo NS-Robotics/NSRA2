@@ -35,13 +35,11 @@ void CLI::CLIFunc()
                     while(numtoken[strlen(numtoken) - 1] == ' ')
                         numtoken[strlen(numtoken) - 1] = '\0';
 
-                    char *out;
-                    std::cout << token << std::endl;
-                    std::strcat(out, token);
-                    std::cout << out << std::endl;
+                    char *out = new char[strlen(numtoken) + strlen(token) + 3];
+                    std::strcpy(out, token);
                     std::strcat(out, " -");
-                    std::cout << out << std::endl;
                     std::strcat(out, numtoken);
+
                     std::cout << out << std::endl;
                     
                 } else
