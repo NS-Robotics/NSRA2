@@ -22,4 +22,4 @@ target_include_directories(
 
 ament_target_dependencies(ros_node rclcpp)
 
-target_link_libraries(ros_node fastrtps fastcdr foonathan_memory Readline)
+target_link_libraries(ros_node fastrtps fastcdr foonathan_memory)
