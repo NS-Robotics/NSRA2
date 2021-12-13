@@ -23,6 +23,7 @@ void CLI::CLIFunc()
 
         while (token != NULL)
         {
+            token[strlen(token) - 1] = '\0';
             cmd.push_back(token);
             token = strtok(NULL, del);
         }
