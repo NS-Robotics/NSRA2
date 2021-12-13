@@ -38,6 +38,7 @@ void CLI::CLIFunc()
                 {
                     char *arg;
                     arg = strtok(cmd[i], arg_del);
+                    arg = strtok(NULL, del);
                     while(arg[strlen(arg) - 1] == ' ')
                         arg[strlen(arg) - 1] = '\0';
                     std::cout << arg << std::endl;
