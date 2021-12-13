@@ -37,12 +37,13 @@ void CLI::CLIFunc()
                         numtoken[strlen(numtoken) - 1] = '\0';
 
                     std::cout << numtoken << std::endl;
+
+                    char *out;
+                    std::strcat(out, token);
+                    std::strcat(out, " -");
+                    std::strcat(out, numtoken);
                     
-                    std::strcat(token, " -");
-                    std::strcat(token, numtoken);
-                    std::puts(token);
-                    
-                    std::cout << token << std::endl;
+                    std::cout << out << std::endl;
                 } else
                 {
                     arg_status = NSSC_CLI_ARGUMENT_TYPE_ERROR;
