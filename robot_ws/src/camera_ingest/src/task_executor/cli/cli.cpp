@@ -31,10 +31,14 @@ void CLI::CLIFunc()
 
         if(strcmp(cmd[0], "NDI") == 0)
         {
+            /*
             if(cmd.size() > 1 && cmd[1][0] == 'r');
             {
                 cmd
             }
+            */
+
+            std::cout << cmd[1] << std::endl;
 
             rawNDI();
         }
