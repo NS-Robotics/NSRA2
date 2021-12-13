@@ -8,6 +8,6 @@ Executor::Executor(std::shared_ptr<NSSC>& node, std::shared_ptr<rclcpp::executor
 
 void Executor::exit()
 {
-    stopCLI();
+    CLI::closeCLI();
     this->node_executor->cancel();
 }
