@@ -30,7 +30,7 @@ void CLI::CLIFunc()
         if(strcmp(cmd[0], "NDI") == 0)
         {
             int ret;
-            if(getIntArg(cmd, 'r', ret) != NSSC_STATUS_SUCCESS)
+            if(getBoolArg(cmd, 'r', ret) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
             } else
