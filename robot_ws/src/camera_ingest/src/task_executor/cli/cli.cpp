@@ -27,11 +27,11 @@ void CLI::CLIFunc()
         {
             printf("[Executor] Usage:\n \
                     NDI - Open raw NDI stream\n \
-                    exit - close Application\n");
+                    exit - Close Application\n");
         }
         else
         {
-            printf("[Executor] Error: Unknown command!\n");
+            printf("\u001b[31m[Executor] Error: Unknown command!\u001b[0m\n");
         }
         
         free(buf);
