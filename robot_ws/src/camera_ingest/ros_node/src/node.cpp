@@ -2,7 +2,7 @@
 
 NSSC::NSSC() : Node("NSSC") 
 {
-    RCLCPP_INFO(this->get_logger(), "[Node] initialized!");
+    printInfo(this->msgCaller, "initialized!");
 }
 
 void NSSC::printInfo(std::string caller, std::string msg)

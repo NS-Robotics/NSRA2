@@ -5,7 +5,9 @@
 
 class NSSC : public rclcpp::Node
 {
-public:
-    NSSC();
-    void printInfo(std::string caller, std::string msg);
+    public:
+        NSSC();
+        void printInfo(std::string caller, std::string msg);
+    private:
+        std::string msgCaller = "Node";
 };
