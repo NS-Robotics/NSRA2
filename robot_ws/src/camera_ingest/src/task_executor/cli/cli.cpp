@@ -5,6 +5,7 @@ void CLI::CLIFunc()
     char *buf;
 
     const char del[2] = "-";
+    const char arg_del[2] = " ";
 
     while ((buf = readline("\033[1;32m[NSSC client] >> \033[0m")) != nullptr && this->cliON.load())
     {
@@ -36,7 +37,7 @@ void CLI::CLIFunc()
                 if(cmd[i][0] == 'r')
                 {
                     char *arg;
-                    arg = strtok(cmd[i], ' ');
+                    arg = strtok(cmd[i], arg_del);
                     while(arg[strlen(arg) - 1] == ' ')
                         arg[strlen(arg) - 1] = '\0';
                     std::cout << arg << std::endl;
