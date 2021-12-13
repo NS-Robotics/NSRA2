@@ -9,16 +9,25 @@ CLI::CLI()
 void CLI::CLIFunc()
 {
     char *buf;
-    while ((buf = readline(">> ")) != nullptr && this->streamON.load())
+    while ((buf = readline("[NSSC client] ")) != nullptr && this->streamON.load())
     {
         if (strlen(buf) > 0)
         {
             add_history(buf);
         }
 
-        printf("[%s]\n", buf);
+        //printf("[%s]\n", buf);
 
-        // readline malloc's a new buffer every time.
+        if(buf == "hello")
+        {
+            printf("hello!");
+        } else if(buf == "exit")
+        {
+            printf("closing CLI!");
+            this->streamON = false;
+        }
+
+        
         free(buf);
     }
 }
