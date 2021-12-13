@@ -4,9 +4,6 @@ void CLI::CLIFunc()
 {
     char *buf;
 
-    const char del[2] = "-";
-    const char arg_del[2] = " ";
-
     while ((buf = readline("\033[1;32m[NSSC client] >> \033[0m")) != nullptr && this->cliON.load())
     {
         if (strlen(buf) > 0)
@@ -32,20 +29,7 @@ void CLI::CLIFunc()
 
         if(strcmp(cmd[0], "NDI") == 0)
         {
-            for(int i = 1; i < cmd.size(); i++)
-            {
-                if(cmd[i][0] == 'r')
-                {
-                    char *arg;
-                    arg = strtok(cmd[i], arg_del);
-                    arg = strtok(NULL, del);
-                    while(arg[strlen(arg) - 1] == ' ')
-                        arg[strlen(arg) - 1] = '\0';
-                    while(arg[0] == ' ')
-                        arg++;
-                    std::cout << arg << std::endl;
-                }   
-            }
+            getArg(cmd, 'r');
 
             rawNDI();
         }
@@ -72,6 +56,25 @@ void CLI::CLIFunc()
         }
         
         free(buf);
+    }
+}
+
+char *CLI::getArg(std::vector<char*> cmd, char par)
+{
+    for (int i = 1; i < cmd.size(); i++)
+    {
+        if (cmd[i][0] == par)
+        {
+            char *arg;
+            arg = strtok(cmd[i], arg_del);
+            arg = strtok(NULL, del);
+            while (arg[strlen(arg) - 1] == ' ')
+                arg[strlen(arg) - 1] = '\0';
+            while (arg[0] == ' ')
+                arg++;
+            std::cout << arg << std::endl;
+            return arg;
+        }
     }
 }
 

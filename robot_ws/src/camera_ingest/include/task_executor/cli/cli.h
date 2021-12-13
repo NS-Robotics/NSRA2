@@ -25,6 +25,10 @@ class CLI
 
     private:
         std::thread CLIThread;
+
+        char *getArg(std::vector<char*> cmd, char *par);
+        const char del[2] = "-";
+        const char arg_del[2] = " ";
 };
 
 #endif  // NSSC_TASK_EXECUTOR_CLI_
