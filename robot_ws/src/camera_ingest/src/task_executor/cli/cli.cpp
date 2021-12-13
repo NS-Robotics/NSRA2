@@ -30,10 +30,10 @@ void CLI::CLIFunc()
         }
         else if(strcmp(buf, "help") == 0)
         {
-            printf("\033[1;34m[Executor] \033[0mUsage:\n \
-                    NDI - Toggle raw NDI stream\n \
-                    exit - Close Application\n \
-                    ingest - Start calibration capture\n");
+            printf("\033[1;34m[Executor] \033[0mUsage:\n"
+                   "NDI - Toggle raw NDI stream\n"
+                   "exit - Close Application\n"
+                   "ingest - Start calibration capture\n");
         }
         else
         {
