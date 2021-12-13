@@ -40,6 +40,7 @@ void CLI::CLIFunc()
                     
                     std::strcat(token, " -");
                     std::strcat(token, numtoken);
+                    std::puts(token);
                     
                     std::cout << token << std::endl;
                 } else
