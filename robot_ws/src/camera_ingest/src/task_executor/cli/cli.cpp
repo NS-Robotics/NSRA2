@@ -77,7 +77,15 @@ void CLI::CLIFunc()
         }
         else if(strcmp(cmd[0], "ingest") == 0)
         {
-            ingest();
+            int ret;
+            if(getIntArg(cmd, 'n', ret) != NSSC_STATUS_SUCCESS)
+            {
+                this->printError("Bad argument!");
+            } else
+            {
+                std::cout << ret << std::endl;
+                ingest();
+            }
         }
         else if(strcmp(cmd[0], "exit") == 0)
         {
@@ -114,6 +122,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
                 arg++;
+            std::cout << arg << std::endl;
             try
             {
                 ret = boost::lexical_cast<int>(arg);
@@ -140,7 +149,6 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
                 arg++;
-            std::cout << arg << std::endl;
             try
             {
                 ret = boost::lexical_cast<bool>(arg);
