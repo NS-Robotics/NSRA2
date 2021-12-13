@@ -99,7 +99,14 @@
         "nssc_errors.h": "c",
         "numeric": "cpp",
         "xxatomic": "cpp",
-        "xtree": "c"
+        "xtree": "c",
+        "__bits": "cpp",
+        "bit": "cpp",
+        "clocale": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "cmake.configureOnOpen": false

@@ -1,5 +1,5 @@
-#ifndef NSSC_ROS_NODE_CLI_
-#define NSSC_ROS_NODE_CLI_
+#ifndef NSSC_TASK_EXECUTOR_CLI_
+#define NSSC_TASK_EXECUTOR_CLI_
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -20,4 +20,4 @@ class CLI
         std::atomic<bool> streamON{false};
 };
 
-#endif  // NSSC_ROS_NODE_CLI_
+#endif  // NSSC_TASK_EXECUTOR_CLI_

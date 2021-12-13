@@ -58,6 +58,11 @@ add_library(NPP SHARED IMPORTED)
 set_target_properties(NPP PROPERTIES IMPORTED_LOCATION ${npp_LIBRARY})
 set_target_properties(NPPI PROPERTIES IMPORTED_LOCATION ${nppi_LIBRARY})
 
+set(readline_INCLUDES /usr/include/readline)
+set(readline_LIBRARY /usr/lib/aarch64-linux-gnu/libreadline.so)
+add_library(readline SHARED IMPORTED)
+set_target_properties(readline PROPERTIES IMPORTED_LOCATION ${readline_LIBRARY})
+
 add_library(
   nssc_errors
   src/errors/nssc_errors.cpp
@@ -73,6 +78,25 @@ target_include_directories(
 target_link_libraries(nssc_errors ros_node gxiapi)
 
 ament_target_dependencies(nssc_errors rclcpp)
+
+add_library(
+  task_executor
+  src/task_executor/executor.cpp
+  src/task_executor/cli/cli.cpp
+)
+
+target_include_directories(
+  task_executor
+  PUBLIC
+  include/task_executor
+  include/task_executor/cli
+  include/errors
+  ${readline_INCLUDES}
+)
+
+target_link_libraries(task_executor readline ros_node)
+
+ament_target_dependencies(task_executor rclcpp)
 
 add_library(
   frame
@@ -181,17 +205,17 @@ add_executable(main_node src/main_node.cpp)
 
 ament_target_dependencies(main_node rclcpp)
 
-target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi)
+target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor)
 
 install(
-  TARGETS camera ndi_send nssc_errors camera_manager #nssc_image_transport
+  TARGETS camera ndi_send nssc_errors camera_manager task_executor #nssc_image_transport
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
 install(
-  FILES ${gxi_LIBRARY} ${gxi_GVTL} ${gxi_U3VTL} ${ndi_LIBRARY} ${ndi5_LIBRARY} ${jinference_LIBRARY} ${jutils_LIBRARY}
+  FILES ${gxi_LIBRARY} ${gxi_GVTL} ${gxi_U3VTL} ${ndi_LIBRARY} ${ndi5_LIBRARY} ${jinference_LIBRARY} ${jutils_LIBRARY} ${readline_INCLUDES}
   DESTINATION lib
 )
 

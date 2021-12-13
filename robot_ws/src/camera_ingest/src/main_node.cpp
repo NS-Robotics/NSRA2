@@ -2,6 +2,7 @@
 #include "node.h"
 #include "ndi.h"
 #include "nssc_errors.h"
+#include "executor.h"
 
 int main(int argc, char **argv)
 {
@@ -10,6 +11,8 @@ int main(int argc, char **argv)
     auto node = std::make_shared<NSSC>();
 
     NSSC_ERRORS eHandler(node);
+
+    Executor executor(node);
 
     auto camManager = std::make_shared<cameraManager>(node);
     NODE_VERIFY_EXIT(camManager->init());
@@ -21,11 +24,11 @@ int main(int argc, char **argv)
 
     NODE_VERIFY_EXIT(ndi.startStream());
 
-    node->openCLI();
+    executor.startCLI();
 
     rclcpp::spin(node);
 
-    node->closeCLI();
+    executor.stopCLI();
 
     NODE_VERIFY_EXIT(ndi.endStream());
     NODE_VERIFY_EXIT(camManager->closeCameras());

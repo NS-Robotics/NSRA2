@@ -5,15 +5,9 @@ find_package(fastrtps REQUIRED)
 
 set(ndi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/libndi)
 
-set(readline_INCLUDES /usr/include/readline)
-set(readline_LIBRARY /usr/lib/aarch64-linux-gnu/libreadline.so)
-add_library(readline SHARED IMPORTED)
-set_target_properties(readline PROPERTIES IMPORTED_LOCATION ${readline_LIBRARY})
-
 add_library(
     ros_node
     src/node.cpp
-    src/cli.cpp
 )
 
 target_include_directories(
@@ -21,9 +15,8 @@ target_include_directories(
     PUBLIC
     include
     ${ndi_INCLUDES}
-    ${readline_INCLUDES}
 )
 
 ament_target_dependencies(ros_node rclcpp)
 
-target_link_libraries(ros_node fastrtps fastcdr foonathan_memory readline)
+target_link_libraries(ros_node fastrtps fastcdr foonathan_memory)
