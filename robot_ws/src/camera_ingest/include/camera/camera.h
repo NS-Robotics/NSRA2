@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NSSC_CAMERA_
+#define NSSC_CAMERA_
 
 #include "GxIAPI.h"
 #include "DxImageProc.h"
@@ -72,3 +73,5 @@ private:
     moodycamel::BlockingConcurrentQueue<monoFrame*> filledFrameBuf;
     moodycamel::BlockingConcurrentQueue<monoFrame*> emptyFrameBuf;
 };
+
+#endif //NSSC_CAMERA_

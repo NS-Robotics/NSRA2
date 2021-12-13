@@ -8,6 +8,7 @@ set(ndi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/libndi
 add_library(
     ros_node
     src/node.cpp
+    src/cli.cpp
 )
 
 target_include_directories(
