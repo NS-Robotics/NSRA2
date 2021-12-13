@@ -134,6 +134,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
             }
         }
     }
+    return NSSC_CLI_ARGUMENT_TYPE_ERROR;
 }
 
 NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
@@ -160,6 +161,7 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
             }
         }
     }
+    return NSSC_CLI_ARGUMENT_TYPE_ERROR;
 }
 
 void CLI::printError(const char* message)
