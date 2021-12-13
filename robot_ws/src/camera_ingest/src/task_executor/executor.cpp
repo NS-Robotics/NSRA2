@@ -39,6 +39,13 @@ void Executor::init()
 
 void Executor::rawNDI()
 {
-    this->ndi->startStream();
-    this->rawNDIstream = true;
+    if(this->rawNDIstream)
+    {
+        this->ndi->endStream();
+        this->rawNDIstream = false;
+    } else
+    {
+        this->ndi->startStream();
+        this->rawNDIstream = true;
+    }
 }

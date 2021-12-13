@@ -27,7 +27,7 @@ void CLI::CLIFunc()
         else if(strcmp(buf, "help") == 0)
         {
             printf("\033[1;34m[Executor] \033[0mUsage:\n \
-                    NDI - Open raw NDI stream\n \
+                    NDI - Toggle raw NDI stream\n \
                     exit - Close Application\n");
         }
         else
