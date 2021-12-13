@@ -140,6 +140,7 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
                 arg++;
+            std::cout << arg << std::endl;
             try
             {
                 ret = boost::lexical_cast<bool>(arg);
