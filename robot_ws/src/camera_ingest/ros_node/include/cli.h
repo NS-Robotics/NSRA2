@@ -6,6 +6,7 @@
 
 #include <thread>
 #include <atomic>
+#include <string.h>
 
 class CLI
 {

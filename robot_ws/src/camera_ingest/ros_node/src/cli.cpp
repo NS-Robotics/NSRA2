@@ -9,6 +9,9 @@ CLI::CLI()
 void CLI::CLIFunc()
 {
     char *buf;
+    char hello[] = "hello";
+    char exit[] = "exit";
+
     while ((buf = readline("[NSSC client] ")) != nullptr && this->streamON.load())
     {
         if (strlen(buf) > 0)
@@ -18,10 +21,10 @@ void CLI::CLIFunc()
 
         //printf("[%s]\n", buf);
 
-        if(buf == "hello")
+        if(strcmp(buf, hello) == 0)
         {
             printf("hello!");
-        } else if(buf == "exit")
+        } else if(strcmp(buf, exit) == 0)
         {
             printf("closing CLI!");
             this->streamON = false;
