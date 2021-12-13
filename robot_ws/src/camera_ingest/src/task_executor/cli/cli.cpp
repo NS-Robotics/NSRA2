@@ -4,6 +4,8 @@ void CLI::CLIFunc()
 {
     char *buf;
 
+    const char del[2] = "-";
+
     while ((buf = readline("\033[1;32m[NSSC client] >> \033[0m")) != nullptr && this->cliON.load())
     {
         if (strlen(buf) > 0)
@@ -12,6 +14,15 @@ void CLI::CLIFunc()
         } else
         {
             continue;
+        }
+
+        char *token;
+        token = strtok(buf, del);
+        while (token != NULL)
+        {
+            printf(" %s\n", token);
+
+            token = strtok(NULL, del);
         }
 
         if(strcmp(buf, "NDI") == 0)
