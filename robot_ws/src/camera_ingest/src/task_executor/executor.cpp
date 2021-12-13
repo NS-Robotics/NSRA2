@@ -50,3 +50,8 @@ void Executor::rawNDI()
         this->rawNDIstream = true;
     }
 }
+
+void Executor::ingest()
+{
+    Ingest ingest(this->node);
+}

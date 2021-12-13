@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NSSC_NDI_
+#define NSSC_NDI_
 
 #include "node.h"
 #include "config.h"
@@ -39,3 +40,5 @@ private:
 
     std::thread sThread;
 };
+
+#endif  //NSSC_NDI_

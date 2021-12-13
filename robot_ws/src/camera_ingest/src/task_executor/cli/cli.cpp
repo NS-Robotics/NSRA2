@@ -17,7 +17,11 @@ void CLI::CLIFunc()
         if(strcmp(buf, "NDI") == 0)
         {
             rawNDI();
-        } 
+        }
+        else if(strcmp(buf, "ingest") == 0)
+        {
+            ingest();
+        }
         else if(strcmp(buf, "exit") == 0)
         {
             this->cliON = false;
@@ -28,7 +32,9 @@ void CLI::CLIFunc()
         {
             printf("\033[1;34m[Executor] \033[0mUsage:\n \
                     NDI - Toggle raw NDI stream\n \
-                    exit - Close Application\n");
+                    exit - Close Application\n \
+                    ingest - Start calibration capture\n \
+                   ");
         }
         else
         {

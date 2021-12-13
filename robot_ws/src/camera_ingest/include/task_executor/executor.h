@@ -6,6 +6,7 @@
 #include "node.h"
 #include "camera_manager.h"
 #include "ndi.h"
+#include "ingest.h"
 
 class Executor : public NSSC_ERRORS, public CLI
 {
@@ -14,6 +15,7 @@ class Executor : public NSSC_ERRORS, public CLI
         void exit();
         void init();
         void rawNDI();
+        void ingest();
     
     private:
         std::shared_ptr<NSSC> node;

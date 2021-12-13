@@ -19,6 +19,7 @@ class CLI
 
         virtual void exit() = 0;
         virtual void rawNDI() = 0;
+        virtual void ingest() = 0;
 
         std::atomic<bool> cliON{false};
 

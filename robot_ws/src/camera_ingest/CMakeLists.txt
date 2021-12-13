@@ -163,6 +163,24 @@ target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference)
 
 ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
 
+add_lirary(
+  ingest
+  src/ingest/ingest.cpp
+)
+
+target_include_directories(
+  ingest
+  PUBLIC
+  include/ingest
+  include/errors
+  include/camera_manager
+  include/frame/frame_struct
+)
+
+target_link_libraries(ingest ros_node camera_manager)
+
+ament_target_dependencies(ingest rclcpp OpenCV)
+
 #add_library(
 #  nssc_image_transport
 #  src/image_transport/image_transport.cpp
@@ -196,11 +214,12 @@ target_include_directories(
   include/errors
   include/camera_manager
   include/ndi
+  include/ingest
   ${readline_INCLUDES}
   ${gxi_INCLUDES}
 )
 
-target_link_libraries(task_executor readline ros_node ndi_send camera_manager)
+target_link_libraries(task_executor readline ros_node ndi_send camera_manager ingest)
 
 ament_target_dependencies(task_executor rclcpp)
 
@@ -209,10 +228,10 @@ add_executable(main_node src/main_node.cpp)
 
 ament_target_dependencies(main_node rclcpp)
 
-target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor)
+target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest)
 
 install(
-  TARGETS camera ndi_send nssc_errors camera_manager task_executor #nssc_image_transport
+  TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest #nssc_image_transport
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
