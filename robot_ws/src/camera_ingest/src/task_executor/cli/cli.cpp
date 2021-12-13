@@ -40,10 +40,8 @@ void CLI::CLIFunc()
                     std::strcat(out, " -");
                     std::strcat(out, numtoken);
 
-                    std::cout << out << std::endl;
-
                     cmd.push_back(out);
-                    
+
                     token = strtok(NULL, del);
                     if(token == NULL) break;
                     
@@ -137,7 +135,7 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
         {
             char *arg;
             arg = strtok(cmd[i], arg_del);
-            arg = strtok(NULL, del);
+            arg = strtok(NULL, arg_del);
             while (arg[strlen(arg) - 1] == ' ')
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
