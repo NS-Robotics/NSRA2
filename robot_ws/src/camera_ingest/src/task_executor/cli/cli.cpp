@@ -23,7 +23,16 @@ void CLI::CLIFunc()
             exit();
             break;
         }
-
+        else if(strcmp(buf, "help") == 0)
+        {
+            printf("[Executor] Usage:\n
+                    NDI - Open raw NDI stream\n
+                    exit - close Application\n");
+        }
+        else
+        {
+            printf("[Executor] Error: Unknown command!\n");
+        }
         
         free(buf);
     }
