@@ -1,5 +1,12 @@
 #include "cli.h"
 
+/*  TEST CASES:
+    --r
+    -r-r
+    -rrr
+    -r-
+*/
+
 NSSC_STATUS CLI::procArg(char* buf, std::vector<char*>& cmd)
 {
     char *token;
@@ -50,6 +57,29 @@ NSSC_STATUS CLI::procArg(char* buf, std::vector<char*>& cmd)
     return arg_status;
 }
 
+NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
+{
+    for (int i = 1; i < cmd.size(); i++)
+    {
+        if (cmd[i][0] == par)
+        {
+            strcpy(*ret, cmd[i]);
+            
+            while (*ret[strlen(*ret) - 1] != '"' && strlen(*ret) > 0)
+                *ret[strlen(*ret) - 1] = '\0';
+            *ret[strlen(*ret) - 1] = '\0';
+            while (*ret[0] != '"' && strlen(*ret) > 0)
+                *ret++;
+            *ret++;
+            if (strlen(*ret) <= 0)
+                return NSSC_CLI_ARGUMENT_TYPE_ERROR;
+            else
+                return NSSC_STATUS_SUCCESS;
+        }
+    }
+}
+
+
 NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
 {
     for (int i = 1; i < cmd.size(); i++)
@@ -59,6 +89,8 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
             char *arg;
             arg = strtok(cmd[i], arg_del);
             arg = strtok(NULL, arg_del);
+            if (arg == NULL)
+                return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             while (arg[strlen(arg) - 1] == ' ')
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')
@@ -86,6 +118,8 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
             char *arg;
             arg = strtok(cmd[i], arg_del);
             arg = strtok(NULL, arg_del);
+            if (arg == NULL)
+                return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             while (arg[strlen(arg) - 1] == ' ')
                 arg[strlen(arg) - 1] = '\0';
             while (arg[0] == ' ')

@@ -33,6 +33,7 @@ class CLI
         NSSC_STATUS procArg(char* buf, std::vector<char*>& cmd);
         NSSC_STATUS getIntArg(std::vector<char*> cmd, char par, int& ret);
         NSSC_STATUS getBoolArg(std::vector<char*> cmd, char par, bool& ret);
+        NSSC_STATUS getStrArg(std::vector<char*> cmd, char par, char** ret);
         const char del[2] = "-";
         const char arg_del[2] = " ";
 };
