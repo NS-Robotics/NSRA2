@@ -78,7 +78,7 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
             out++;
             std::cout << out << std::endl;
             
-            ret = out*;
+            ret = &out;
 
             if (strlen(out) <= 0)
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
