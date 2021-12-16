@@ -64,7 +64,7 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
         if (cmd[i][0] == par)
         {
             char* out;
-            out = (char*)malloc(strlen(cmd[i]);
+            out = (char*)malloc(strlen(cmd[i]));
 
             strcpy(out, cmd[i]);
             
