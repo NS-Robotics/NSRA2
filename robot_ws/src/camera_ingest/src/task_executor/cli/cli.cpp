@@ -37,7 +37,7 @@ void CLI::CLIFunc()
         else if(strcmp(cmd[0], "test") == 0)
         {
             char* ret;
-            if(getStrArg(cmd, 't', &ret) != NSSC_STATUS_SUCCESS || ret < 1)
+            if(getStrArg(cmd, 't', &ret) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
             } else
@@ -48,7 +48,7 @@ void CLI::CLIFunc()
         else if(strcmp(cmd[0], "ingest") == 0)
         {
             int ret;
-            if(getIntArg(cmd, 'n', ret) != NSSC_STATUS_SUCCESS)
+            if(getIntArg(cmd, 'n', ret) != NSSC_STATUS_SUCCESS || ret < 1)
             {
                 this->printError("Bad argument!");
             } else
