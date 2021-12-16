@@ -65,6 +65,8 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
         {
             *ret = (char*)malloc(strlen(cmd[i]) + 1);
 
+            std::cout << strlen(cmd[i]) << std::endl;
+
             strcpy(*ret, cmd[i]);
 
             std::cout << *ret << std::endl;
