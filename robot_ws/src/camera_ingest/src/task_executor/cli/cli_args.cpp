@@ -64,13 +64,17 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
         if (cmd[i][0] == par)
         {
             strcpy(*ret, cmd[i]);
+
+            std::cout << *ret << std::endl;
             
             while (*ret[strlen(*ret) - 1] != '"' && strlen(*ret) > 0)
                 *ret[strlen(*ret) - 1] = '\0';
             *ret[strlen(*ret) - 1] = '\0';
+            std::cout << *ret << std::endl;
             while (*ret[0] != '"' && strlen(*ret) > 0)
                 *ret++;
             *ret++;
+            std::cout << *ret << std::endl;
             if (strlen(*ret) <= 0)
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             else
