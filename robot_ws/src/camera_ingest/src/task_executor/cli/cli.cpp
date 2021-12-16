@@ -43,6 +43,7 @@ void CLI::CLIFunc()
             } else
             {
                 std::cout << ret << std::endl;
+                free(ret);
             }
         }
         else if(strcmp(cmd[0], "ingest") == 0)
