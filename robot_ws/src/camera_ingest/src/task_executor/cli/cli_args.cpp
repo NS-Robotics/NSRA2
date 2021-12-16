@@ -64,6 +64,7 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
         if (cmd[i][0] == par)
         {
             char* out;
+            out = (char*)malloc(strlen(cmd[i]);
 
             strcpy(out, cmd[i]);
             
@@ -82,10 +83,12 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
             if (strlen(out) <= 0)
             {
                 std::cout << "fail" << std::endl;
+                free(out);
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             } else
             {
                 std::cout << "succ" << std::endl;
+                free(out);
                 return NSSC_STATUS_SUCCESS;
             }
         }
