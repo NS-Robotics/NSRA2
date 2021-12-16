@@ -83,12 +83,12 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
             if (strlen(out) <= 0)
             {
                 std::cout << "fail" << std::endl;
-                free(out);
+                delete [] out;
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             } else
             {
                 std::cout << "succ" << std::endl;
-                free(out);
+                delete [] out;
                 return NSSC_STATUS_SUCCESS;
             }
         }
