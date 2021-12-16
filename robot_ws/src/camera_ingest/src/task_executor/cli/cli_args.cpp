@@ -68,7 +68,8 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
             strcpy(*ret, cmd[i]);
 
             std::cout << *ret << std::endl;
-            std::cout << **ret[strlen(*ret) - 1] << std::endl;
+            std::cout << strlen(ret) << std::endl;
+            std::cout << *ret[strlen(ret) - 1] << std::endl;
             
             while (*ret[strlen(*ret) - 1] != '"' && strlen(*ret) > 0)
                 *ret[strlen(*ret) - 1] = '\0';
