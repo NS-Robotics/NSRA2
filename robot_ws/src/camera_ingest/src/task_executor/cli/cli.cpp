@@ -36,7 +36,6 @@ void CLI::CLIFunc()
         }
         else if(strcmp(cmd[0], "test") == 0)
         {
-            std::cout << "test" << std::endl;
             char* ret;
             if(getStrArg(cmd, 't', &ret) != NSSC_STATUS_SUCCESS)
             {
