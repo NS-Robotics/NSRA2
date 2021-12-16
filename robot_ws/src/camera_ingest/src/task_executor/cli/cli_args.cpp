@@ -63,26 +63,23 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
     {
         if (cmd[i][0] == par)
         {
-            *ret = (char*)malloc(strlen(cmd[i]) + 1);
+            char* out;
 
-            std::cout << strlen(cmd[i]) << std::endl;
-
-            strcpy(*ret, cmd[i]);
-
-            std::cout << *ret << std::endl;
-            std::cout << strlen(*ret) << std::endl;
-            std::cout << *ret[strlen(*ret) - 1] << std::endl;
+            strcpy(out, cmd[i]);
             
-            while (*ret[strlen(*ret) - 1] != '"' && strlen(*ret) > 0)
-                *ret[strlen(*ret) - 1] = '\0';
-            *ret[strlen(*ret) - 1] = '\0';
-            std::cout << *ret << std::endl;
-            while (*ret[0] != '"' && strlen(*ret) > 0)
-                *ret++;
-            *ret++;
-            std::cout << *ret << std::endl;
+            while (out[strlen(out) - 1] != '"' && strlen(*ret) > 0)
+                out[strlen(out) - 1] = '\0';
+            out[strlen(out) - 1] = '\0';
+            std::cout << out << std::endl;
+            while (out[0] != '"' && strlen(out) > 0)
+                out++;
+            out++;
+            std::cout << out << std::endl;
 
-            if (strlen(*ret) <= 0)
+            *ret = (char*)malloc(strlen(out));
+            strcpy(*ret, out);
+
+            if (strlen(out) <= 0)
             {
                 std::cout << "fail" << std::endl;
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
