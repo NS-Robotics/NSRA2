@@ -30,6 +30,7 @@ void CLI::CLIFunc()
                 this->printError("Bad argument!");
             } else
             {
+                this->node->g_config.resize_frame = ret;
                 std::cout << ret << std::endl;
                 rawNDI();
             }
