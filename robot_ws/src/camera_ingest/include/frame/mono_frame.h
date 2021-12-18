@@ -20,11 +20,11 @@
 class monoFrame
 {
   public:
-    static monoFrame *make_frame(NSSC_FRAME_TYPE type, std::shared_ptr<NSSC>& node);
+    static monoFrame *make_frame(NSSC_FRAME_TYPE type);
     void setTimestamp();
     
     virtual void convert(frameBuffer* rgbBuf) = 0;
-    virtual void alloc() = 0;
+    virtual void alloc(std::shared_ptr<NSSC>& node) = 0;
 
     std::shared_ptr<NSSC> node;
     frameBuffer           frameBuf;

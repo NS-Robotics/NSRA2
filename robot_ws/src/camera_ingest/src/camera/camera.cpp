@@ -132,8 +132,8 @@ NSSC_STATUS Camera::startAcquisition()
 
     for (int i = 0; i < 5; i++)
     {
-        monoFrame* frame = monoFrame::make_frame(this->node->g_config.g_type, this->node);
-        frame->alloc();
+        monoFrame* frame = monoFrame::make_frame(this->node->g_config.g_type);
+        frame->alloc(this->node);
 
         this->emptyFrameBuf.enqueue(frame);
         this->numOfEmpty++;

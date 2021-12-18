@@ -23,7 +23,7 @@ class RGBAStereoFrame: public stereoFrame
         void alloc(std::shared_ptr<NSSC>& node)
         {
             this->node = node;
-            
+
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->stereoBuf.hImageBuf, this->node->g_config.stereo_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->stereoBuf.dImageBuf, (void *) this->stereoBuf.hImageBuf , 0);
@@ -105,7 +105,7 @@ class UYVYStereoFrame: public stereoFrame
         }
 };
 
-stereoFrame *stereoFrame::make_frame(NSSC_FRAME_TYPE type, std::shared_ptr<NSSC>& node)
+stereoFrame *stereoFrame::make_frame(NSSC_FRAME_TYPE type)
 {
     switch(type)
     {
