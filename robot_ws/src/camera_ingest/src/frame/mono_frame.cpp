@@ -32,7 +32,7 @@ class RGBAFrame: public monoFrame
             cudaHostAlloc((void **)&this->frameBuf.hImageBuf, this->node->g_config.mono_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->frameBuf.dImageBuf, (void *) this->frameBuf.hImageBuf , 0);
 
-            if(g_config.resize_frame)
+            if(this->node->g_config.resize_frame)
             {
                 cudaSetDeviceFlags(cudaDeviceMapHost);
                 cudaHostAlloc((void **)&this->resizeBuf.hImageBuf, this->node->g_config.mono_x_res * this->node->g_config.mono_y_res * 3, cudaHostAllocMapped);
@@ -79,7 +79,7 @@ class I420Frame: public monoFrame
             cudaHostAlloc((void **)&this->frameBuf.hImageBuf, this->node->g_config.mono_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->frameBuf.dImageBuf, (void *) this->frameBuf.hImageBuf , 0);
 
-            if(g_config.resize_frame)
+            if(this->node->g_config.resize_frame)
             {
                 cudaSetDeviceFlags(cudaDeviceMapHost);
                 cudaHostAlloc((void **)&this->resizeBuf.hImageBuf, this->node->g_config.mono_x_res * this->node->g_config.mono_y_res * 3, cudaHostAllocMapped);
@@ -123,7 +123,7 @@ class UYVYFrame: public monoFrame
 monoFrame *monoFrame::make_frame(NSSC_FRAME_TYPE type, std::shared_ptr<NSSC>& node)
 {
     this->node = node;
-    
+
     switch(type)
     {
         case NSSC_FRAME_RGBA:
