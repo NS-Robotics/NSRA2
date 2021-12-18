@@ -142,7 +142,20 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
             }
             catch(boost::bad_lexical_cast &)
             {
-                return NSSC_CLI_ARGUMENT_TYPE_ERROR;
+                if(strcmp(arg, "True") == 0 || strcmp(arg, "true") == 0)
+                {
+                    ret = 1;
+                    return NSSC_STATUS_SUCCESS;
+                } 
+                else if(strcmp(arg, "False") == 0 || strcmp(arg, "false") == 0)
+                {
+                    ret = 0;
+                    return NSSC_STATUS_SUCCESS;
+                } 
+                else
+                {
+                    return NSSC_CLI_ARGUMENT_TYPE_ERROR;
+                }
             }
         }
     }
