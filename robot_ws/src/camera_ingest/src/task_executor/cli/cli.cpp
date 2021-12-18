@@ -72,7 +72,7 @@ void CLI::CLIFunc()
                    "  calibrate [-d image set name]             - Run the calibration\n"
                    "  run [-c calibration config]               - Run NSSC\n"
                    "  exit                                      - Close the application\n"
-                   "  test");
+                   "  test")
         }
         else
         {
