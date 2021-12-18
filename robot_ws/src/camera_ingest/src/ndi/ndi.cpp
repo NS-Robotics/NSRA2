@@ -37,11 +37,11 @@ NSSC_STATUS NDI::init()
                                      "             serial=\"lolhahatest\"/>";
         NDIlib_send_add_connection_metadata(this->pNDI_send, &NDI_connection_type);
 
-        this->NDI_video_frame.xres = g_config.stream_x_res;
-        this->NDI_video_frame.yres = g_config.stream_y_res;
-        this->NDI_video_frame.FourCC = g_config.FourCC;
-        this->NDI_video_frame.p_data = (uint8_t *)malloc(g_config.stereo_buf_size);
-        this->NDI_video_frame.line_stride_in_bytes = g_config.ndi_line_stride;
+        this->NDI_video_frame.xres = this->node->g_config.stream_x_res;
+        this->NDI_video_frame.yres = this->node->g_config.stream_y_res;
+        this->NDI_video_frame.FourCC = this->node->g_config.FourCC;
+        this->NDI_video_frame.p_data = (uint8_t *)malloc(this->node->g_config.stereo_buf_size);
+        this->NDI_video_frame.line_stride_in_bytes = this->node->g_config.ndi_line_stride;
 
         status = NSSC_STATUS_SUCCESS;
         this->node->printInfo(this->msgCaller, "initalized");

@@ -2,7 +2,6 @@
 #define NSSC_NDI_
 
 #include "node.h"
-#include "config.h"
 #include <Processing.NDI.Advanced.h>
 #include "nssc_errors.h"
 #include "camera_manager.h"
@@ -25,8 +24,6 @@ public:
     NSSC_STATUS closeNDI();
 
 private:
-    globalConfig g_config;
-    
     std::shared_ptr<NSSC>           node;
     std::shared_ptr<cameraManager>  camManager;
     NDIlib_send_instance_t          pNDI_send;
