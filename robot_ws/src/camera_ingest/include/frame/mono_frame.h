@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NSSC_FRAME_MONO_FRAME_
+#define NSSC_FRAME_MONO_FRAME_
 
 #include "frame_struct.h"
 #include "nssc_errors.h"
@@ -32,3 +33,5 @@ class monoFrame
     frameBuffer*          inputBuf;
     bool                  inputFlag = false;
 };
+
+#endif //NSSC_FRAME_MONO_FRAME_

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NSSC_CONFIG_
+#define NSSC_CONFIG_
 
 #include <Processing.NDI.Advanced.h>
 
@@ -64,3 +65,5 @@ public:
     }
 
 };
+
+#endif  //NSSC_CONFIG_

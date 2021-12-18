@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NSSC_FRAME_FRAME_STRUCT_
+#define NSSC_FRAME_FRAME_STRUCT_
 
 #include <chrono>
 
@@ -27,3 +28,5 @@ public:
         timestamp = buf->timestamp;
     }
 };
+
+#endif //NSSC_FRAME_FRAME_STRUCT_

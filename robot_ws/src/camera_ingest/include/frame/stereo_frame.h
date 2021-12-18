@@ -1,4 +1,6 @@
-#pragma once
+#ifndef NSSC_FRAME_STEREO_FRAME_
+#define NSSC_FRAME_STEREO_FRAME_
+
 #include "frame_struct.h"
 #include "mono_frame.h"
 
@@ -20,3 +22,5 @@ class stereoFrame
     bool          inputFlag = false;
     int           timedif;
 };
+
+#endif  //NSSC_FRAME_STEREO_FRAME_
