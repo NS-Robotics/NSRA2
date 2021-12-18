@@ -8,10 +8,10 @@
 class stereoFrame
 {
   public:
-    static stereoFrame *make_frame(NSSC_FRAME_TYPE type, std::shared_ptr<NSSC>& node);
+    static stereoFrame *make_frame(NSSC_FRAME_TYPE type);
     
     virtual void convert(monoFrame* leftCamera, monoFrame* rightCamera) = 0;
-    virtual void alloc() = 0;
+    virtual void alloc(std::shared_ptr<NSSC>& node) = 0;
 
     std::shared_ptr<NSSC> node;
     frameBuffer   stereoBuf;

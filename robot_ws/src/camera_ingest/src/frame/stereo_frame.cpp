@@ -20,8 +20,10 @@ class RGBAStereoFrame: public stereoFrame
             this->timedif = c_timedif.count();
         }
 
-        void alloc()
+        void alloc(std::shared_ptr<NSSC>& node)
         {
+            this->node = node;
+            
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->stereoBuf.hImageBuf, this->node->g_config.stereo_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->stereoBuf.dImageBuf, (void *) this->stereoBuf.hImageBuf , 0);
@@ -53,8 +55,10 @@ class I420StereoFrame: public stereoFrame
             this->timedif = c_timedif.count();
         }
 
-        void alloc()
+        void alloc(std::shared_ptr<NSSC>& node)
         {
+            this->node = node;
+
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->stereoBuf.hImageBuf, this->node->g_config.stereo_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->stereoBuf.dImageBuf, (void *) this->stereoBuf.hImageBuf , 0);
@@ -86,8 +90,10 @@ class UYVYStereoFrame: public stereoFrame
             this->timedif = c_timedif.count();
         }
 
-        void alloc()
+        void alloc(std::shared_ptr<NSSC>& node)
         {
+            this->node = node;
+
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->stereoBuf.hImageBuf, this->node->g_config.stereo_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->stereoBuf.dImageBuf, (void *) this->stereoBuf.hImageBuf , 0);
@@ -101,8 +107,6 @@ class UYVYStereoFrame: public stereoFrame
 
 stereoFrame *stereoFrame::make_frame(NSSC_FRAME_TYPE type, std::shared_ptr<NSSC>& node)
 {
-    this->node = node;
-
     switch(type)
     {
         case NSSC_FRAME_RGBA:
