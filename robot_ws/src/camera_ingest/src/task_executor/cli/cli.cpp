@@ -71,8 +71,7 @@ void CLI::CLIFunc()
                    "  ingest [-n number of images -d set name]  - Start the calibration capture\n"
                    "  calibrate [-d image set name]             - Run the calibration\n"
                    "  run [-c calibration config]               - Run NSSC\n"
-                   "  exit                                      - Close the application\n"
-                   "  test")
+                   "  exit                                      - Close the application\n");
         }
         else
         {
