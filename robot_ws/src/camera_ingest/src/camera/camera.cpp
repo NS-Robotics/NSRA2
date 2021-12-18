@@ -132,7 +132,7 @@ NSSC_STATUS Camera::startAcquisition()
 
     for (int i = 0; i < 5; i++)
     {
-        monoFrame* frame = monoFrame::make_frame(g_config.g_type);
+        monoFrame* frame = monoFrame::make_frame(this->node->g_config.g_type, this->node);
         frame->alloc();
 
         this->emptyFrameBuf.enqueue(frame);
@@ -151,8 +151,8 @@ void Camera::GXDQBufThreadNDI()
     cudaHostAlloc((void **)&rgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
     cudaHostGetDevicePointer((void **)&rgbBuf.dImageBuf, (void *) rgbBuf.hImageBuf , 0);
 
-    cv::Mat h_rgb(cv::Size(g_config.cam_x_res, g_config.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
-    cv::cuda::GpuMat d_rgb(cv::Size(g_config.cam_x_res, g_config.cam_y_res), CV_8UC3, rgbBuf.dImageBuf);
+    cv::Mat h_rgb(cv::Size(this->node->g_config.cam_x_res, this->node->g_config.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
+    cv::cuda::GpuMat d_rgb(cv::Size(this->node->g_config.cam_x_res, this->node->g_config.cam_y_res), CV_8UC3, rgbBuf.dImageBuf);
 
     PGX_FRAME_BUFFER pFrameBuffer = NULL;
 

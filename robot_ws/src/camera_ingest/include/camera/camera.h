@@ -47,8 +47,6 @@ protected:
 private:
     NSSC_STATUS _PrintDeviceInfo();
 
-    globalConfig g_config;
-
     void GXDQBufThread();
     void GXDQBufThreadNDI();
 

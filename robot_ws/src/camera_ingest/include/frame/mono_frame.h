@@ -2,7 +2,7 @@
 
 #include "frame_struct.h"
 #include "nssc_errors.h"
-#include "config.h"
+#include "node.h"
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/cuda.hpp>
@@ -20,15 +20,15 @@
 class monoFrame
 {
   public:
-    static monoFrame *make_frame(NSSC_FRAME_TYPE type);
+    static monoFrame *make_frame(NSSC_FRAME_TYPE type, std::shared_ptr<NSSC>& node);
     void setTimestamp();
     
     virtual void convert(frameBuffer* rgbBuf) = 0;
     virtual void alloc() = 0;
 
-    frameBuffer   frameBuf;
-    frameBuffer   resizeBuf;
-    frameBuffer*  inputBuf;
-    bool          inputFlag = false;
-    globalConfig  g_config;
+    std::shared_ptr<NSSC> node;
+    frameBuffer           frameBuf;
+    frameBuffer           resizeBuf;
+    frameBuffer*          inputBuf;
+    bool                  inputFlag = false;
 };

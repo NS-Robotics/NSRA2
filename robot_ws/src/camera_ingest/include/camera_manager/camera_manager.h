@@ -22,9 +22,7 @@ class cameraManager : public NSSC_ERRORS
         stereoFrame* getFrame();
         NSSC_STATUS returnBuf(stereoFrame* stereoBuf);
 
-    private:
-        globalConfig g_config;
-        
+    private:        
         std::shared_ptr<NSSC>   node;
         std::unique_ptr<Camera> cam1;
         std::unique_ptr<Camera> cam2;

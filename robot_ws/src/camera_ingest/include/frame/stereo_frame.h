@@ -18,5 +18,4 @@ class stereoFrame
     monoFrame*    rightCamera;
     bool          inputFlag = false;
     int           timedif;
-    globalConfig  g_config;
 };

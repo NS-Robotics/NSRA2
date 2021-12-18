@@ -62,10 +62,10 @@ NSSC_STATUS Camera::LoadCamera(char device_serial_number[])
     status = GXSetEnum(this->hDevice, GX_ENUM_PIXEL_FORMAT, nPixelFormat);
     _GX_VERIFY_EXIT(status);
 
-    status = GXSetFloat(this->hDevice, GX_FLOAT_EXPOSURE_TIME, g_config.cam_exposure_time);
+    status = GXSetFloat(this->hDevice, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.cam_exposure_time);
     _GX_VERIFY_EXIT(status);
 
-    status = GXSetFloat(this->hDevice, GX_FLOAT_GAIN, g_config.cam_gain);
+    status = GXSetFloat(this->hDevice, GX_FLOAT_GAIN, this->node->g_config.cam_gain);
     _GX_VERIFY_EXIT(status);
 
     status = GXSetEnum(this->hDevice, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_OFF);
