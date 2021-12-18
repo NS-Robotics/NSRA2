@@ -16,7 +16,7 @@ class CLI
 {
     public:
         void CLIFunc();
-        void openCLI();
+        void openCLI(std::shared_ptr<NSSC> &node);
         void closeCLI();
 
         virtual void exit() = 0;
@@ -27,6 +27,8 @@ class CLI
 
     private:
         std::thread CLIThread;
+
+        std::shared_ptr<NSSC> node;
 
         void printError(const char* message);
 

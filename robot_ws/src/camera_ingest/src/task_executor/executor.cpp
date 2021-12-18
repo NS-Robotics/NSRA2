@@ -33,7 +33,7 @@ void Executor::init()
     this->ndi = std::make_shared<NDI>(this->node, this->camManager);
     this->ndi->init();
 
-    CLI::openCLI();
+    CLI::openCLI(this->node);
 
     this->initialized = true;
 }

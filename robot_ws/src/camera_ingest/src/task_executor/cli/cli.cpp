@@ -87,8 +87,9 @@ void CLI::printError(const char* message)
     printf("\033[1;34m[Executor] \033[1;31mError: %s\033[0m\n", message);
 }
 
-void CLI::openCLI()
+void CLI::openCLI(std::shared_ptr<NSSC> &node)
 {
+    this->node = node;
     this->cliON = true;
     this->CLIThread = std::thread(&CLI::CLIFunc, this);
 }
