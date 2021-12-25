@@ -59,6 +59,19 @@ void CLI::CLIFunc()
                 ingest();
             }
         }
+        else if(strcmp(cmd[0], "calibrate") == 0)
+        {
+            char* ret;
+            if(getStrArg(cmd, 'd', &ret) != NSSC_STATUS_SUCCESS)
+            {
+                this->printError("Bad argument!");
+            } else
+            {
+                std::cout << ret << std::endl;
+                delete [] ret;
+                //calibrate()
+            }
+        }
         else if(strcmp(cmd[0], "exit") == 0)
         {
             this->cliON = false;
