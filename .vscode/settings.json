@@ -106,7 +106,10 @@
         "compare": "cpp",
         "concepts": "cpp",
         "numbers": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "*.tcc": "cpp",
+        "memory_resource": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "cmake.configureOnOpen": false
