@@ -176,11 +176,12 @@ void Camera::GXDQBufThreadNDI()
 
             this->cb->Await();
             status = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
+            frame->setTimestamp();
             
             auto start0 = std::chrono::high_resolution_clock::now();
             
             status = GXDQBuf(this->hDevice, &pFrameBuffer, 5000);
-            frame->setTimestamp();
+            
             auto end = std::chrono::system_clock::now();
 
             auto stop0 = std::chrono::high_resolution_clock::now();
