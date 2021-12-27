@@ -34,7 +34,8 @@ class RGBAFrame: public monoFrame
                         2);
 
             cv::cuda::GpuMat inputFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC3, this->inputBuf->dImageBuf);
-            cv::cuda::cvtColor(this->inputBuf->dImageBuf, this->frameBuf.dImageBuf, cv::COLOR_RGB2RGBA);
+            cv::cuda::GpuMat convFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, this->frameBuf.dImageBuf);
+            cv::cuda::cvtColor(inputFrame, convFrame, cv::COLOR_RGB2RGBA);
 
             /*
             if( CUDA_FAILED(cudaConvertColor(this->inputBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_RGBA8, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)) )
