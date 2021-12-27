@@ -8,7 +8,7 @@
 class Ingest : public NSSC_ERRORS
 {
     public:
-        Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager>& camManager, int ingestAmount);
+        Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager>& camManager, int ingestAmount, char* setName);
         void cancelIngest();
 
     private:
