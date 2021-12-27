@@ -102,14 +102,17 @@ void NDI::streamThread()
                 
         auto start2 = std::chrono::high_resolution_clock::now();
 
-        cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf.hImageBuf);
+        if(this->node->g_config.ingestConfig.is_running)
+        {
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf.hImageBuf);
 
-        cv::putText(sendFrame, std::to_string(this->node->g_config.ingestConfig.current_frame_idx), cv::Point(25, 25), //top-left position
-            cv::FONT_HERSHEY_DUPLEX,
-            5.0,
-            cv::Scalar(254, 0, 0), //font color
-            2);
-
+            cv::putText(sendFrame, std::to_string(this->node->g_config.ingestConfig.current_frame_idx), cv::Point(25, 50), //top-left position
+                        cv::FONT_HERSHEY_DUPLEX,
+                        3.0,
+                        cv::Scalar(254, 0, 0), //font color
+                        2);
+        }
+        
         this->NDI_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf.hImageBuf;
 		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
 
