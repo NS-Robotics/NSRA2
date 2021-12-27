@@ -7,7 +7,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->ingestAmount = ingestAmount;
 
     this->runIngest = true;
-    this->iThread = std::thread(&Ingest::runIngest, this);
+    this->iThread = std::thread(&Ingest::ingestThread, this);
     
     this->node->g_config.ingestConfig.is_running = true;
     this->node->printInfo(this->msgCaller, "Ingest!");
