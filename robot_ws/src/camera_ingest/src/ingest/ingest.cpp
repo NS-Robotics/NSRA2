@@ -7,7 +7,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->ingestAmount = ingestAmount;
     this->setName = setName;
 
-    this->setPath = this->node->g_config.share_dir + "/NSSC/" + setName + "/";
+    this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
     int status = std::system(("mkdir -p " + this->setPath).c_str());
     if (status == -1)
         this->node->printInfo(this->msgCaller, "Not created!");
