@@ -108,16 +108,16 @@ void NDI::streamThread()
 
             cv::putText(sendFrame, std::to_string(this->node->g_config.ingestConfig.current_frame_idx), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
-                        3.0,
+                        2.0,
                         cv::Scalar(254, 0, 0), //font color
                         2);
 
             auto now = std::chrono::high_resolution_clock::now();
-            auto time_left = std::chrono::duration_cast<std::chrono::microseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
+            auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
 
-            cv::putText(sendFrame, std::to_string(time_left.count()), cv::Point(100, 60), //top-left position
+            cv::putText(sendFrame, std::to_string(5000 - time_left.count()), cv::Point(100, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
-                        3.0,
+                        2.0,
                         cv::Scalar(254, 0, 0), //font color
                         2);
         }
