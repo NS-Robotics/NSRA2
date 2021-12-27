@@ -52,7 +52,7 @@ void Ingest::ingestThread()
 
         this->node->printInfo(this->msgCaller, std::ctime(&end_time));
 
-        cv::putText(left_frame, std::ctime(&end_time), cv::Point(10, img.rows / 2), //top-left position
+        cv::putText(leftFrame, std::ctime(&end_time), cv::Point(10, img.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
             CV_RGB(118, 185, 0), //font color
