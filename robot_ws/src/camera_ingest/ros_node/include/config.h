@@ -26,7 +26,7 @@ struct frame_config
         float cam_exposure_time = 70000.0; //microseconds
         float cam_gain          = 15.0;
 
-        bool resize_frame       = true;
+        bool resize_frame       = false;
 
         int max_frame_time_diff = 20000; //microseconds
 
