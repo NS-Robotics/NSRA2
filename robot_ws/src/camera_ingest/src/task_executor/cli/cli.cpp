@@ -44,15 +44,16 @@ void CLI::CLIFunc()
             if(getIntArg(cmd, 'n', ingestAmount) != NSSC_STATUS_SUCCESS || ingestAmount < 1)
             {
                 this->printError("Bad argument!");
-                break;
+                continue;
             }
             char* setName;
             if(getStrArg(cmd, 'd', &setName) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
-                break;
+                continue;
             }
             run_ingest(ingestAmount, setName);
+            delete [] setName;
         }
         else if(strcmp(cmd[0], "calibrate") == 0)
         {
