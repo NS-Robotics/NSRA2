@@ -16,8 +16,10 @@ class Ingest : public NSSC_ERRORS
         std::shared_ptr<cameraManager>  camManager;
 
         std::string msgCaller = "Ingest";
+
         int ingestAmount;
         char* setName;
+        std::string setPath;
 
         void ingestThread();
         std::thread iThread;

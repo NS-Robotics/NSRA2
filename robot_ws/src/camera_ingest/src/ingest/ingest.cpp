@@ -7,6 +7,9 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->ingestAmount = ingestAmount;
     this->setName = setName;
 
+    this->setPath = this->node->g_config.share_dir + "/NSSC/" + setName + "/";
+    this->node->printInfo(this->msgCaller, this->setPath);
+
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::ingestThread, this);
     
@@ -41,8 +44,8 @@ void Ingest::ingestThread()
         cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
         cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
 
-        cv::imwrite("right.png", right_conv);
-        cv::imwrite("left.png", left_conv);
+        cv::imwrite((this->setPath + "img_right_%d.png", this->node->g_config.ingestConfig.current_frame_idx), right_conv);
+        cv::imwrite((this->setPath + "img_left_%d.png", this->node->g_config.ingestConfig.current_frame_idx), left_conv);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame!");

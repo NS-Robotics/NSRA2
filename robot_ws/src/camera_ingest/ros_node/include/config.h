@@ -2,6 +2,7 @@
 #define NSSC_CONFIG_
 
 #include <Processing.NDI.Advanced.h>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 typedef int NSSC_BUF_SIZE;
 
@@ -92,8 +93,16 @@ struct ingest_config
 struct globalConfig : public frame_config, public ingest_config
 {
 public:
+    std::string package_name = "camera_ingest";
+    std::string share_dir;
+
     frame_config frameConfig;
     ingest_config ingestConfig;
+
+    globalConfig()
+    {
+        share_dir = ament_index_cpp::get_package_share_directory(package_name);
+    }
 };
 
 #endif  //NSSC_CONFIG_
