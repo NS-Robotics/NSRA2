@@ -55,7 +55,7 @@ void Ingest::ingestThread()
         cv::putText(leftFrame, std::ctime(&end_time), cv::Point(10, leftFrame.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
-            cv::CV_RGB(118, 185, 0), //font color
+            cv::cvScalar(118, 185, 0), //font color
             2);
 
         cv::imwrite(this->setPath + "img_right_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
