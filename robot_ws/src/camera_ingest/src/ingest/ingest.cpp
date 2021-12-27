@@ -35,8 +35,14 @@ void Ingest::ingestThread()
         cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
         cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
         
-        cv::imwrite("right.png", rightFrame);
-        cv::imwrite("left.png", leftFrame);
+        cv::Mat left_conv;
+        cv::Mat right_conv;
+
+        cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
+        cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
+
+        cv::imwrite("right.png", right_conv);
+        cv::imwrite("left.png", left_conv);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame!");
