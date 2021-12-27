@@ -5,9 +5,7 @@
 #include "camera_manager.h"
 #include "node.h"
 
-#define BOOST_NO_CXX11_SCOPED_ENUMS
-#include <boost/filesystem.hpp>
-#undef BOOST_NO_CXX11_SCOPED_ENUMS
+#include <filesystem>
 
 class Ingest : public NSSC_ERRORS
 {

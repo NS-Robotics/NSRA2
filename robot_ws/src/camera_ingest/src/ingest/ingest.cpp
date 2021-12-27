@@ -8,7 +8,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->setName = setName;
 
     this->setPath = this->node->g_config.share_dir + "/NSSC/" + setName + "/";
-    boost::filesystem::create_directories(this->setPath);
+    std::filesystem::create_directory(this->setPath);
     this->node->printInfo(this->msgCaller, this->setPath);
 
     this->runIngest = true;
