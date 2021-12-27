@@ -105,6 +105,8 @@ void NDI::streamThread()
         auto end = std::chrono::system_clock::now();
         std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
+        this->node->printInfo(this->msgCaller, std::ctime(&end_time));
+
         cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
