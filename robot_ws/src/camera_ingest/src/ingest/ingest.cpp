@@ -26,6 +26,8 @@ void Ingest::ingestThread()
     {
         if (!this->runIngest.load()) { break; }
 
+        stereoFrame = this->camManager->getFrame();
+        /*
         while(this->runIngest.load())
         {
             stereoFrame = this->camManager->getFrame();
@@ -39,7 +41,7 @@ void Ingest::ingestThread()
                 this->node->printInfo(this->msgCaller, "new Frame");
             }
         }
-
+        */
         cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
         cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
 
