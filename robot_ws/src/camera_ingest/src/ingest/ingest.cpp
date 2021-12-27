@@ -36,6 +36,7 @@ void Ingest::ingestThread()
             {
                 this->camManager->returnBuf(stereoFrame);
             }
+            this->node->printInfo(this->msgCaller, "new frame");
         }
 
         cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
@@ -52,7 +53,7 @@ void Ingest::ingestThread()
 
         this->node->printInfo(this->msgCaller, std::ctime(&end_time));
 
-        cv::putText(leftFrame, std::ctime(&end_time), cv::Point(10, leftFrame.rows / 2), //top-left position
+        cv::putText(left_conv, std::ctime(&end_time), cv::Point(10, leftFrame.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
             cv::Scalar(118, 185, 0), //font color
