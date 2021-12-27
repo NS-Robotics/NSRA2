@@ -21,21 +21,24 @@ class RGBAFrame: public monoFrame
             {
                 this->inputBuf = rgbBuf;
             }
+
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC3, this->inputBuf.hImageBuf);
+
+            auto end = std::chrono::system_clock::now();
+            std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+            cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2), //top-left position
+                        cv::FONT_HERSHEY_DUPLEX,
+                        1.0,
+                        cv::Scalar(254, 0, 0), //font color
+                        2);
+
             if( CUDA_FAILED(cudaConvertColor(this->inputBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_RGBA8, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)) )
             {
                 std::cout << "RGBA convert failed" << std::endl;
             } else
             {
-                cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, this->frameBuf.hImageBuf);
-        
-                auto end = std::chrono::system_clock::now();
-                std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-                cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2), //top-left position
-                cv::FONT_HERSHEY_DUPLEX,
-                1.0,
-                cv::Scalar(254, 0, 0), //font color
-                2);
+                
             }
         }
 
