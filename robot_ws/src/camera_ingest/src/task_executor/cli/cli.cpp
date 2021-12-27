@@ -40,15 +40,19 @@ void CLI::CLIFunc()
         }
         else if(strcmp(cmd[0], "ingest") == 0)
         {
-            int ret;
-            if(getIntArg(cmd, 'n', ret) != NSSC_STATUS_SUCCESS || ret < 1)
+            int ingestAmount;
+            if(getIntArg(cmd, 'n', ingestAmount) != NSSC_STATUS_SUCCESS || ret < 1)
             {
                 this->printError("Bad argument!");
-            } else
-            {
-                std::cout << ret << std::endl;
-                run_ingest(ret);
+                break;
             }
+            char* setName;
+            if(getStrArg(cmd, 'd', &setName) != NSSC_STATUS_SUCCESS)
+            {
+                this->printError("Bad argument!");
+                break;
+            }
+            run_ingest(ingestAmount, setName);
         }
         else if(strcmp(cmd[0], "calibrate") == 0)
         {

@@ -19,8 +19,8 @@ struct frame_config
     public:
         //Frame
         NSSC_FRAME_TYPE g_type  = NSSC_FRAME_RGBA;
-        short cam_x_res         = 3088;
-        short cam_y_res         = 2064;
+        const short cam_x_res         = 3088;
+        const short cam_y_res         = 2064;
 
         float cam_exposure_time = 70000.0; //microseconds
         float cam_gain          = 15.0;

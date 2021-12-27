@@ -16,22 +16,25 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
 void Ingest::ingestThread()
 {
     stereoFrame* stereoFrame;
-    this->node->printInfo(this->msgCaller, "test1");
+    this->node->g_config.ingestConfig.current_frame_idx = 0;
+
     for (int i = 0; i < this->ingestAmount; i++)
     {
         if (!this->runIngest.load()) { break; }
 
-        this->node->printInfo(this->msgCaller, "test2");
         while(this->runIngest.load())
         {
             stereoFrame = this->camManager->getFrame();
-            this->node->printInfo(this->msgCaller, "test3");
             if(stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
             {
-                this->node->printInfo(this->msgCaller, "test4");
                 break;
             }
         }
+
+        cv::imwrite("left.png", stereoFrame->leftCamera->frameBuf->hImageBuf);
+        cv::imwrite("right.png", stereoFrame->leftCamera->frameBuf->hImageBuf);
+
+        this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame!");
         std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
     }
