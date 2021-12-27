@@ -31,8 +31,8 @@ void Ingest::ingestThread()
             }
         }
 
-        cv::imwrite("left.png", stereoFrame->leftCamera->frameBuf->hImageBuf);
-        cv::imwrite("right.png", stereoFrame->leftCamera->frameBuf->hImageBuf);
+        cv::imwrite("left.png", stereoFrame->leftCamera->frameBuf.hImageBuf);
+        cv::imwrite("right.png", stereoFrame->leftCamera->frameBuf.hImageBuf);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame!");
