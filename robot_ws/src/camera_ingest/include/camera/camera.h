@@ -50,6 +50,12 @@ private:
     void GXDQBufThread();
     void GXDQBufThreadNDI();
 
+    //TEST
+    monoFrame* testFillBuf();
+    frameBuffer TestrgbBuf;
+    PGX_FRAME_BUFFER TestpFrameBuffer = NULL;
+    //END TEST
+
     std::thread GXDQThread;
     std::thread GXDQThreadNDI;
 

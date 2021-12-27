@@ -116,6 +116,8 @@ NSSC_STATUS Camera::CloseCamera()
 
     this->streamON = false;
     this->GXDQThreadNDI.join();
+    //TEST
+    cudaFreeHost(this->TestrgbBuf.hImageBuf);
 
     status = GXCloseDevice(this->hDevice);
     this->hDevice = NULL;
@@ -139,7 +141,11 @@ NSSC_STATUS Camera::startAcquisition()
         this->numOfEmpty++;
     }
 
-    this->GXDQThreadNDI = std::thread(&Camera::GXDQBufThreadNDI, this);
+    //this->GXDQThreadNDI = std::thread(&Camera::GXDQBufThreadNDI, this);
+    //TEST
+    cudaSetDeviceFlags(cudaDeviceMapHost);
+    cudaHostAlloc((void **)&this->TestrgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
+    cudaHostGetDevicePointer((void **)&this->TestrgbBuf.dImageBuf, (void *) this->TestrgbBuf.hImageBuf , 0);
 
     return NSSC_STATUS_SUCCESS;
 }
@@ -205,14 +211,38 @@ void Camera::GXDQBufThreadNDI()
     cudaFreeHost(rgbBuf.hImageBuf);
 }
 
+monoFrame* Camera::testFillBuf()
+{
+    NSSC_STATUS status;
+
+    monoFrame *frame;
+    this->emptyFrameBuf.wait_dequeue(frame);
+    this->numOfEmpty--;
+
+    this->cb->Await();
+
+    status = GXDQBuf(this->hDevice, &this->TestpFrameBuffer, 5000);
+    frame->setTimestamp();
+
+    status = DxRaw8toRGB24((unsigned char *)this->TestpFrameBuffer->pImgBuf, this->TestrgbBuf.hImageBuf, this->TestpFrameBuffer->nWidth, this->TestpFrameBuffer->nHeight,
+                           RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
+
+    status = GXQBuf(this->hDevice, this->TestpFrameBuffer);
+
+    frame->convert(&this->TestrgbBuf);
+}
+
 monoFrame* Camera::getFrame()
 {
+    /*
     monoFrame* frame;
 
     this->filledFrameBuf.wait_dequeue(frame);
     this->numOfFilled--;
 
     return frame;
+    */
+    return testFillBuf();
 }
 
 NSSC_STATUS Camera::returnBuf(monoFrame* frame)
