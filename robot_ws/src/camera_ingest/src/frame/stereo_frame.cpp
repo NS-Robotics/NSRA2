@@ -21,7 +21,7 @@ class RGBAStereoFrame: public stereoFrame
 
             if(this->timedif > 5000)
             {
-                this->node->printWarning(this->msgCaller, "Frame timestamp difference out of bounds: " + std::to_string(this->timedif) + " us")
+                this->node->printWarning(this->msgCaller, "Frame timestamp difference out of bounds: " + std::to_string(this->timedif) + " us");
             }
         }
 
