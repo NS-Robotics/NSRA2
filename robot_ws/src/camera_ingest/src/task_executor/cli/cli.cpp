@@ -52,8 +52,8 @@ void CLI::CLIFunc()
                 this->printError("Bad argument!");
                 continue;
             }
-            this->node->g_config.ingestConfig.setName = setName;
-            this->node->g_config.ingestConfig.ingestAmount = ingestAmount;
+            this->node->g_config.ingestConfig.set_name = setName;
+            this->node->g_config.ingestConfig.ingest_amount = ingestAmount;
             run_ingest();
             delete [] setName;
         }
