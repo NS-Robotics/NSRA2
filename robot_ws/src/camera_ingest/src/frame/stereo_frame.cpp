@@ -19,7 +19,7 @@ class RGBAStereoFrame: public stereoFrame
             auto c_timedif = std::chrono::duration_cast<std::chrono::microseconds>(leftCamera->frameBuf.timestamp - rightCamera->frameBuf.timestamp);
             this->timedif = c_timedif.count();
 
-            if(this->timedif > 5000)
+            if(this->timedif > 10000)
             {
                 this->node->printWarning(this->msgCaller, "Frame timestamp difference out of bounds: " + std::to_string(this->timedif) + " us");
             }

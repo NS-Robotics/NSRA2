@@ -7,12 +7,16 @@ class RGBAFrame: public monoFrame
         {
             if(this->node->g_config.resize_frame)
             {
+                auto start0 = std::chrono::high_resolution_clock::now();
                 cv::cuda::GpuMat inputFrame(cv::Size(this->node->g_config.cam_x_res, this->node->g_config.cam_y_res), CV_8UC3, rgbBuf->dImageBuf);
                 cv::cuda::GpuMat resizedFrame(cv::Size(this->node->g_config.mono_x_res, this->node->g_config.mono_y_res), CV_8UC3, this->resizeBuf.dImageBuf);
 
                 cv::cuda::resize(inputFrame, resizedFrame, cv::Size(this->node->g_config.mono_x_res, this->node->g_config.mono_y_res));
 
                 this->inputBuf = &this->resizeBuf;
+                auto stop0 = std::chrono::high_resolution_clock::now();
+                auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
+                this->node->printInfo(this->msgCaller, "Frame timing: resize - " + std::to_string(duration0.count()));
             } else
             {
                 this->inputBuf = rgbBuf;

@@ -28,6 +28,7 @@ class monoFrame
     virtual void alloc(std::shared_ptr<NSSC>& node) = 0;
 
     std::shared_ptr<NSSC> node;
+    std::string msgCaller = "Mono Frame";
     frameBuffer           frameBuf;
     frameBuffer           resizeBuf;
     frameBuffer*          inputBuf;
