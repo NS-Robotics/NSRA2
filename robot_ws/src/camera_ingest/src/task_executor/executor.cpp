@@ -8,6 +8,10 @@ Executor::Executor(std::shared_ptr<NSSC>& node, std::shared_ptr<rclcpp::executor
 
 void Executor::exit()
 {
+    if(this->node->g_config.ingestConfig.is_running)
+    {
+        this->ingest->cancelIngest();
+    }
     if(this->rawNDIstream)
     {
         this->ndi->endStream();
@@ -51,7 +55,7 @@ void Executor::rawNDI()
     }
 }
 
-void Executor::ingest(int ingestAmount)
+void Executor::run_ingest(int ingestAmount)
 {
-    Ingest ingest(this->node, this->camManager, ingestAmount);
+    this->ingest = new Ingest(this->node, this->camManager, ingestAmount);
 }

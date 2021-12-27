@@ -15,13 +15,15 @@ class Executor : public NSSC_ERRORS, public CLI
         void exit();
         void init();
         void rawNDI();
-        void ingest(int ingestAmount);
+        void run_ingest(int ingestAmount);
     
     private:
         std::shared_ptr<NSSC> node;
         std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
         std::shared_ptr<cameraManager> camManager;
         std::shared_ptr<NDI> ndi;
+
+        Ingest* ingest;
 
         bool initialized = false;
         bool rawNDIstream = false;

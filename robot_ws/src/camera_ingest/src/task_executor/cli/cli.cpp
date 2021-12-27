@@ -47,7 +47,7 @@ void CLI::CLIFunc()
             } else
             {
                 std::cout << ret << std::endl;
-                ingest(ret);
+                run_ingest(ret);
             }
         }
         else if(strcmp(cmd[0], "calibrate") == 0)

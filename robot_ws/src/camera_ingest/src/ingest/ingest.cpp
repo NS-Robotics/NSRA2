@@ -19,6 +19,8 @@ void Ingest::ingestThread()
     this->node->printInfo(this->msgCaller, "test1");
     for (int i = 0; i < this->ingestAmount; i++)
     {
+        if (!this->runIngest.load()) { break; }
+
         this->node->printInfo(this->msgCaller, "test2");
         while(this->runIngest.load())
         {
@@ -33,4 +35,12 @@ void Ingest::ingestThread()
         this->node->printInfo(this->msgCaller, "Ingest frame!");
         std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
     }
+}
+
+void Ingest::cancelIngest()
+{
+    this->runIngest = false;
+    this->node->g_config.ingestConfig.is_running = false;
+    this->iThread.join();
+    this->node->printInfo(this->msgCaller, "Ingest canceled");
 }
