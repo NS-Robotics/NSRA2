@@ -22,7 +22,7 @@ class RGBAFrame: public monoFrame
                 this->inputBuf = rgbBuf;
             }
 
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC3, this->inputBuf.hImageBuf);
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC3, this->inputBuf->hImageBuf);
 
             auto end = std::chrono::system_clock::now();
             std::time_t end_time = std::chrono::system_clock::to_time_t(end);
