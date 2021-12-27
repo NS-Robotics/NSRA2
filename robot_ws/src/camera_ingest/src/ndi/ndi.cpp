@@ -99,7 +99,7 @@ void NDI::streamThread()
         auto start0 = std::chrono::high_resolution_clock::now();
         stereoFrame = this->camManager->getFrame();
         auto stop0 = std::chrono::high_resolution_clock::now();
-        /*
+        
         cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf.hImageBuf);
         
         auto end = std::chrono::system_clock::now();
@@ -110,7 +110,7 @@ void NDI::streamThread()
             1.0,
             cv::Scalar(254, 0, 0), //font color
             2);
-        */
+        
         auto start2 = std::chrono::high_resolution_clock::now();
 
         this->NDI_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf.hImageBuf;
