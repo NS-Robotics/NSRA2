@@ -52,7 +52,9 @@ void CLI::CLIFunc()
                 this->printError("Bad argument!");
                 continue;
             }
-            run_ingest(ingestAmount, setName);
+            this->node->g_config.ingestConfig.setName = setName;
+            this->node->g_config.ingestConfig.ingestAmount = ingestAmount;
+            run_ingest();
             delete [] setName;
         }
         else if(strcmp(cmd[0], "calibrate") == 0)

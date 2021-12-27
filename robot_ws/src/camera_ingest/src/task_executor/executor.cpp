@@ -55,7 +55,7 @@ void Executor::rawNDI()
     }
 }
 
-void Executor::run_ingest(int ingestAmount, char* setName)
+void Executor::run_ingest()
 {
-    this->ingest = new Ingest(this->node, this->camManager, ingestAmount, setName);
+    this->ingest = new Ingest(this->node, this->camManager);
 }

@@ -88,6 +88,9 @@ struct ingest_config
         int wait_duration         = 5000; //milliseconds
         bool is_running           = false; 
         short current_frame_idx   = 0;
+        int ingest_amount         = 0;
+        char* set_name            = "N/A";
+        bool image_taken          = false;
         std::chrono::high_resolution_clock::time_point sleep_timestamp;
 };
 

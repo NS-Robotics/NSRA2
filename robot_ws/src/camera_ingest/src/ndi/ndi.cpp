@@ -106,7 +106,7 @@ void NDI::streamThread()
         {
             cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf.hImageBuf);
 
-            cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx), cv::Point(25, 60), //top-left position
+            cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingestAmount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
                         cv::Scalar(254, 0, 0), //font color
@@ -114,13 +114,19 @@ void NDI::streamThread()
 
             auto now = std::chrono::high_resolution_clock::now();
             auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
-            int countdown = 5000 - time_left.count();
-            if(countdown < 0)
+            int countdown_i = 5000 - time_left.count();
+            if(countdown_i < 0)
             {
-                countdown = 0;
+                countdown_i = 0;
+            }
+            std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
+
+            if(countdown_i < 0 && this->node->g_config.ingestConfig.image_taken)
+            {
+                countdown = "Image taken!";
             }
 
-            cv::putText(sendFrame, "Next image in " + std::to_string(countdown) + " ms", cv::Point(500, 60), //top-left position
+            cv::putText(sendFrame, countdown, cv::Point(800, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
                         cv::Scalar(254, 0, 0), //font color

@@ -12,7 +12,7 @@
 class Ingest : public NSSC_ERRORS
 {
     public:
-        Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager>& camManager, int ingestAmount, char* setName);
+        Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager>& camManager);
         void cancelIngest();
 
     private:
@@ -21,8 +21,6 @@ class Ingest : public NSSC_ERRORS
 
         std::string msgCaller = "Ingest";
 
-        int ingestAmount;
-        char* setName;
         std::string setPath;
 
         void ingestThread();

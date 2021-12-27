@@ -1,11 +1,9 @@
 #include "ingest.h"
 
-Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager, int ingestAmount, char* setName) : NSSC_ERRORS(node)
+Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->camManager = camManager;
-    this->ingestAmount = ingestAmount;
-    this->setName = setName;
 
     this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
     std::system(("mkdir -p " + this->setPath).c_str());
@@ -37,6 +35,8 @@ void Ingest::ingestThread()
                 this->camManager->returnBuf(stereoFrame);
             }
         }
+
+        this->node->g_config.ingestConfig.image_taken = true;
         
         cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
         cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
@@ -55,6 +55,7 @@ void Ingest::ingestThread()
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
         this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
+        this->node->g_config.ingestConfig.image_taken = false;
         std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
     }
 }
