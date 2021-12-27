@@ -4,6 +4,7 @@
 #include "nssc_errors.h"
 #include "camera_manager.h"
 #include "node.h"
+#include <boost/filesystem.hpp>
 
 class Ingest : public NSSC_ERRORS
 {
