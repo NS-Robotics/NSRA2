@@ -44,8 +44,8 @@ void Ingest::ingestThread()
         cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
         cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
 
-        cv::imwrite((this->setPath + "img_right_%d.png", this->node->g_config.ingestConfig.current_frame_idx), right_conv);
-        cv::imwrite((this->setPath + "img_left_%d.png", this->node->g_config.ingestConfig.current_frame_idx), left_conv);
+        cv::imwrite(("%simg_right_%d.png", this->setPath, this->node->g_config.ingestConfig.current_frame_idx), right_conv);
+        cv::imwrite(("%simg_left_%d.png", this->setPath, this->node->g_config.ingestConfig.current_frame_idx), left_conv);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame!");
