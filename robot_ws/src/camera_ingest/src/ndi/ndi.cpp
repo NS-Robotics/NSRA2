@@ -126,7 +126,7 @@ void NDI::streamThread()
                 countdown = "Image taken!";
             }
 
-            cv::putText(sendFrame, countdown, cv::Point(800, 60), //top-left position
+            cv::putText(sendFrame, countdown, cv::Point(1000, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
                         cv::Scalar(254, 0, 0), //font color
