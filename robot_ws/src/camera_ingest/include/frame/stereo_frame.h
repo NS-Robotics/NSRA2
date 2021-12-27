@@ -16,6 +16,7 @@ class stereoFrame
     virtual void alloc(std::shared_ptr<NSSC>& node) = 0;
 
     std::shared_ptr<NSSC> node;
+    std::string msgCaller = "Stereo Frame";
     frameBuffer   stereoBuf;
     monoFrame*    leftCamera;
     monoFrame*    rightCamera;

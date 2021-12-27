@@ -9,6 +9,7 @@ class NSSC : public rclcpp::Node
     public:
         NSSC();
         void printInfo(std::string caller, std::string msg);
+        void printWarning(std::string caller, std::string msg);
         globalConfig g_config;
     private:
         std::string msgCaller = "Node";
