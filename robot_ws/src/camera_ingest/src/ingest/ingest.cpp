@@ -9,6 +9,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::runIngest, this);
     
+    this->node->g_config.ingestConfig.is_running = true;
     this->node->printInfo(this->msgCaller, "Ingest!");
 }
 
@@ -25,6 +26,8 @@ void Ingest::ingestThread()
             {
                 break;
             }
+            this->node->printInfo(this->msgCaller, "Ingest frame!");
+            std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
         }
         
     }
