@@ -51,17 +51,6 @@ void Ingest::ingestThread()
         cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
         cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
 
-        auto end = std::chrono::system_clock::now();
-        std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-        this->node->printInfo(this->msgCaller, std::ctime(&end_time));
-
-        cv::putText(left_conv, std::ctime(&end_time), cv::Point(10, leftFrame.rows / 2), //top-left position
-            cv::FONT_HERSHEY_DUPLEX,
-            1.0,
-            cv::Scalar(254, 0, 0), //font color
-            2);
-
         cv::imwrite(this->setPath + "img_right_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
         cv::imwrite(this->setPath + "img_left_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
 

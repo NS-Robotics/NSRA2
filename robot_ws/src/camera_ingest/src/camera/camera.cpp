@@ -182,23 +182,11 @@ void Camera::GXDQBufThreadNDI()
             
             status = GXDQBuf(this->hDevice, &pFrameBuffer, 5000);
             
-            auto end = std::chrono::system_clock::now();
-
             auto stop0 = std::chrono::high_resolution_clock::now();
             auto start1 = std::chrono::high_resolution_clock::now();
 
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, rgbBuf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
-
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
-   
-            std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-            cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2 + 200), //top-left position
-                cv::FONT_HERSHEY_DUPLEX,
-                1.0,
-                cv::Scalar(0, 254, 0), //font color
-                2);
 
             status = GXQBuf(this->hDevice, pFrameBuffer);
 
