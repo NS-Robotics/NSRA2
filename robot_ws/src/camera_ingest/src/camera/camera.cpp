@@ -117,7 +117,7 @@ NSSC_STATUS Camera::CloseCamera()
     this->streamON = false;
     this->GXDQThreadNDI.join();
     //TEST
-    cudaFreeHost(this->TestrgbBuf.hImageBuf);
+    //cudaFreeHost(this->TestrgbBuf.hImageBuf);
 
     status = GXCloseDevice(this->hDevice);
     this->hDevice = NULL;
@@ -141,12 +141,13 @@ NSSC_STATUS Camera::startAcquisition()
         this->numOfEmpty++;
     }
 
-    //this->GXDQThreadNDI = std::thread(&Camera::GXDQBufThreadNDI, this);
+    this->GXDQThreadNDI = std::thread(&Camera::GXDQBufThreadNDI, this);
     //TEST
+    /*
     cudaSetDeviceFlags(cudaDeviceMapHost);
     cudaHostAlloc((void **)&this->TestrgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
     cudaHostGetDevicePointer((void **)&this->TestrgbBuf.dImageBuf, (void *) this->TestrgbBuf.hImageBuf , 0);
-
+    */
     return NSSC_STATUS_SUCCESS;
 }
 
@@ -237,7 +238,7 @@ monoFrame* Camera::testFillBuf()
                 cv::Scalar(0, 254, 0), //font color
                 2);
 
-    status = GXQBuf(this->hDevice, this->TestpFrameBuffer);
+    status = GXQBuf(this->hDevice, this->TestpFrameBuffer); 
 
     frame->convert(&this->TestrgbBuf);
 
@@ -246,15 +247,15 @@ monoFrame* Camera::testFillBuf()
 
 monoFrame* Camera::getFrame()
 {
-    /*
+    
     monoFrame* frame;
 
     this->filledFrameBuf.wait_dequeue(frame);
     this->numOfFilled--;
 
     return frame;
-    */
-    return testFillBuf();
+    
+    //return testFillBuf();
 }
 
 NSSC_STATUS Camera::returnBuf(monoFrame* frame)
