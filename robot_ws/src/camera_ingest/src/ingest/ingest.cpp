@@ -8,11 +8,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->setName = setName;
 
     this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
-    int status = std::system(("mkdir -p " + this->setPath).c_str());
-    if (status == -1)
-        this->node->printInfo(this->msgCaller, "Not created!");
-    else
-        this->node->printInfo(this->msgCaller, "Dir created!");
+    std::system(("mkdir -p " + this->setPath).c_str());
 
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::ingestThread, this);
@@ -44,12 +40,23 @@ void Ingest::ingestThread()
 
         cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
         cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
-        
+
         cv::Mat left_conv;
         cv::Mat right_conv;
 
         cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
         cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
+
+        auto end = std::chrono::system_clock::now();
+        std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+        this->node->printInfo(this->msgCaller, std::ctime(&end_time));
+
+        cv::putText(left_frame, std::ctime(&end_time), cv::Point(10, img.rows / 2), //top-left position
+            cv::FONT_HERSHEY_DUPLEX,
+            1.0,
+            CV_RGB(118, 185, 0), //font color
+            2);
 
         cv::imwrite(this->setPath + "img_right_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
         cv::imwrite(this->setPath + "img_left_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);

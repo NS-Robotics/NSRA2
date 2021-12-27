@@ -1,5 +1,7 @@
 #include "ndi.h"
 #include <iostream>
+#include <chrono>
+#include <ctime>    
 
 NDI::NDI(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager) : NSSC_ERRORS(node)
 {
