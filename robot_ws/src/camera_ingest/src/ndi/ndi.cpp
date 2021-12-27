@@ -114,8 +114,13 @@ void NDI::streamThread()
 
             auto now = std::chrono::high_resolution_clock::now();
             auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
+            int countdown = 5000 - time_left.count();
+            if(countdown < 0)
+            {
+                countdown = 0;
+            }
 
-            cv::putText(sendFrame, "Next image in " + std::to_string(5000 - time_left.count()) + " ms", cv::Point(400, 60), //top-left position
+            cv::putText(sendFrame, "Next image in " + std::to_string(countdown) + " ms", cv::Point(500, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
                         cv::Scalar(254, 0, 0), //font color
