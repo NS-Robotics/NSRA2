@@ -51,7 +51,7 @@ void Executor::rawNDI()
     }
 }
 
-void Executor::ingest()
+void Executor::ingest(int ingestAmount)
 {
-    Ingest ingest(this->node);
+    Ingest ingest(this->node, ingestAmount);
 }
