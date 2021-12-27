@@ -31,7 +31,7 @@ void CLI::CLIFunc()
             } else
             {
                 this->node->g_config.resize_frame = ret;
-                std::cout << ret << std::endl;
+                this->node->g_config.calculate_params();
                 rawNDI();
             }
         }

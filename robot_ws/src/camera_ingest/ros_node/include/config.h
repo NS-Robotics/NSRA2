@@ -40,6 +40,11 @@ public:
 
     globalConfig()
     {
+        calculate_params();
+    }
+
+    void calculate_params()
+    {
         switch(g_type)
         {
             case NSSC_FRAME_RGBA:
