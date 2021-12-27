@@ -8,8 +8,11 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->setName = setName;
 
     this->setPath = this->node->g_config.share_dir + "/NSSC/" + setName + "/";
-    std::filesystem::create_directory(this->setPath);
-    this->node->printInfo(this->msgCaller, this->setPath);
+    int status = std::system("mkdir -p " + this->setPath);
+    if (status == -1)
+        this->node->printInfo(this->msgCaller, "Not created!");
+    else
+        this->node->printInfo(this->msgCaller, "Dir created!");
 
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::ingestThread, this);

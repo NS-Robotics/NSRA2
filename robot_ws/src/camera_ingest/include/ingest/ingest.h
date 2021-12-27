@@ -5,7 +5,9 @@
 #include "camera_manager.h"
 #include "node.h"
 
-#include <experimental/filesystem>
+#include <bits/stdc++.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 class Ingest : public NSSC_ERRORS
 {
