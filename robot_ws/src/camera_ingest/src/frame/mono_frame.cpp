@@ -5,6 +5,7 @@ class RGBAFrame: public monoFrame
     public:
         void convert(frameBuffer* rgbBuf)
         {
+            std::cout << "test0" << std::endl;
             if(this->node->g_config.frameConfig.resize_frame)
             {
                 auto start0 = std::chrono::high_resolution_clock::now();
@@ -28,6 +29,7 @@ class RGBAFrame: public monoFrame
             {
                 //std::cout << "successfully converted" << std::endl;
             }
+            std::cout << "test1" << std::endl;
             cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, this->frameBuf.hImageBuf);
         
             auto end = std::chrono::system_clock::now();
