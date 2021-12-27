@@ -4,7 +4,10 @@
 #include "nssc_errors.h"
 #include "camera_manager.h"
 #include "node.h"
+
+#define BOOST_NO_CXX11_SCOPED_ENUMS
 #include <boost/filesystem.hpp>
+#undef BOOST_NO_CXX11_SCOPED_ENUMS
 
 class Ingest : public NSSC_ERRORS
 {
