@@ -121,7 +121,7 @@ void NDI::streamThread()
             }
             std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
 
-            if(countdown_i < 0 && this->node->g_config.ingestConfig.image_taken)
+            if(countdown_i == 0 && this->node->g_config.ingestConfig.image_taken)
             {
                 countdown = "Image taken!";
             }
