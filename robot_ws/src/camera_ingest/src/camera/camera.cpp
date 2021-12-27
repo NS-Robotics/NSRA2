@@ -223,9 +223,20 @@ monoFrame* Camera::testFillBuf()
 
     status = GXDQBuf(this->hDevice, &this->TestpFrameBuffer, 5000);
     frame->setTimestamp();
+    auto end = std::chrono::system_clock::now();
 
     status = DxRaw8toRGB24((unsigned char *)this->TestpFrameBuffer->pImgBuf, this->TestrgbBuf.hImageBuf, this->TestpFrameBuffer->nWidth, this->TestpFrameBuffer->nHeight,
                            RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
+
+    cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, this->TestrgbBuf.hImageBuf);
+   
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+    cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2 + 200), //top-left position
+                cv::FONT_HERSHEY_DUPLEX,
+                1.0,
+                cv::Scalar(0, 254, 0), //font color
+                2);
 
     status = GXQBuf(this->hDevice, this->TestpFrameBuffer);
 
