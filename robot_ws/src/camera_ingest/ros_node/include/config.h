@@ -24,7 +24,7 @@ public:
     float cam_exposure_time = 70000.0;
     float cam_gain          = 15.0;
 
-    bool resize_frame       = false;
+    bool resize_frame       = true;
 
     short mono_x_res;
     short mono_y_res;

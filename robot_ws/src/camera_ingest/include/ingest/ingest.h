@@ -8,12 +8,17 @@
 class Ingest : public NSSC_ERRORS
 {
     public:
-        Ingest(std::shared_ptr<NSSC> &node);
+        Ingest(std::shared_ptr<NSSC> &node, int ingestAmount);
 
     private:
         std::shared_ptr<NSSC> node;
 
         std::string msgCaller = "Ingest";
+        int ingestAmount;
+
+        void ingestThread();
+        std::thread iThread;
+        std::atomic<bool> runIngest{false};
 };
 
 #endif  //NSSC_INGEST_

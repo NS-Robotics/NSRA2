@@ -24,16 +24,7 @@ void CLI::CLIFunc()
 
         if(strcmp(cmd[0], "NDI") == 0)
         {
-            bool ret;
-            if(getBoolArg(cmd, 'r', ret) != NSSC_STATUS_SUCCESS)
-            {
-                this->printError("Bad argument!");
-            } else
-            {
-                this->node->g_config.resize_frame = ret;
-                this->node->g_config.calculate_params();
-                rawNDI();
-            }
+            rawNDI();
         }
         else if(strcmp(cmd[0], "test") == 0)
         {
@@ -81,7 +72,7 @@ void CLI::CLIFunc()
         else if(strcmp(cmd[0], "help") == 0)
         {
             printf("\033[1;34m[Executor] \033[0mUsage:\n"
-                   "  NDI [-r resize frame]                     - Toggle raw NDI stream\n"
+                   "  NDI                                       - Toggle raw NDI stream\n"
                    "  ingest [-n number of images -d set name]  - Start the calibration capture\n"
                    "  calibrate [-d image set name]             - Run the calibration\n"
                    "  run [-c calibration config]               - Run NSSC\n"
