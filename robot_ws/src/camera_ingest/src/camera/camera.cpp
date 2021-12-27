@@ -230,6 +230,8 @@ monoFrame* Camera::testFillBuf()
     status = GXQBuf(this->hDevice, this->TestpFrameBuffer);
 
     frame->convert(&this->TestrgbBuf);
+
+    return frame;
 }
 
 monoFrame* Camera::getFrame()
