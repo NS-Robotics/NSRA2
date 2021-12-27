@@ -17,6 +17,7 @@ class Ingest : public NSSC_ERRORS
 
         std::string msgCaller = "Ingest";
         int ingestAmount;
+        char* setName;
 
         void ingestThread();
         std::thread iThread;

@@ -1,10 +1,11 @@
 #include "ingest.h"
 
-Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager, int ingestAmount) : NSSC_ERRORS(node)
+Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager, int ingestAmount, char* setName) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->camManager = camManager;
     this->ingestAmount = ingestAmount;
+    this->setName = setName;
 
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::ingestThread, this);
