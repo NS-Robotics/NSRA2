@@ -132,7 +132,7 @@ void NDI::streamThread()
         //this->node->printInfo(this->msgCaller, "Frame diff: " + std::to_string(stereoFrame->timedif));
 
         //this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()) + " | sendFrame - " + std::to_string(duration2.count()) + " | total - " + std::to_string(duration0.count() + duration2.count()));
-        this->node->printInfo(this->msgCaller, "Frame timing: frame total - " + std::to_string(total_dur.count()) + " | total - " + std::to_string(duration0.count() + duration2.count()));
+        //this->node->printInfo(this->msgCaller, "Frame timing: frame total - " + std::to_string(total_dur.count()) + " | total - " + std::to_string(duration0.count() + duration2.count()));
 	}
 	NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
 }
