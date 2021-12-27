@@ -175,7 +175,7 @@ void Camera::GXDQBufThreadNDI()
             this->numOfEmpty--;
 
             this->cb->Await();
-            emStatus = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
+            status = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
             
             auto start0 = std::chrono::high_resolution_clock::now();
             
