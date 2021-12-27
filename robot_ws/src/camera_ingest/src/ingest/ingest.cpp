@@ -31,12 +31,13 @@ void Ingest::ingestThread()
             stereoFrame = this->camManager->getFrame();
             if(stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
             {
+                this->node->printInfo(this->msgCaller, "good Frame");
                 break;
             } else
             {
                 this->camManager->returnBuf(stereoFrame);
+                this->node->printInfo(this->msgCaller, "new Frame");
             }
-            this->node->printInfo(this->msgCaller, "new frame");
         }
 
         cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
@@ -56,7 +57,7 @@ void Ingest::ingestThread()
         cv::putText(left_conv, std::ctime(&end_time), cv::Point(10, leftFrame.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
-            cv::Scalar(118, 185, 0), //font color
+            cv::Scalar(254, 0, 0), //font color
             2);
 
         cv::imwrite(this->setPath + "img_right_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
