@@ -52,10 +52,10 @@ void Ingest::ingestThread()
 
         this->node->printInfo(this->msgCaller, std::ctime(&end_time));
 
-        cv::putText(leftFrame, std::ctime(&end_time), cv::Point(10, img.rows / 2), //top-left position
+        cv::putText(leftFrame, std::ctime(&end_time), cv::Point(10, leftFrame.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
-            CV_RGB(118, 185, 0), //font color
+            cv::CV_RGB(118, 185, 0), //font color
             2);
 
         cv::imwrite(this->setPath + "img_right_" + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
