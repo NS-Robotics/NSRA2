@@ -20,7 +20,7 @@
 #include <jetson-utils/cudaMappedMemory.h>
 #include <cuda.h>
 
-#define ACQ_BUFFER_NUM          1           
+#define ACQ_BUFFER_NUM          0           
 #define ACQ_TRANSFER_SIZE       (64 * 1024)    
 #define ACQ_TRANSFER_NUMBER_URB 64             
 
