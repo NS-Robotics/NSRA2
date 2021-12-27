@@ -26,11 +26,11 @@ public:
 
     bool resize_frame       = false;
 
-    short mono_x_res        = resize_frame ? 1920 : cam_x_res;
-    short mono_y_res        = resize_frame ? 1080 : cam_y_res;
+    short mono_x_res;
+    short mono_y_res;
 
-    short stream_x_res      = mono_x_res * 2;
-    short stream_y_res      = mono_y_res;
+    short stream_x_res;
+    short stream_y_res;
 
     NDIlib_FourCC_video_type_e FourCC;
 
@@ -45,6 +45,12 @@ public:
 
     void calculate_params()
     {
+        mono_x_res        = resize_frame ? 1920 : cam_x_res;
+        mono_y_res        = resize_frame ? 1080 : cam_y_res;
+
+        stream_x_res      = mono_x_res * 2;
+        stream_y_res      = mono_y_res;
+
         switch(g_type)
         {
             case NSSC_FRAME_RGBA:
@@ -68,7 +74,6 @@ public:
                 break;
         }
     }
-
 };
 
 #endif  //NSSC_CONFIG_
