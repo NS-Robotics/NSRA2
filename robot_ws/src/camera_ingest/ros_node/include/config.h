@@ -21,8 +21,8 @@ public:
     short cam_x_res         = 3088;
     short cam_y_res         = 2064;
 
-    float cam_exposure_time = 90000.0;
-    float cam_gain          = 20.0;
+    float cam_exposure_time = 70000.0;
+    float cam_gain          = 15.0;
 
     bool resize_frame       = true;
 
