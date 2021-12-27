@@ -159,7 +159,7 @@ void Camera::GXDQBufThreadNDI()
     while(this->streamON.load())
     {
 
-        if(this->numOfFilled.load() < 2 && this->numOfEmpty.load() > 0)
+        if(this->numOfFilled.load() < 1 && this->numOfEmpty.load() > 0)
         {
             NSSC_STATUS status;
 
