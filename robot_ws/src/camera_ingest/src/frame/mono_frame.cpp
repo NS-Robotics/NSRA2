@@ -5,7 +5,6 @@ class RGBAFrame: public monoFrame
     public:
         void convert(frameBuffer* rgbBuf)
         {
-            std::cout << "test0" << std::endl;
             if(this->node->g_config.frameConfig.resize_frame)
             {
                 auto start0 = std::chrono::high_resolution_clock::now();
@@ -29,13 +28,12 @@ class RGBAFrame: public monoFrame
             {
                 //std::cout << "successfully converted" << std::endl;
             }
-            std::cout << "test1" << std::endl;
             cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, this->frameBuf.hImageBuf);
         
             auto end = std::chrono::system_clock::now();
             std::time_t end_time = std::chrono::system_clock::to_time_t(end);
 
-            cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2 + 100), //top-left position
+            cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2), //top-left position
             cv::FONT_HERSHEY_DUPLEX,
             1.0,
             cv::Scalar(254, 0, 0), //font color
