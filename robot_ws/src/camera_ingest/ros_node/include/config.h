@@ -28,7 +28,7 @@ struct frame_config
 
         bool resize_frame       = false;
 
-        int max_frame_time_diff = 20000; //microseconds
+        int max_frame_time_diff = 5000; //microseconds
 
         short mono_x_res;
         short mono_y_res;
