@@ -25,8 +25,6 @@ void Ingest::ingestThread()
     for (int i = 0; i < this->ingestAmount; i++)
     {
         if (!this->runIngest.load()) { break; }
-
-        stereoFrame = this->camManager->getFrame();
         
         while(this->runIngest.load())
         {
