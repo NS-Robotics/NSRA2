@@ -195,7 +195,7 @@ void Camera::GXDQBufThreadNDI()
             auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
             auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(stop2 - start2);
 
-            //this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()) + " | upldFrame - " + std::to_string(duration1.count()) + " | convFrame - " + std::to_string(duration2.count()) + " | frame count - " + std::to_string(this->numOfFilled.load()) + " | total - " + std::to_string(duration0.count() + duration1.count() + duration2.count()));
+            this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()) + " | upldFrame - " + std::to_string(duration1.count()) + " | convFrame - " + std::to_string(duration2.count()) + " | frame count - " + std::to_string(this->numOfFilled.load()) + " | total - " + std::to_string(duration0.count() + duration1.count() + duration2.count()));
 
         } else
         {
