@@ -5,7 +5,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->node = node;
     this->camManager = camManager;
 
-    this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
+    this->setPath = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
     std::system(("mkdir -p " + this->setPath).c_str());
 
     this->runIngest = true;
@@ -20,7 +20,7 @@ void Ingest::ingestThread()
     stereoFrame* stereoFrame;
     this->node->g_config.ingestConfig.current_frame_idx = 0;
 
-    for (int i = 0; i < this->ingestAmount; i++)
+    for (int i = 0; i < this->node->g_config.ingestConfig.ingest_amount; i++)
     {
         if (!this->runIngest.load()) { break; }
         

@@ -106,7 +106,7 @@ void NDI::streamThread()
         {
             cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf.hImageBuf);
 
-            cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingestAmount), cv::Point(25, 60), //top-left position
+            cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
                         cv::Scalar(254, 0, 0), //font color
