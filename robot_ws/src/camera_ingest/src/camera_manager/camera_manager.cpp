@@ -21,7 +21,7 @@ NSSC_STATUS cameraManager::init()
 
     for (int i = 0; i < 3; i++)
     {
-        stereoFrame* frame = stereoFrame::make_frame(this->node->g_config.g_type);
+        stereoFrame* frame = stereoFrame::make_frame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node);
 
         this->emptyFrameBuf.enqueue(frame);

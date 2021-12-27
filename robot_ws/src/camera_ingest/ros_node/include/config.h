@@ -14,31 +14,35 @@ typedef enum NSSC_FRAME_TYPES
 
 } NSSC_FRAME_TYPE;
 
-struct globalConfig
+struct frame_config
 {
-public:
-    NSSC_FRAME_TYPE g_type  = NSSC_FRAME_RGBA;
-    short cam_x_res         = 3088;
-    short cam_y_res         = 2064;
+    public:
+        //Frame
+        NSSC_FRAME_TYPE g_type  = NSSC_FRAME_RGBA;
+        short cam_x_res         = 3088;
+        short cam_y_res         = 2064;
 
-    float cam_exposure_time = 70000.0;
-    float cam_gain          = 15.0;
+        float cam_exposure_time = 70000.0; //microseconds
+        float cam_gain          = 15.0;
 
-    bool resize_frame       = false;
+        bool resize_frame       = false;
 
-    short mono_x_res;
-    short mono_y_res;
+        int max_frame_time_diff = 20000; //microseconds
 
-    short stream_x_res;
-    short stream_y_res;
+        short mono_x_res;
+        short mono_y_res;
 
-    NDIlib_FourCC_video_type_e FourCC;
+        //NDI
+        short stream_x_res;
+        short stream_y_res;
 
-    NSSC_BUF_SIZE stereo_buf_size;
-    NSSC_BUF_SIZE mono_buf_size;
-    NSSC_BUF_SIZE ndi_line_stride;
+        NDIlib_FourCC_video_type_e FourCC;
 
-    globalConfig()
+        NSSC_BUF_SIZE stereo_buf_size;
+        NSSC_BUF_SIZE mono_buf_size;
+        NSSC_BUF_SIZE ndi_line_stride;
+
+    frame_config()
     {
         calculate_params();
     }
@@ -74,6 +78,22 @@ public:
                 break;
         }
     }
+};
+
+struct ingest_config
+{
+    public:
+        short max_frame_time_diff = 1000; //microseconds
+        int wait_duration         = 5000; //milliseconds
+        bool is_running           = false; 
+        short current_frame_idx   = 0;
+};
+
+struct globalConfig : public frame_config, public ingest_config
+{
+public:
+    frame_config frameConfig;
+    ingest_config ingestConfig;
 };
 
 #endif  //NSSC_CONFIG_

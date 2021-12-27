@@ -8,10 +8,11 @@
 class Ingest : public NSSC_ERRORS
 {
     public:
-        Ingest(std::shared_ptr<NSSC> &node, int ingestAmount);
+        Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager>& camManager, int ingestAmount);
 
     private:
         std::shared_ptr<NSSC> node;
+        std::shared_ptr<cameraManager>  camManager;
 
         std::string msgCaller = "Ingest";
         int ingestAmount;
