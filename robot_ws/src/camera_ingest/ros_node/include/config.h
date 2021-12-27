@@ -24,7 +24,7 @@ struct frame_config
         const short cam_y_res         = 2064;
 
         float cam_exposure_time = 10000.0; //microseconds
-        float cam_gain          = 25.0;
+        float cam_gain          = 20.0;
 
         bool resize_frame       = false;
 
