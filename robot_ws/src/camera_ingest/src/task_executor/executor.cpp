@@ -53,5 +53,5 @@ void Executor::rawNDI()
 
 void Executor::ingest(int ingestAmount)
 {
-    Ingest ingest(this->node, ingestAmount);
+    Ingest ingest(this->node, this->camManager, ingestAmount);
 }
