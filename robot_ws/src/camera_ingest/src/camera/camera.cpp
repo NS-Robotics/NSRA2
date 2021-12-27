@@ -220,10 +220,9 @@ monoFrame* Camera::testFillBuf()
     this->numOfEmpty--;
 
     //this->cb->Await();
-
-    status = GXDQBuf(this->hDevice, &this->TestpFrameBuffer, 5000);
-    frame->setTimestamp();
     auto end = std::chrono::system_clock::now();
+    status = GXDQBuf(this->hDevice, &this->TestpFrameBuffer, 500);
+    frame->setTimestamp();
 
     status = DxRaw8toRGB24((unsigned char *)this->TestpFrameBuffer->pImgBuf, this->TestrgbBuf.hImageBuf, this->TestpFrameBuffer->nWidth, this->TestpFrameBuffer->nHeight,
                            RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
