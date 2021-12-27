@@ -16,7 +16,7 @@ class RGBAFrame: public monoFrame
                 this->inputBuf = &this->resizeBuf;
                 auto stop0 = std::chrono::high_resolution_clock::now();
                 auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
-                this->node->printInfo(this->msgCaller, "Frame timing: resize - " + std::to_string(duration0.count()));
+                //this->node->printInfo(this->msgCaller, "Frame timing: resize - " + std::to_string(duration0.count()));
             } else
             {
                 this->inputBuf = rgbBuf;
