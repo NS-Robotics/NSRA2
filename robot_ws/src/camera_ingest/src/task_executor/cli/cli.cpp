@@ -41,7 +41,7 @@ void CLI::CLIFunc()
         else if(strcmp(cmd[0], "ingest") == 0)
         {
             int ingestAmount;
-            if(getIntArg(cmd, 'n', ingestAmount) != NSSC_STATUS_SUCCESS || ret < 1)
+            if(getIntArg(cmd, 'n', ingestAmount) != NSSC_STATUS_SUCCESS || ingestAmount < 1)
             {
                 this->printError("Bad argument!");
                 break;
