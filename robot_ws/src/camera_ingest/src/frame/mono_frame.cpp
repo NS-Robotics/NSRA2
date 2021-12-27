@@ -28,6 +28,16 @@ class RGBAFrame: public monoFrame
             {
                 //std::cout << "successfully converted" << std::endl;
             }
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, this->frameBuf.hImageBuf);
+        
+            auto end = std::chrono::system_clock::now();
+            std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+            cv::putText(sendFrame, "mono_frame" + std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2 + 15), //top-left position
+            cv::FONT_HERSHEY_DUPLEX,
+            1.0,
+            cv::Scalar(254, 0, 0), //font color
+            2);
         }
 
         void alloc(std::shared_ptr<NSSC>& node)
