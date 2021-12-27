@@ -58,6 +58,7 @@ void Ingest::ingestThread()
         this->node->g_config.ingestConfig.image_taken = false;
         std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
     }
+    this->node->g_config.ingestConfig.is_running = false;
 }
 
 void Ingest::cancelIngest()
