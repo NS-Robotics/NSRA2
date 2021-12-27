@@ -31,12 +31,10 @@ void Ingest::ingestThread()
             stereoFrame = this->camManager->getFrame();
             if(stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
             {
-                this->node->printInfo(this->msgCaller, "good Frame");
                 break;
             } else
             {
                 this->camManager->returnBuf(stereoFrame);
-                this->node->printInfo(this->msgCaller, "new Frame");
             }
         }
         
@@ -55,7 +53,8 @@ void Ingest::ingestThread()
         this->camManager->returnBuf(stereoFrame);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
-        this->node->printInfo(this->msgCaller, "Ingest frame!");
+        this->node->printInfo(this->msgCaller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
+        this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
         std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
     }
 }

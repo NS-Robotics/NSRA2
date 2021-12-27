@@ -88,6 +88,7 @@ struct ingest_config
         int wait_duration         = 5000; //milliseconds
         bool is_running           = false; 
         short current_frame_idx   = 0;
+        std::chrono::high_resolution_clock::time_point sleep_timestamp;
 };
 
 struct globalConfig : public frame_config, public ingest_config
