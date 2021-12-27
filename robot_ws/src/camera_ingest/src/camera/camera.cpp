@@ -219,7 +219,7 @@ monoFrame* Camera::testFillBuf()
     this->emptyFrameBuf.wait_dequeue(frame);
     this->numOfEmpty--;
 
-    this->cb->Await();
+    //this->cb->Await();
 
     status = GXDQBuf(this->hDevice, &this->TestpFrameBuffer, 5000);
     frame->setTimestamp();
