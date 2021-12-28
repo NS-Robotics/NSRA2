@@ -76,6 +76,7 @@ NSSC_STATUS NDI::endStream()
 
 NSSC_STATUS NDI::closeNDI()
 {
+    free(this->NDI_video_frame.p_data);
     NDIlib_send_destroy(this->pNDI_send);
     NDIlib_destroy();
     this->node->printInfo(this->msgCaller, "NDI closed");
