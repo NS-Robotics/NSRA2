@@ -122,7 +122,7 @@ void Ingest::ingestThread()
 
 void Ingest::cancelIngest()
 {
-
+    editConfig()
     this->runIngest = false;
     this->node->g_config.ingestConfig.is_running = false;
     this->iThread.join();
