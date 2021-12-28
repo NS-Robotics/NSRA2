@@ -8,6 +8,7 @@ Executor::Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executor
 
 void Executor::exit()
 {
+    if (this->is_closed) { return; }
     if (this->node->g_config.ingestConfig.is_running)
     {
         this->ingest->cancelIngest();
@@ -21,11 +22,8 @@ void Executor::exit()
         this->ndi->closeNDI();
         this->camManager->closeCameras();
     }
-    if (CLI::cliON.load())
-    {
-        CLI::closeCLI();
-    }
     this->node_executor->cancel();
+    this->is_closed = true;
 }
 
 void Executor::init()

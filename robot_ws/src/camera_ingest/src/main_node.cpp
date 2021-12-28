@@ -21,5 +21,7 @@ int main(int argc, char **argv)
 
     executor.exit();
 
+    executor.closeCLI();
+
     rclcpp::shutdown();
 }

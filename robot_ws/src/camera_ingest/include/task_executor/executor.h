@@ -31,6 +31,8 @@ private:
     bool rawNDIstream = false;
 
     std::string msgCaller = "Executor";
+
+    bool is_closed = false;
 };
 
 #endif //NSSC_TASK_EXECUTOR_
