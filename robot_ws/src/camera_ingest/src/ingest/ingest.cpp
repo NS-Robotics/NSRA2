@@ -8,19 +8,10 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->setPath = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
     std::system(("mkdir -p " + this->setPath).c_str());
 
-    rapidxml::xml_document<> doc;
-    rapidxml::xml_node<> * root_node;
     std::ifstream xmlFile(this->setPath + "config.xml");
-    std::vector<char> buffer((std::istreambuf_iterator<char>(xmlFile)), std::istreambuf_iterator<char>());
-    buffer.push_back('\0');
-
-    try
-    {
-        doc.parse<0>(&buffer[0]);
-        root_node = doc.first_node("NSSC");
+    if(!xmlFile.fail()){
         this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
-    } 
-    catch(const rapidxml::parse_error& e)
+    } else
     {
         rapidxml::xml_document<> new_doc;
 
