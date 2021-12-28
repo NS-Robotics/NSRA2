@@ -103,5 +103,4 @@ void CLI::closeCLI()
 {
     this->cliON = false;
     this->CLIThread.join();
-    //this->node->printInfo("CLI", "CLI closed!");
 }
