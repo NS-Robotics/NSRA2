@@ -8,38 +8,24 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->setPath = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
     std::system(("mkdir -p " + this->setPath).c_str());
 
-    tinyxml2::XMLDocument xmlDoc;
-
-    int ret = xmlDoc.Parse((this->setPath + "config.xml").c_str());
-    this->node->printInfo(this->msgCaller, "doc " + std::to_string(ret));
-    
-    if(ret == 0)
+    rapidxml::xml_document<> doc;
+    rapidxml::xml_node<> * root_node;
+    std::ifstream xmlFile(this->setPath + "config.xml");
+    std::vector<char> buffer((std::istreambuf_iterator<char>(xmlFile)), std::istreambuf_iterator<char>());
+    buffer.push_back('\0');
+    try
+    {
+        doc.parse<0>(&buffer[0]);
+    } catch(const rapidxml::parse_error& e)
     {
         this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
-    } else
-    {
-        //tinyxml2::XMLDeclaration* decl = new tinyxml2::XMLDeclaration("1.0", "UTF-8", "");
-        xmlDoc.NewDeclaration();
-
-        tinyxml2::XMLElement *pRoot = xmlDoc.NewElement("NSSC");
-        xmlDoc.InsertFirstChild(pRoot);
-
-        tinyxml2::XMLElement *setName = xmlDoc.NewElement("setName");
-        setName->SetText("test");
-        pRoot->InsertEndChild(setName);
-
-        tinyxml2::XMLElement *ingestAmount = xmlDoc.NewElement("ingestAmount");
-        ingestAmount->SetText(this->node->g_config.ingestConfig.ingest_amount);
-        pRoot->InsertEndChild(ingestAmount);
-
-        xmlDoc.SaveFile((this->setPath + "config.xml").c_str());
-
-        this->runIngest = true;
-        this->iThread = std::thread(&Ingest::ingestThread, this);
-
-        this->node->g_config.ingestConfig.is_running = true;
-        this->node->printInfo(this->msgCaller, "Ingest!");
     }
+
+    this->runIngest = true;
+    this->iThread = std::thread(&Ingest::ingestThread, this);
+
+    this->node->g_config.ingestConfig.is_running = true;
+    this->node->printInfo(this->msgCaller, "Ingest!");
 }
 
 void Ingest::ingestThread()

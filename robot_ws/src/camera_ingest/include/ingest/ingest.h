@@ -5,7 +5,7 @@
 #include "camera_manager.h"
 #include "node.h"
 
-#include "tinyxml2.h"
+#include "rapidxml.hpp"
 
 #include <bits/stdc++.h>
 #include <sys/stat.h>
