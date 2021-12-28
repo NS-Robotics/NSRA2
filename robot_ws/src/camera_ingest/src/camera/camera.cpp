@@ -177,9 +177,9 @@ void Camera::GXDQBufThreadNDI()
             this->cb->Await();
             status = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
-                                    
+
             status = GXDQBuf(this->hDevice, &pFrameBuffer, 5000);
-            
+
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, rgbBuf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
 

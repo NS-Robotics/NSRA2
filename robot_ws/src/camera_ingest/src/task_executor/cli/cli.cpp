@@ -26,18 +26,6 @@ void CLI::CLIFunc()
         {
             rawNDI();
         }
-        else if(strcmp(cmd[0], "test") == 0)
-        {
-            char* ret;
-            if(getStrArg(cmd, 't', &ret) != NSSC_STATUS_SUCCESS)
-            {
-                this->printError("Bad argument!");
-            } else
-            {
-                std::cout << ret << std::endl;
-                delete [] ret;
-            }
-        }
         else if(strcmp(cmd[0], "ingest") == 0)
         {
             int ingestAmount;
