@@ -18,7 +18,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     tinyxml2::XMLElement* port = xmlDoc.NewElement("port");
     port->SetText(21);
     pRoot->InsertEndChild(port);
-    xmlDoc.SaveFile(this->setPath + "SavedData.xml");
+    xmlDoc.SaveFile((this->setPath + "SavedData.xml").c_str());
 
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::ingestThread, this);
