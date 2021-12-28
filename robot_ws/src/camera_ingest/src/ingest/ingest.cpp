@@ -13,28 +13,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
     } else
     {
-        rapidxml::xml_document<> new_doc;
-
-        rapidxml::xml_node<>* decl = new_doc.allocate_node(rapidxml::node_declaration);
-        decl->append_attribute(new_doc.allocate_attribute("version", "1.0"));
-        decl->append_attribute(new_doc.allocate_attribute("encoding", "utf-8"));
-        new_doc.append_node(decl);
-
-        rapidxml::xml_node<>* root = new_doc.allocate_node(rapidxml::node_element, "NSSC");
-        root->append_attribute(new_doc.allocate_attribute("type", "ingest config"));
-        new_doc.append_node(root);
-
-        root->append_node(new_doc.allocate_node(rapidxml::node_element, "setName", this->node->g_config.ingestConfig.set_name));
-        std::string s = std::to_string(this->node->g_config.ingestConfig.ingest_amount);
-        root->append_node(new_doc.allocate_node(rapidxml::node_element, "ingestAmount", s.c_str()));
-
-        std::string xml_as_string;
-        rapidxml::print(std::back_inserter(xml_as_string), new_doc);
-
-        std::ofstream file_stored(this->setPath + "config.xml");
-        file_stored << new_doc;
-        file_stored.close();
-        new_doc.clear();
+        saveConfig();
 
         this->runIngest = true;
         this->iThread = std::thread(&Ingest::ingestThread, this);
@@ -42,6 +21,56 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         this->node->g_config.ingestConfig.is_running = true;
         this->node->printInfo(this->msgCaller, "Ingest!");   
     }
+}
+
+void Ingest::saveConfig()
+{
+    rapidxml::xml_document<> new_doc;
+
+    rapidxml::xml_node<> *decl = new_doc.allocate_node(rapidxml::node_declaration);
+    decl->append_attribute(new_doc.allocate_attribute("version", "1.0"));
+    decl->append_attribute(new_doc.allocate_attribute("encoding", "utf-8"));
+    new_doc.append_node(decl);
+
+    rapidxml::xml_node<> *root = new_doc.allocate_node(rapidxml::node_element, "NSSC");
+    root->append_attribute(new_doc.allocate_attribute("type", "ingest config"));
+    new_doc.append_node(root);
+
+    rapidxml::xml_node<> *config = new_doc.allocate_node(rapidxml::node_element, "Config");
+    config->append_attribute(new_doc.allocate_attribute("setName", this->node->g_config.ingestConfig.set_name));
+    std::string s = std::to_string(this->node->g_config.ingestConfig.ingest_amount);
+    config->append_attribute(new_doc.allocate_attribute("ingestAmount", s.c_str()));
+    root.append_node(config);
+
+    std::string xml_as_string;
+    rapidxml::print(std::back_inserter(xml_as_string), new_doc);
+
+    std::ofstream file_stored(this->setPath + "config.xml");
+    file_stored << new_doc;
+    file_stored.close();
+    new_doc.clear();
+}
+
+void Ingest::editConfig()
+{
+    rapidxml::xml_document<> doc
+    rapidxml::xml_node<> * root_node = NULL;
+
+    std::ifstream xmlFile(this->setPath + "config.xml");
+    std::vector<char> buffer((std::istreambuf_iterator<char>(xmlFile)), std::istreambuf_iterator<char>());
+    buffer.push_back('\0');
+   
+    doc.parse<0>(&buffer[0]);
+   
+    root_node = doc.first_node("NSSC");
+    this->node->printInfo(this->msgCaller, root_node->first_node("Config")->first_attribute("setName")->value());
+    std::string s = std::to_string(this->node->g_config.ingestConfig.ingest_amount);
+    root_node->first_node("Config")->first_attribute("setName")->value(s.c_str());
+
+    std::ofstream file_stored(this->setPath + "config.xml");
+    file_stored << doc;
+    file_stored.close();
+    doc.clear();
 }
 
 void Ingest::ingestThread()
@@ -93,6 +122,7 @@ void Ingest::ingestThread()
 
 void Ingest::cancelIngest()
 {
+
     this->runIngest = false;
     this->node->g_config.ingestConfig.is_running = false;
     this->iThread.join();

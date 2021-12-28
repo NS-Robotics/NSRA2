@@ -30,6 +30,9 @@ class Ingest : public NSSC_ERRORS
         void ingestThread();
         std::thread iThread;
         std::atomic<bool> runIngest{false};
+
+        void saveConfig();
+        void editConfig();
 };
 
 #endif  //NSSC_INGEST_
