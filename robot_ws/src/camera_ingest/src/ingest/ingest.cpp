@@ -41,7 +41,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         rapidxml::print(std::back_inserter(xml_as_string), new_doc);
 
         std::ofstream file_stored(this->setPath + "config.xml");
-        file_stored << xml_as_string;
+        file_stored << new_doc;
         file_stored.close();
         new_doc.clear();
 
