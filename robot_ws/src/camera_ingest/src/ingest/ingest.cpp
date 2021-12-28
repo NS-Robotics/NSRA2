@@ -25,7 +25,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         xmlDoc.InsertFirstChild(pRoot);
 
         tinyxml2::XMLElement *setName = xmlDoc.NewElement("setName");
-        setName->SetText(this->node->g_config.ingestConfig.set_name);
+        setName->SetText("test");
         pRoot->InsertEndChild(setName);
 
         tinyxml2::XMLElement *ingestAmount = xmlDoc.NewElement("ingestAmount");
