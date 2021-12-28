@@ -79,9 +79,7 @@ void Ingest::ingestThread()
     this->node->g_config.ingestConfig.current_frame_idx = 0;
 
     for (int i = 0; i < this->node->g_config.ingestConfig.ingest_amount; i++)
-    {
-        if (!this->runIngest.load()) { break; }
-        
+    {   
         while(this->runIngest.load())
         {
             stereoFrame = this->camManager->getFrame();
@@ -93,6 +91,8 @@ void Ingest::ingestThread()
                 this->camManager->returnBuf(stereoFrame);
             }
         }
+
+        if (!this->runIngest.load()) { break; }
 
         this->node->g_config.ingestConfig.image_taken = true;
         
@@ -112,10 +112,13 @@ void Ingest::ingestThread()
 
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msgCaller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
+
         this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
         this->node->g_config.ingestConfig.image_taken = false;
+
         std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
     }
+    
     this->node->g_config.ingestConfig.is_running = false;
     this->runIngest = false;
 }
