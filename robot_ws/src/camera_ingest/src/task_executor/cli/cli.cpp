@@ -61,7 +61,6 @@ void CLI::CLIFunc()
         else if(strcmp(cmd[0], "cancel") == 0)
         {
             cancel();
-            break;
         }
         else if(strcmp(cmd[0], "exit") == 0)
         {
