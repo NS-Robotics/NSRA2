@@ -61,7 +61,6 @@ class NSSC_ERRORS
                 GXCloseDevice(this->hDevice);         \
                 this->hDevice = NULL;                 \
                 GXCloseLib();                         \
-                this->camera_loaded = false;          \
                 return status;                        \
             }
         
