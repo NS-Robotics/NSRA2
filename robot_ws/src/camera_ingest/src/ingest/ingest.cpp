@@ -37,8 +37,11 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         rapidxml::xml_node<>* child = new_doc.allocate_node(rapidxml::node_element, "childnode");
         root->append_node(child);
 
+        std::string xml_as_string;
+        rapidxml::print(std::back_inserter(xml_as_string), new_doc);
+
         std::ofstream file_stored(this->setPath + "config.xml");
-        file_stored << new_doc;
+        file_stored << xml_as_string;
         file_stored.close();
         new_doc.clear();
 
