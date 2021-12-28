@@ -10,9 +10,14 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
 
     tinyxml2::XMLDocument xmlDoc;
 
-    XMLElement* port = xmlDoc.NewElement("port");
+    tinyxml2::XMLElement* pRoot = xmlDoc.NewElement("Ingest config");
+    pRoot->SetAttribute("setName", this->node->g_config.ingestConfig.set_name);
+    pRoot->SetAttribute("ingestAmount", this->node->g_config.ingestConfig.ingest_amount);
+    xmlDoc.InsertFirstChild(pRoot);
+    
+    tinyxml2::XMLElement* port = xmlDoc.NewElement("port");
     port->SetText(21);
-    subchild->InsertEndChild(port);
+    pRoot->InsertEndChild(port);
     xmlDoc.SaveFile(this->setPath + "SavedData.xml");
 
     this->runIngest = true;
