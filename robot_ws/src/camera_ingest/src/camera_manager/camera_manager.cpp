@@ -50,6 +50,10 @@ NSSC_STATUS cameraManager::loadCameras()
 
 NSSC_STATUS cameraManager::closeCameras()
 {
+    if(this->is_closed) { return NSSC_STATUS_SUCCESS; }
+
+    this->is_closed = true;
+
     this->cb->Break();
     NSSC_STATUS status = this->cam1->CloseCamera();
     if(status != NSSC_STATUS_SUCCESS)

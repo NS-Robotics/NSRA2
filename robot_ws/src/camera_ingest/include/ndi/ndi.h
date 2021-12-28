@@ -36,6 +36,8 @@ private:
     std::atomic<bool> streamON{false};
 
     std::thread sThread;
+
+    bool is_closed = false;
 };
 
 #endif  //NSSC_NDI_

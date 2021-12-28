@@ -70,6 +70,8 @@ private:
 
     moodycamel::BlockingConcurrentQueue<monoFrame*> filledFrameBuf;
     moodycamel::BlockingConcurrentQueue<monoFrame*> emptyFrameBuf;
+
+    bool is_closed = false;
 };
 
 #endif //NSSC_CAMERA_

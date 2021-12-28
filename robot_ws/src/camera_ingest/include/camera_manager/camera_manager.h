@@ -35,6 +35,8 @@ class cameraManager : public NSSC_ERRORS
 
         moodycamel::BlockingConcurrentQueue<stereoFrame*> emptyFrameBuf;
         std::atomic<int>  numOfEmpty{0};
+
+        bool is_closed = false;
 };
 
 #endif //NSSC_CAMERA_MANAGER_

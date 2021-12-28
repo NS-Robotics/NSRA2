@@ -112,6 +112,10 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
 
 NSSC_STATUS Camera::CloseCamera()
 {
+    if(this->is_closed) { return NSSC_STATUS_SUCCESS; }
+
+    this->is_closed = true;
+
     NSSC_STATUS status;
 
     this->streamON = false;
