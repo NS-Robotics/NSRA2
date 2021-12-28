@@ -7,7 +7,7 @@
     -r-
 */
 
-NSSC_STATUS CLI::procArg(char *buf, std::vector<char *> &cmd)
+NSSC_STATUS CLI::__procArg(char *buf, std::vector<char *> &cmd)
 {
     char *token;
     token = strtok(buf, del);

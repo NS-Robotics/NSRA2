@@ -17,7 +17,7 @@ void CLI::CLIFunc()
 
         std::vector<char *> cmd = {};
 
-        if (procArg(buf, cmd) != NSSC_STATUS_SUCCESS)
+        if (__procArg(buf, cmd) != NSSC_STATUS_SUCCESS)
         {
             this->printError("Bad argument!");
             continue;

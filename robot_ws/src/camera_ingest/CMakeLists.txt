@@ -178,9 +178,26 @@ target_include_directories(
   include/rapidxml-1.13
 )
 
-target_link_libraries(ingest ros_node camera_manager tinyxml2)
+target_link_libraries(ingest ros_node camera_manager)
 
 ament_target_dependencies(ingest rclcpp OpenCV)
+
+add_library(
+  calibration
+  src/calibration/calibration.cpp
+)
+
+target_include_directories(
+  calibration
+  PUBLIC
+  include/calibration
+  include/errors
+  include/rapidxml-1.13
+)
+
+target_link_libraries(calibration ros_node)
+
+ament_target_dependencies(calibration rclcpp OpenCV)
 
 #add_library(
 #  nssc_image_transport
@@ -217,11 +234,12 @@ target_include_directories(
   include/camera_manager
   include/ndi
   include/ingest
+  include/calibration
   ${readline_INCLUDES}
   ${gxi_INCLUDES}
 )
 
-target_link_libraries(task_executor readline ros_node ndi_send camera_manager ingest)
+target_link_libraries(task_executor readline ros_node ndi_send camera_manager ingest calibration)
 
 ament_target_dependencies(task_executor rclcpp)
 
@@ -230,10 +248,10 @@ add_executable(main_node src/main_node.cpp)
 
 ament_target_dependencies(main_node rclcpp)
 
-target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest)
+target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
 
 install(
-  TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest #nssc_image_transport
+  TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration #nssc_image_transport
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

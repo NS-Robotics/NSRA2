@@ -1,0 +1,6 @@
+#ifndef NSSC_CALIBRATION_
+#define NSSC_CALIBRATION_
+
+
+
+#endif //NSSC_CALIBRATION_
