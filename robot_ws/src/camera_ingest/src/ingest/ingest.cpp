@@ -22,25 +22,25 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     } 
     catch(const rapidxml::parse_error& e)
     {
-        doc.clear();
+        rapidxml::xml_document<> new_doc;
 
-        rapidxml::xml_node<>* decl = doc.allocate_node(rapidxml::node_declaration);
-        decl->append_attribute(doc.allocate_attribute("version", "1.0"));
-        decl->append_attribute(doc.allocate_attribute("encoding", "utf-8"));
-        doc.append_node(decl);
+        rapidxml::xml_node<>* decl = new_doc.allocate_node(rapidxml::node_declaration);
+        decl->append_attribute(new_doc.allocate_attribute("version", "1.0"));
+        decl->append_attribute(new_doc.allocate_attribute("encoding", "utf-8"));
+        new_doc.append_node(decl);
 
-        rapidxml::xml_node<>* root = doc.allocate_node(rapidxml::node_element, "rootnode");
-        root->append_attribute(doc.allocate_attribute("version", "1.0"));
-        root->append_attribute(doc.allocate_attribute("type", "example"));
-        doc.append_node(root);
+        rapidxml::xml_node<>* root = new_doc.allocate_node(rapidxml::node_element, "rootnode");
+        root->append_attribute(new_doc.allocate_attribute("version", "1.0"));
+        root->append_attribute(new_doc.allocate_attribute("type", "example"));
+        new_doc.append_node(root);
 
-        rapidxml::xml_node<>* child = doc.allocate_node(rapidxml::node_element, "childnode");
+        rapidxml::xml_node<>* child = new_doc.allocate_node(rapidxml::node_element, "childnode");
         root->append_node(child);
 
         std::ofstream file_stored(this->setPath + "config.xml");
-        file_stored << doc;
+        file_stored << new_doc;
         file_stored.close();
-        doc.clear();
+        new_doc.clear();
 
         this->runIngest = true;
         this->iThread = std::thread(&Ingest::ingestThread, this);
