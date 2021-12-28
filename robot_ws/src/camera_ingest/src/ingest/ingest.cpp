@@ -10,7 +10,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
 
     tinyxml2::XMLDocument xmlDoc;
 
-    int ret = xmlDoc.LoadFile((this->setPath + "config.xml").c_str());
+    int ret = xmlDoc.Parse((this->setPath + "config.xml").c_str());
     this->node->printInfo(this->msgCaller, "doc " + std::to_string(ret));
     
     if(ret == 0)
