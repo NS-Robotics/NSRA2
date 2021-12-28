@@ -11,7 +11,7 @@ NDI::NDI(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager
 
 NDI::~NDI()
 {
-    endStream();
+    NDIlib_destroy();
 }
 
 NSSC_STATUS NDI::init()
@@ -76,9 +76,7 @@ NSSC_STATUS NDI::endStream()
 
 NSSC_STATUS NDI::closeNDI()
 {
-    free(this->NDI_video_frame.p_data);
     NDIlib_send_destroy(this->pNDI_send);
-    NDIlib_destroy();
     this->node->printInfo(this->msgCaller, "NDI closed");
 
     return NSSC_STATUS_SUCCESS;
@@ -138,4 +136,6 @@ void NDI::streamThread()
         idx = (idx == 0) ? 1 : 0;
 	}
 	NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
+    
+    free(this->NDI_video_frame.p_data);
 }
