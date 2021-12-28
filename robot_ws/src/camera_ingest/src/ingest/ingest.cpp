@@ -40,7 +40,7 @@ void Ingest::saveConfig()
     config->append_attribute(new_doc.allocate_attribute("setName", this->node->g_config.ingestConfig.set_name));
     std::string s = std::to_string(this->node->g_config.ingestConfig.ingest_amount);
     config->append_attribute(new_doc.allocate_attribute("ingestAmount", s.c_str()));
-    root.append_node(config);
+    root->append_node(config);
 
     std::string xml_as_string;
     rapidxml::print(std::back_inserter(xml_as_string), new_doc);
