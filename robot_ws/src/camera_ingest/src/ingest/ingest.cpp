@@ -9,8 +9,11 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     std::system(("mkdir -p " + this->setPath).c_str());
 
     tinyxml2::XMLDocument xmlDoc;
+
+    int ret = xmlDoc.LoadFile((this->setPath + "config.xml").c_str());
+    this->node->printInfo(this->msgCaller, "doc" + std::to_string(ret));
     
-    if(xmlDoc.LoadFile((this->setPath + "config.xml").c_str()) == 0)
+    if(ret == 0)
     {
         this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
     } else
