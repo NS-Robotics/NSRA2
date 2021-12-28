@@ -46,7 +46,7 @@ NSSC_STATUS NDI::init()
         this->NDI_video_frame.line_stride_in_bytes = this->node->g_config.frameConfig.ndi_line_stride;
 
         status = NSSC_STATUS_SUCCESS;
-        this->node->printInfo(this->msgCaller, "initalized");
+        this->node->printInfo(this->msgCaller, "initalized!");
     }
 
     return status;
@@ -60,7 +60,7 @@ NSSC_STATUS NDI::startStream()
 
     this->sThread = std::thread(&NDI::streamThread, this);
 
-    this->node->printInfo(this->msgCaller, "Thread started");
+    this->node->printInfo(this->msgCaller, "Stream thread started");
 
     return status;
 }
