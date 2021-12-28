@@ -164,6 +164,17 @@ target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference)
 ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
 
 add_library(
+  tinyxml2
+  src/tinyxml2/tinyxml2.cpp
+)
+
+target_include_directories(
+  tinyxml2
+  PUBLIC
+  include/tinyxml2
+)
+
+add_library(
   ingest
   src/ingest/ingest.cpp
 )
@@ -175,9 +186,10 @@ target_include_directories(
   include/errors
   include/camera_manager
   include/frame/frame_struct
+  include/tinyxml2
 )
 
-target_link_libraries(ingest ros_node camera_manager)
+target_link_libraries(ingest ros_node camera_manager tinyxml2)
 
 ament_target_dependencies(ingest rclcpp OpenCV)
 
