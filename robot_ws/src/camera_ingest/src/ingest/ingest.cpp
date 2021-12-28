@@ -11,13 +11,16 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     tinyxml2::XMLDocument xmlDoc;
 
     int ret = xmlDoc.LoadFile((this->setPath + "config.xml").c_str());
-    this->node->printInfo(this->msgCaller, "doc" + std::to_string(ret));
+    this->node->printInfo(this->msgCaller, "doc " + std::to_string(ret));
     
     if(ret == 0)
     {
         this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
     } else
     {
+        //tinyxml2::XMLDeclaration* decl = new tinyxml2::XMLDeclaration("1.0", "UTF-8", "");
+        xmlDoc.NewDeclaration();
+
         tinyxml2::XMLElement *pRoot = xmlDoc.NewElement("NSSC ingest config");
         pRoot->SetAttribute("setName", this->node->g_config.ingestConfig.set_name);
         xmlDoc.InsertFirstChild(pRoot);
