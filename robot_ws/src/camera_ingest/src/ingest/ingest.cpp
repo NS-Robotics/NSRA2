@@ -63,8 +63,8 @@ void Ingest::editConfig()
     doc.parse<0>(&buffer[0]);
    
     root_node = doc.first_node("NSSC");
-    
-    std::string s = std::to_string(this->node->g_config.ingestConfig.current_frame_idx);
+
+    std::string s = std::to_string(this->node->g_config.ingestConfig.current_frame_idx + 1);
     root_node->first_node("Config")->first_attribute("ingestAmount")->value(s.c_str());
 
     std::ofstream file_stored(this->setPath + "config.xml");
