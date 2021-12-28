@@ -20,13 +20,12 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         decl->append_attribute(new_doc.allocate_attribute("encoding", "utf-8"));
         new_doc.append_node(decl);
 
-        rapidxml::xml_node<>* root = new_doc.allocate_node(rapidxml::node_element, "rootnode");
-        root->append_attribute(new_doc.allocate_attribute("version", "1.0"));
-        root->append_attribute(new_doc.allocate_attribute("type", "example"));
+        rapidxml::xml_node<>* root = new_doc.allocate_node(rapidxml::node_element, "NSSC");
+        root->append_attribute(new_doc.allocate_attribute("type", "ingest config"));
         new_doc.append_node(root);
 
-        rapidxml::xml_node<>* child = new_doc.allocate_node(rapidxml::node_element, "childnode");
-        root->append_node(child);
+        root->append_node(new_doc.allocate_node(rapidxml::node_element, "setName", this->node->g_config.ingestConfig.set_name));
+        root->append_node(new_doc.allocate_node(rapidxml::node_element, "ingestAmount", this->node->g_config.ingestConfig.ingestAmount));
 
         std::string xml_as_string;
         rapidxml::print(std::back_inserter(xml_as_string), new_doc);
