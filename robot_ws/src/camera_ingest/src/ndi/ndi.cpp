@@ -140,6 +140,4 @@ void NDI::streamThread()
         idx = (idx == 0) ? 1 : 0;
 	}
 	NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
-    
-    free(this->NDI_video_frame.p_data);
 }
