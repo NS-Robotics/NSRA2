@@ -8,6 +8,13 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     this->setPath = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
     std::system(("mkdir -p " + this->setPath).c_str());
 
+    tinyxml2::XMLDocument xmlDoc;
+
+    XMLElement* port = xmlDoc.NewElement("port");
+    port->SetText(21);
+    subchild->InsertEndChild(port);
+    xmlDoc.SaveFile(this->setPath + "SavedData.xml");
+
     this->runIngest = true;
     this->iThread = std::thread(&Ingest::ingestThread, this);
     

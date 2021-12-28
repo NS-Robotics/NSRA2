@@ -116,9 +116,7 @@ NSSC_STATUS Camera::CloseCamera()
 
     this->streamON = false;
     this->GXDQThreadNDI.join();
-    //TEST
-    //cudaFreeHost(this->TestrgbBuf.hImageBuf);
-
+    
     status = GXCloseDevice(this->hDevice);
     this->hDevice = NULL;
     GXCloseLib();
@@ -142,12 +140,7 @@ NSSC_STATUS Camera::startAcquisition()
     }
 
     this->GXDQThreadNDI = std::thread(&Camera::GXDQBufThreadNDI, this);
-    //TEST
-    /*
-    cudaSetDeviceFlags(cudaDeviceMapHost);
-    cudaHostAlloc((void **)&this->TestrgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
-    cudaHostGetDevicePointer((void **)&this->TestrgbBuf.dImageBuf, (void *) this->TestrgbBuf.hImageBuf , 0);
-    */
+
     return NSSC_STATUS_SUCCESS;
 }
 
@@ -197,39 +190,6 @@ void Camera::GXDQBufThreadNDI()
     cudaFreeHost(rgbBuf.hImageBuf);
 }
 
-monoFrame* Camera::testFillBuf()
-{
-    NSSC_STATUS status;
-
-    monoFrame *frame;
-    this->emptyFrameBuf.wait_dequeue(frame);
-    this->numOfEmpty--;
-
-    //this->cb->Await();
-    auto end = std::chrono::system_clock::now();
-    status = GXDQBuf(this->hDevice, &this->TestpFrameBuffer, 500);
-    frame->setTimestamp();
-
-    status = DxRaw8toRGB24((unsigned char *)this->TestpFrameBuffer->pImgBuf, this->TestrgbBuf.hImageBuf, this->TestpFrameBuffer->nWidth, this->TestpFrameBuffer->nHeight,
-                           RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
-
-    cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, this->TestrgbBuf.hImageBuf);
-   
-    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-
-    cv::putText(sendFrame, std::ctime(&end_time), cv::Point(10, sendFrame.rows / 2 + 200), //top-left position
-                cv::FONT_HERSHEY_DUPLEX,
-                1.0,
-                cv::Scalar(0, 254, 0), //font color
-                2);
-
-    status = GXQBuf(this->hDevice, this->TestpFrameBuffer); 
-
-    frame->convert(&this->TestrgbBuf);
-
-    return frame;
-}
-
 monoFrame* Camera::getFrame()
 {
     
@@ -238,9 +198,7 @@ monoFrame* Camera::getFrame()
     this->filledFrameBuf.wait_dequeue(frame);
     this->numOfFilled--;
 
-    return frame;
-    
-    //return testFillBuf();
+    return frame;    
 }
 
 NSSC_STATUS Camera::returnBuf(monoFrame* frame)

@@ -5,6 +5,8 @@
 #include "camera_manager.h"
 #include "node.h"
 
+#include "tinyxml2.h"
+
 #include <bits/stdc++.h>
 #include <sys/stat.h>
 #include <sys/types.h>

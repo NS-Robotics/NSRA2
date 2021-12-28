@@ -105,7 +105,7 @@ void NDI::streamThread()
             cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
-                        cv::Scalar(254, 0, 0), //font color
+                        cv::Scalar(254, 0, 0),
                         2);
 
             auto now = std::chrono::high_resolution_clock::now();
@@ -122,10 +122,10 @@ void NDI::streamThread()
                 countdown = "Image taken!";
             }
 
-            cv::putText(sendFrame, countdown, cv::Point(1000, 60), //top-left position
+            cv::putText(sendFrame, countdown, cv::Point(1000, 60),
                         cv::FONT_HERSHEY_DUPLEX,
                         2.0,
-                        cv::Scalar(254, 0, 0), //font color
+                        cv::Scalar(254, 0, 0),
                         2);
         }
         

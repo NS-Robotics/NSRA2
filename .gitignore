@@ -9,3 +9,7 @@ aarch64/
 images/.DS_Store
 .vscode/settings.json
 .idea/
+robot_ws/src/.DS_Store
+robot_ws/src/camera_ingest/.DS_Store
+robot_ws/src/camera_ingest/include/.DS_Store
+robot_ws/src/camera_ingest/src/.DS_Store
