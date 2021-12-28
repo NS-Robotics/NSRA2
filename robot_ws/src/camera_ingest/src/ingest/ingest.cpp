@@ -25,7 +25,7 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         new_doc.append_node(root);
 
         root->append_node(new_doc.allocate_node(rapidxml::node_element, "setName", this->node->g_config.ingestConfig.set_name));
-        root->append_node(new_doc.allocate_node(rapidxml::node_element, "ingestAmount", std::to_string(this->node->g_config.ingestConfig.ingest_amount)));
+        root->append_node(new_doc.allocate_node(rapidxml::node_element, "ingestAmount", std::to_string(this->node->g_config.ingestConfig.ingest_amount).c_str()));
 
         std::string xml_as_string;
         rapidxml::print(std::back_inserter(xml_as_string), new_doc);
