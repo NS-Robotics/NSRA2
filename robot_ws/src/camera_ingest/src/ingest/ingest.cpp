@@ -60,12 +60,7 @@ void Ingest::editConfig()
     std::vector<char> buffer((std::istreambuf_iterator<char>(xmlFile)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
    
-    doc.parse<0>(&buffer[0]);
-    
-    rapidxml::xml_node<> *decl = doc.allocate_node(rapidxml::node_declaration);
-    decl->append_attribute(doc.allocate_attribute("version", "1.0"));
-    decl->append_attribute(doc.allocate_attribute("encoding", "utf-8"));
-    doc.append_node(decl);
+    doc.parse<rapidxml::parse_no_data_nodes>(&buffer[0]);
     
     root_node = doc.first_node("NSSC");
 
