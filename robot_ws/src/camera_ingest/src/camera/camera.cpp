@@ -177,34 +177,18 @@ void Camera::GXDQBufThreadNDI()
             this->cb->Await();
             status = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
-                        
-            auto start0 = std::chrono::high_resolution_clock::now();
-            
+                                    
             status = GXDQBuf(this->hDevice, &pFrameBuffer, 5000);
             
-            auto stop0 = std::chrono::high_resolution_clock::now();
-            auto start1 = std::chrono::high_resolution_clock::now();
-
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, rgbBuf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
 
             status = GXQBuf(this->hDevice, pFrameBuffer);
 
-            auto stop1 = std::chrono::high_resolution_clock::now();
-            auto start2 = std::chrono::high_resolution_clock::now();
-            
             frame->convert(&rgbBuf);
 
             this->filledFrameBuf.enqueue(frame);
             this->numOfFilled++;
-            auto stop2 = std::chrono::high_resolution_clock::now();
-
-            auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
-            auto duration1 = std::chrono::duration_cast<std::chrono::microseconds>(stop1 - start1);
-            auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(stop2 - start2);
-
-            //this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()) + " | upldFrame - " + std::to_string(duration1.count()) + " | convFrame - " + std::to_string(duration2.count()) + " | frame count - " + std::to_string(this->numOfFilled.load()) + " | total - " + std::to_string(duration0.count() + duration1.count() + duration2.count()));
-
         } else
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));

@@ -96,11 +96,7 @@ void NDI::streamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
 	    }
 
-        auto start0 = std::chrono::high_resolution_clock::now();
         stereoFrame = this->camManager->getFrame();
-        auto stop0 = std::chrono::high_resolution_clock::now();
-                
-        auto start2 = std::chrono::high_resolution_clock::now();
 
         if(this->node->g_config.ingestConfig.is_running)
         {
@@ -139,18 +135,6 @@ void NDI::streamThread()
         this->camManager->returnBuf(stereoFrame);
 
         idx = (idx == 0) ? 1 : 0;
-
-        auto stop2 = std::chrono::high_resolution_clock::now();
-
-        auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
-        auto duration2 = std::chrono::duration_cast<std::chrono::microseconds>(stop2 - start2);
-
-        auto total_dur = std::chrono::duration_cast<std::chrono::microseconds>(stop2 - stereoFrame->leftCamera->frameBuf.timestamp);
-
-        //this->node->printInfo(this->msgCaller, "Frame diff: " + std::to_string(stereoFrame->timedif));
-
-        //this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()) + " | sendFrame - " + std::to_string(duration2.count()) + " | total - " + std::to_string(duration0.count() + duration2.count()));
-        //this->node->printInfo(this->msgCaller, "Frame timing: frame total - " + std::to_string(total_dur.count()) + " | total - " + std::to_string(duration0.count() + duration2.count()));
 	}
 	NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
 }
