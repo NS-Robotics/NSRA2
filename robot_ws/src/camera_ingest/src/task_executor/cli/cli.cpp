@@ -9,33 +9,34 @@ void CLI::CLIFunc()
         if (strlen(buf) > 0)
         {
             add_history(buf);
-        } else
+        }
+        else
         {
             continue;
         }
 
-        std::vector<char*> cmd = {};
+        std::vector<char *> cmd = {};
 
-        if(procArg(buf, cmd) != NSSC_STATUS_SUCCESS)
+        if (procArg(buf, cmd) != NSSC_STATUS_SUCCESS)
         {
             this->printError("Bad argument!");
             continue;
         }
 
-        if(strcmp(cmd[0], "NDI") == 0)
+        if (strcmp(cmd[0], "NDI") == 0)
         {
             rawNDI();
         }
-        else if(strcmp(cmd[0], "ingest") == 0)
+        else if (strcmp(cmd[0], "ingest") == 0)
         {
             int ingestAmount;
-            if(getIntArg(cmd, 'n', ingestAmount) != NSSC_STATUS_SUCCESS || ingestAmount < 1)
+            if (getIntArg(cmd, 'n', ingestAmount) != NSSC_STATUS_SUCCESS || ingestAmount < 1)
             {
                 this->printError("Bad argument!");
                 continue;
             }
-            char* setName;
-            if(getStrArg(cmd, 'd', &setName) != NSSC_STATUS_SUCCESS)
+            char *setName;
+            if (getStrArg(cmd, 'd', &setName) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
                 continue;
@@ -43,32 +44,32 @@ void CLI::CLIFunc()
             this->node->g_config.ingestConfig.set_name = setName;
             this->node->g_config.ingestConfig.ingest_amount = ingestAmount;
             run_ingest();
-            delete [] setName;
+            delete[] setName;
         }
-        else if(strcmp(cmd[0], "calibrate") == 0)
+        else if (strcmp(cmd[0], "calibrate") == 0)
         {
-            char* ret;
-            if(getStrArg(cmd, 'd', &ret) != NSSC_STATUS_SUCCESS)
+            char *setName;
+            if (getStrArg(cmd, 'd', &setName) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
-            } else
+            }
+            else
             {
-                std::cout << ret << std::endl;
-                delete [] ret;
-                //calibrate()
+                run_calibration();
+                delete[] setName;
             }
         }
-        else if(strcmp(cmd[0], "cancel") == 0)
+        else if (strcmp(cmd[0], "cancel") == 0)
         {
             cancel();
         }
-        else if(strcmp(cmd[0], "exit") == 0)
+        else if (strcmp(cmd[0], "exit") == 0)
         {
             this->cliON = false;
             exit();
             break;
         }
-        else if(strcmp(cmd[0], "help") == 0)
+        else if (strcmp(cmd[0], "help") == 0)
         {
             printf("\033[1;34m[Executor] \033[0mUsage:\n"
                    "  NDI                                       - Toggle raw NDI stream\n"
@@ -81,12 +82,12 @@ void CLI::CLIFunc()
         {
             this->printError("Unknown command!");
         }
-        
+
         free(buf);
     }
 }
 
-void CLI::printError(const char* message)
+void CLI::printError(const char *message)
 {
     printf("\033[1;34m[Executor] \033[1;31mError: %s\033[0m\n", message);
 }

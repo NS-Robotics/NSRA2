@@ -1,6 +1,6 @@
 #include "executor.h"
 
-Executor::Executor(std::shared_ptr<NSSC>& node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor>& node_executor) : NSSC_ERRORS(node)
+Executor::Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->node_executor = node_executor;
@@ -8,20 +8,20 @@ Executor::Executor(std::shared_ptr<NSSC>& node, std::shared_ptr<rclcpp::executor
 
 void Executor::exit()
 {
-    if(this->node->g_config.ingestConfig.is_running)
+    if (this->node->g_config.ingestConfig.is_running)
     {
         this->ingest->cancelIngest();
     }
-    if(this->rawNDIstream)
+    if (this->rawNDIstream)
     {
         this->ndi->endStream();
     }
-    if(this->initialized)
+    if (this->initialized)
     {
         this->camManager->closeCameras();
         this->ndi->closeNDI();
     }
-    if(CLI::cliON.load())
+    if (CLI::cliON.load())
     {
         CLI::closeCLI();
     }
@@ -44,11 +44,12 @@ void Executor::init()
 
 void Executor::rawNDI()
 {
-    if(this->rawNDIstream)
+    if (this->rawNDIstream)
     {
         this->ndi->endStream();
         this->rawNDIstream = false;
-    } else
+    }
+    else
     {
         this->ndi->startStream();
         this->rawNDIstream = true;
@@ -61,8 +62,8 @@ void Executor::run_ingest()
 }
 
 void Executor::cancel()
-{   
-    if(this->node->g_config.ingestConfig.is_running)
+{
+    if (this->node->g_config.ingestConfig.is_running)
     {
         this->ingest->cancelIngest();
     }

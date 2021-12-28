@@ -7,7 +7,7 @@
     -r-
 */
 
-NSSC_STATUS CLI::procArg(char* buf, std::vector<char*>& cmd)
+NSSC_STATUS CLI::procArg(char *buf, std::vector<char *> &cmd)
 {
     char *token;
     token = strtok(buf, del);
@@ -35,7 +35,7 @@ NSSC_STATUS CLI::procArg(char* buf, std::vector<char*>& cmd)
 
                 cmd.push_back(out);
 
-                delete [] out;
+                delete[] out;
 
                 token = strtok(NULL, del);
                 if (token == NULL)
@@ -57,17 +57,17 @@ NSSC_STATUS CLI::procArg(char* buf, std::vector<char*>& cmd)
     return arg_status;
 }
 
-NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
+NSSC_STATUS CLI::getStrArg(std::vector<char *> cmd, char par, char **ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
         if (cmd[i][0] == par)
         {
-            char* out;
+            char *out;
             out = new char[strlen(cmd[i])];
 
             strcpy(out, cmd[i]);
-            
+
             while (out[strlen(out) - 1] != '"' && strlen(out) > 0)
                 out[strlen(out) - 1] = '\0';
             out[strlen(out) - 1] = '\0';
@@ -75,13 +75,14 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
                 out++;
             out++;
 
-            *ret = (char*)malloc(strlen(out));
+            *ret = (char *)malloc(strlen(out));
             strcpy(*ret, out);
 
             if (strlen(out) <= 0)
             {
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
-            } else
+            }
+            else
             {
                 return NSSC_STATUS_SUCCESS;
             }
@@ -90,8 +91,7 @@ NSSC_STATUS CLI::getStrArg(std::vector<char*> cmd, char par, char** ret)
     return NSSC_CLI_ARGUMENT_TYPE_ERROR;
 }
 
-
-NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
+NSSC_STATUS CLI::getIntArg(std::vector<char *> cmd, char par, int &ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
@@ -111,7 +111,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
                 ret = boost::lexical_cast<int>(arg);
                 return NSSC_STATUS_SUCCESS;
             }
-            catch(boost::bad_lexical_cast &)
+            catch (boost::bad_lexical_cast &)
             {
                 return NSSC_CLI_ARGUMENT_TYPE_ERROR;
             }
@@ -120,7 +120,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char*> cmd, char par, int& ret)
     return NSSC_CLI_ARGUMENT_TYPE_ERROR;
 }
 
-NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
+NSSC_STATUS CLI::getBoolArg(std::vector<char *> cmd, char par, bool &ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
@@ -140,18 +140,18 @@ NSSC_STATUS CLI::getBoolArg(std::vector<char*> cmd, char par, bool& ret)
                 ret = boost::lexical_cast<bool>(arg);
                 return NSSC_STATUS_SUCCESS;
             }
-            catch(boost::bad_lexical_cast &)
+            catch (boost::bad_lexical_cast &)
             {
-                if(strcmp(arg, "True") == 0 || strcmp(arg, "true") == 0)
+                if (strcmp(arg, "True") == 0 || strcmp(arg, "true") == 0)
                 {
                     ret = 1;
                     return NSSC_STATUS_SUCCESS;
-                } 
-                else if(strcmp(arg, "False") == 0 || strcmp(arg, "false") == 0)
+                }
+                else if (strcmp(arg, "False") == 0 || strcmp(arg, "false") == 0)
                 {
                     ret = 0;
                     return NSSC_STATUS_SUCCESS;
-                } 
+                }
                 else
                 {
                     return NSSC_CLI_ARGUMENT_TYPE_ERROR;
