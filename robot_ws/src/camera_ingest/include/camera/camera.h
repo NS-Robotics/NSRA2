@@ -66,7 +66,6 @@ private:
     uint64_t    nBufferNum = ACQ_BUFFER_NUM;
     bool        bStreamTransferSize = false;
     bool        bStreamTransferNumberUrb = false;
-    bool        camera_loaded = false;
 
     moodycamel::BlockingConcurrentQueue<monoFrame*> filledFrameBuf;
     moodycamel::BlockingConcurrentQueue<monoFrame*> emptyFrameBuf;

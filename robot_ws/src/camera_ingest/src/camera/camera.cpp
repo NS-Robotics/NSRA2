@@ -9,11 +9,7 @@ Camera::Camera(std::shared_ptr<NSSC>& node, std::shared_ptr<CyclicBarrier>& cb) 
 
 Camera::~Camera()
 {
-    if(this->camera_loaded)
-    {
-        CloseCamera();
-        this->node->printInfo(this->msgCaller, "Camera destructor called");
-    }
+    CloseCamera();
 }
 
 NSSC_STATUS Camera::init()
@@ -124,7 +120,6 @@ NSSC_STATUS Camera::CloseCamera()
     status = GXCloseDevice(this->hDevice);
     this->hDevice = NULL;
     GXCloseLib();
-    this->camera_loaded = false;
 
     this->node->printInfo(this->msgCaller, "Camera closed!");
     return status;

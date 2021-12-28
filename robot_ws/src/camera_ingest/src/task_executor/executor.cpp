@@ -18,8 +18,8 @@ void Executor::exit()
     }
     if (this->initialized)
     {
-        this->camManager->closeCameras();
         this->ndi->closeNDI();
+        this->camManager->closeCameras();
     }
     if (CLI::cliON.load())
     {

@@ -101,8 +101,6 @@ NSSC_STATUS Camera::LoadCamera(char device_serial_number[])
         _GX_VERIFY_EXIT(status);
     }
 
-    this->camera_loaded = true;
-
     this->node->printInfo(this->msgCaller, "Camera loaded successfully");
     
     return status;
