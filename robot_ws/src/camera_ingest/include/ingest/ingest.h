@@ -9,8 +9,6 @@
 #include "rapidxml_utils.hpp"
 #include "rapidxml_print.hpp"
 
-#include <boost/lexical_cast.hpp>
-
 #include <bits/stdc++.h>
 #include <sys/stat.h>
 #include <sys/types.h>
