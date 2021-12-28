@@ -53,7 +53,7 @@ void Ingest::saveConfig()
 
 void Ingest::editConfig()
 {
-    rapidxml::xml_document<> doc
+    rapidxml::xml_document<> doc;
     rapidxml::xml_node<> * root_node = NULL;
 
     std::ifstream xmlFile(this->setPath + "config.xml");
@@ -122,7 +122,7 @@ void Ingest::ingestThread()
 
 void Ingest::cancelIngest()
 {
-    editConfig()
+    editConfig();
     this->runIngest = false;
     this->node->g_config.ingestConfig.is_running = false;
     this->iThread.join();
