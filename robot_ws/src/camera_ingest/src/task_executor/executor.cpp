@@ -74,5 +74,6 @@ void Executor::cancel()
         this->ingest->cancelIngest();
     }
     */
-   this->camManager->closeCameras();
+    this->ndi->closeNDI();
+    this->camManager->closeCameras();
 }
