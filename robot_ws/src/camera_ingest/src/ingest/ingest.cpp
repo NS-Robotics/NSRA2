@@ -9,22 +9,27 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
     std::system(("mkdir -p " + this->setPath).c_str());
 
     tinyxml2::XMLDocument xmlDoc;
-
-    tinyxml2::XMLElement* pRoot = xmlDoc.NewElement("Ingest config");
-    pRoot->SetAttribute("setName", this->node->g_config.ingestConfig.set_name);
-    pRoot->SetAttribute("ingestAmount", this->node->g_config.ingestConfig.ingest_amount);
-    xmlDoc.InsertFirstChild(pRoot);
     
-    tinyxml2::XMLElement* port = xmlDoc.NewElement("port");
-    port->SetText(21);
-    pRoot->InsertEndChild(port);
-    xmlDoc.SaveFile((this->setPath + "SavedData.xml").c_str());
+    if(xmlDoc.LoadFile((this->setPath + "config.xml").c_str()) == 0)
+    {
+        this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
+    } else
+    {
+        tinyxml2::XMLElement *pRoot = xmlDoc.NewElement("NSSC ingest config");
+        pRoot->SetAttribute("setName", this->node->g_config.ingestConfig.set_name);
+        xmlDoc.InsertFirstChild(pRoot);
 
-    this->runIngest = true;
-    this->iThread = std::thread(&Ingest::ingestThread, this);
-    
-    this->node->g_config.ingestConfig.is_running = true;
-    this->node->printInfo(this->msgCaller, "Ingest!");
+        tinyxml2::XMLElement *port = xmlDoc.NewElement("ingestAmount");
+        port->SetText(this->node->g_config.ingestConfig.ingest_amount);
+        pRoot->InsertEndChild(port);
+        xmlDoc.SaveFile((this->setPath + "config.xml").c_str());
+
+        this->runIngest = true;
+        this->iThread = std::thread(&Ingest::ingestThread, this);
+
+        this->node->g_config.ingestConfig.is_running = true;
+        this->node->printInfo(this->msgCaller, "Ingest!");
+    }
 }
 
 void Ingest::ingestThread()
