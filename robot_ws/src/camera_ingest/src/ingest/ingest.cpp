@@ -21,13 +21,17 @@ Ingest::Ingest(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camM
         //tinyxml2::XMLDeclaration* decl = new tinyxml2::XMLDeclaration("1.0", "UTF-8", "");
         xmlDoc.NewDeclaration();
 
-        tinyxml2::XMLElement *pRoot = xmlDoc.NewElement("NSSC ingest config");
-        pRoot->SetAttribute("setName", this->node->g_config.ingestConfig.set_name);
+        tinyxml2::XMLElement *pRoot = xmlDoc.NewElement("NSSC");
         xmlDoc.InsertFirstChild(pRoot);
 
-        tinyxml2::XMLElement *port = xmlDoc.NewElement("ingestAmount");
-        port->SetText(this->node->g_config.ingestConfig.ingest_amount);
-        pRoot->InsertEndChild(port);
+        tinyxml2::XMLElement *setName = xmlDoc.NewElement("setName");
+        setName->SetText(this->node->g_config.ingestConfig.set_name);
+        pRoot->InsertEndChild(setName);
+
+        tinyxml2::XMLElement *ingestAmount = xmlDoc.NewElement("ingestAmount");
+        ingestAmount->SetText(this->node->g_config.ingestConfig.ingest_amount);
+        pRoot->InsertEndChild(ingestAmount);
+
         xmlDoc.SaveFile((this->setPath + "config.xml").c_str());
 
         this->runIngest = true;
