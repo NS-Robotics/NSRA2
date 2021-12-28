@@ -16,6 +16,7 @@ class Executor : public NSSC_ERRORS, public CLI
         void init();
         void rawNDI();
         void run_ingest();
+        void cancel();
     
     private:
         std::shared_ptr<NSSC> node;

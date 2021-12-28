@@ -59,3 +59,11 @@ void Executor::run_ingest()
 {
     this->ingest = new Ingest(this->node, this->camManager);
 }
+
+void Executor::cancel()
+{   
+    if(this->node->g_config.ingestConfig.is_running)
+    {
+        this->ingest->cancelIngest();
+    }
+}
