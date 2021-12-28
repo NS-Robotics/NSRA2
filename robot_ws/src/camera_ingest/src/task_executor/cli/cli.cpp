@@ -55,7 +55,7 @@ void CLI::CLIFunc()
             }
             else
             {
-                run_calibration();
+                run_calibration(setName);
                 delete[] setName;
             }
         }

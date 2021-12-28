@@ -10,26 +10,27 @@
 
 class Executor : public NSSC_ERRORS, public CLI
 {
-    public:
-        Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
-        void exit();
-        void init();
-        void rawNDI();
-        void run_ingest();
-        void cancel();
-    
-    private:
-        std::shared_ptr<NSSC> node;
-        std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
-        std::shared_ptr<cameraManager> camManager;
-        std::shared_ptr<NDI> ndi;
+public:
+    Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
+    void exit();
+    void init();
+    void rawNDI();
+    void run_ingest();
+    void run_calibration(char *setName);
+    void cancel();
 
-        Ingest* ingest;
+private:
+    std::shared_ptr<NSSC> node;
+    std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
+    std::shared_ptr<cameraManager> camManager;
+    std::shared_ptr<NDI> ndi;
 
-        bool initialized = false;
-        bool rawNDIstream = false;
+    Ingest *ingest;
 
-        std::string msgCaller = "Executor";
+    bool initialized = false;
+    bool rawNDIstream = false;
+
+    std::string msgCaller = "Executor";
 };
 
-#endif  //NSSC_TASK_EXECUTOR_
+#endif //NSSC_TASK_EXECUTOR_
