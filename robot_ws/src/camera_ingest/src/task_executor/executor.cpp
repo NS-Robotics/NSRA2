@@ -22,7 +22,7 @@ void Executor::exit()
         this->ndi->closeNDI();
         this->camManager->closeCameras();
     }
-    this->node->printInfo(this->msgCaller, "Shutdown complete!");
+    this->node->printInfo(this->msgCaller, "Shutdown complete");
     this->node_executor->cancel();
     this->is_closed = true;
 }

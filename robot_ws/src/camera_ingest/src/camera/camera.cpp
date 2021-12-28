@@ -121,7 +121,7 @@ NSSC_STATUS Camera::CloseCamera()
     this->hDevice = NULL;
     GXCloseLib();
 
-    this->node->printInfo(this->msgCaller, "Camera closed!");
+    this->node->printInfo(this->msgCaller, "Camera closed");
     return status;
 }
 

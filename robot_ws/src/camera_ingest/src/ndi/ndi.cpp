@@ -60,7 +60,7 @@ NSSC_STATUS NDI::startStream()
 
     this->sThread = std::thread(&NDI::streamThread, this);
 
-    this->node->printInfo(this->msgCaller, "Thread started!");
+    this->node->printInfo(this->msgCaller, "Thread started");
 
     return status;
 }

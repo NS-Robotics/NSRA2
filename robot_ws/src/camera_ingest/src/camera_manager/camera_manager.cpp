@@ -43,7 +43,7 @@ NSSC_STATUS cameraManager::loadCameras()
     _CM_VERIFY_EXIT(this->cam1->startAcquisition());
     _CM_VERIFY_EXIT(this->cam2->startAcquisition());
 
-    this->node->printInfo(this->msgCaller, "Cameras loaded!");
+    this->node->printInfo(this->msgCaller, "Cameras loaded");
 
     return NSSC_STATUS_SUCCESS;
 }
@@ -59,12 +59,12 @@ NSSC_STATUS cameraManager::closeCameras()
     if(status != NSSC_STATUS_SUCCESS)
     {
         this->cam2->CloseCamera();
-        this->node->printInfo(this->msgCaller, "Cameras closed!");
+        this->node->printInfo(this->msgCaller, "Cameras closed");
         return status;
     } else
     {
         status = this->cam2->CloseCamera();
-        this->node->printInfo(this->msgCaller, "Cameras closed!");
+        this->node->printInfo(this->msgCaller, "Cameras closed");
         return status;
     }
 }
