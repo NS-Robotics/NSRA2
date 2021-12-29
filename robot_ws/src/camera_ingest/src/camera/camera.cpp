@@ -175,7 +175,7 @@ void Camera::GXDQBufThreadNDI()
             auto stop0 = std::chrono::high_resolution_clock::now();
 
             auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
-            this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()));
+            //this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()));
 
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, rgbBuf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
