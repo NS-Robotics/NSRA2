@@ -20,7 +20,7 @@ public:
     void closeCLI();
 
     virtual void exit() = 0;
-    virtual void rawNDI() = 0;
+    virtual void rawNDI(bool stream) = 0;
     virtual void run_ingest() = 0;
     virtual void run_calibration(char *setName) = 0;
     virtual void cancel() = 0;

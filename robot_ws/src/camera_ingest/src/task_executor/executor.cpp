@@ -41,16 +41,28 @@ void Executor::init()
     this->initialized = true;
 }
 
-void Executor::rawNDI()
+void Executor::rawNDI(bool stream)
 {
     if (this->rawNDIstream)
     {
         this->ndi->endStream();
         this->rawNDIstream = false;
     }
+    else if (stream == this->node->g_config.frameConfig.mono_stream)
+    {
+        this->ndi->startStream();
+        this->rawNDIstream = true;
+    }
     else
     {
+        if (this->rawNDIstream)
+        {
+            this->ndi->endStream();
+        }
+        this->node->g_config.frameConfig.mono_stream = stream;
+        this->node->g_config.frameConfig.calculate_params();
         
+        this->ndi->init();
         this->ndi->startStream();
         this->rawNDIstream = true;
     }

@@ -14,7 +14,7 @@ public:
     Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
     void exit();
     void init();
-    void rawNDI();
+    void rawNDI(bool stream);
     void run_ingest();
     void run_calibration(char *setName);
     void cancel();

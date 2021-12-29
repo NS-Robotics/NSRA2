@@ -27,15 +27,16 @@ void CLI::CLIFunc()
         {
             if(cmd.size() == 1)
             {
-                rawNDI();
+                rawNDI(this->node->g_config.frameConfig.mono_stream);
                 continue;
             }
-            if (getBoolArg(cmd, 'm', this->node->g_config.frameConfig.mono_stream) != NSSC_STATUS_SUCCESS)
+            bool stream;
+            if (getBoolArg(cmd, 'm', stream) != NSSC_STATUS_SUCCESS)
             {
                 this->printError("Bad argument!");
                 continue;
             }
-            rawNDI();
+            rawNDI(stream);
         }
         else if (strcmp(cmd[0], "ingest") == 0)
         {
