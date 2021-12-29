@@ -129,7 +129,7 @@ NSSC_STATUS Camera::startAcquisition()
 {
     this->streamON = true;
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 10; i++)
     {
         monoFrame* frame = monoFrame::make_frame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node);
