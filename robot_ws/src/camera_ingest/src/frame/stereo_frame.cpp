@@ -64,7 +64,7 @@ class RGBAStereoFrame: public stereoFrame
             cudaFreeHost(this->resizeBuf.hImageBuf);
         }
 };
-
+/*
 class I420StereoFrame: public stereoFrame
 {
     public:
@@ -134,7 +134,7 @@ class UYVYStereoFrame: public stereoFrame
             cudaFreeHost(this->stereoBuf.hImageBuf);
         }
 };
-
+*/
 stereoFrame *stereoFrame::make_frame(NSSC_FRAME_TYPE type)
 {
     switch(type)
@@ -142,11 +142,13 @@ stereoFrame *stereoFrame::make_frame(NSSC_FRAME_TYPE type)
         case NSSC_FRAME_RGBA:
             return new RGBAStereoFrame;
             break;
+        /*
         case NSSC_FRAME_I420:
             return new I420StereoFrame;
             break;
         case NSSC_FRAME_UYVY:
             return new UYVYStereoFrame;
             break;
+        */
     }
 }
