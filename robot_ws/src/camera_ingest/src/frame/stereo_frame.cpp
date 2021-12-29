@@ -135,7 +135,7 @@ class UYVYStereoFrame: public stereoFrame
 
         ~UYVYStereoFrame()
         {
-            cudaFreeHost(this->stereoBuf.hImageBuf);
+            cudaFreeHost(this->concatenateBuf.hImageBuf);
         }
 };
 
