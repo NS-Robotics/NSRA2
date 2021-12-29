@@ -88,11 +88,8 @@ void Executor::run_calibration(char *setName)
 
 void Executor::cancel()
 {
-    /*
     if (this->node->g_config.ingestConfig.is_running)
     {
         this->ingest->cancelIngest();
     }
-    */
-    CLI::closeCLI();
 }
