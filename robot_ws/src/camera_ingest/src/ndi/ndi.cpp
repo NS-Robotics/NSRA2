@@ -162,7 +162,7 @@ void NDI::monoStreamThread()
 
         stereoFrame[idx] = this->camManager->getFrame();
 
-        this->node->printInfo(this->msgCaller, "mono id: " + std::to_string(stereoFrame[idx]->leftCamera->frameBuf.id) + " stereo id: " + std::to_string(stereoFrame[idx]->concatenateBuf.id));
+        //this->node->printInfo(this->msgCaller, "mono id: " + std::to_string(stereoFrame[idx]->leftCamera->frameBuf.id) + " stereo id: " + std::to_string(stereoFrame[idx]->concatenateBuf.id));
 
         if (this->node->g_config.ingestConfig.is_running)
         {
