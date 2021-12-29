@@ -100,6 +100,7 @@ public:
             ndi_line_stride = mono_x_res;
             FourCC = NDIlib_FourCC_type_I420;
             break;
+            
         case NSSC_FRAME_UYVY:
             mono_x_res = cam_x_res;
             mono_y_res = cam_y_res;
