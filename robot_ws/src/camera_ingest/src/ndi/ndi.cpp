@@ -159,8 +159,6 @@ void NDI::monoStreamThread()
         }
         
         stereoFrame = this->camManager->getFrame();
-        
-        this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()));
 
         if (this->node->g_config.ingestConfig.is_running)
         {
