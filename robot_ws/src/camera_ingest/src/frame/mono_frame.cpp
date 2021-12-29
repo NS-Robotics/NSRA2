@@ -11,13 +11,14 @@ class RGBAFrame: public monoFrame
             }
         }
 
-        void alloc(std::shared_ptr<NSSC>& node)
+        void alloc(std::shared_ptr<NSSC>& node, int id)
         {
             this->node = node;
             
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->frameBuf.hImageBuf, this->node->g_config.frameConfig.mono_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->frameBuf.dImageBuf, (void *) this->frameBuf.hImageBuf , 0);
+            this->frameBuf.id = id;
         }
 
         ~RGBAFrame()
@@ -37,7 +38,7 @@ class I420Frame: public monoFrame
             }
         }
 
-        void alloc(std::shared_ptr<NSSC>& node)
+        void alloc(std::shared_ptr<NSSC> &node, int id)
         {
             this->node = node;
 
@@ -65,7 +66,7 @@ class UYVYFrame: public monoFrame
             }
         }
 
-        void alloc(std::shared_ptr<NSSC>& node)
+        void alloc(std::shared_ptr<NSSC> &node, int id)
         {
             this->node = node;
 

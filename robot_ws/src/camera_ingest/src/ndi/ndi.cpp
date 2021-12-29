@@ -160,6 +160,8 @@ void NDI::monoStreamThread()
         
         stereoFrame = this->camManager->getFrame();
 
+        this->node->printInfo(this->msgCaller, std::to_string(stereoFrame->leftCamera->frameBuf.id));
+
         if (this->node->g_config.ingestConfig.is_running)
         {
             cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);

@@ -19,7 +19,7 @@ NSSC_STATUS cameraManager::init()
     _CM_VERIFY_EXIT(this->cam1->init());
     _CM_VERIFY_EXIT(this->cam2->init());
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 3; i++)
     {
         stereoFrame* frame = stereoFrame::make_frame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node);

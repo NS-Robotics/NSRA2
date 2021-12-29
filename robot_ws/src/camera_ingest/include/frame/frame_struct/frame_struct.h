@@ -9,6 +9,7 @@ public:
     void *hImageBuf; 
     void *dImageBuf;
     std::chrono::time_point<std::chrono::system_clock> timestamp;
+    int id;
 
     frameBuffer()
     {

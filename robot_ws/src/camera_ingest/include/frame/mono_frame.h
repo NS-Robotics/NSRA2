@@ -25,7 +25,7 @@ public:
   void setTimestamp();
 
   virtual void convert(frameBuffer *rgbBuf) = 0;
-  virtual void alloc(std::shared_ptr<NSSC> &node) = 0;
+  virtual void alloc(std::shared_ptr<NSSC> &node, int id) = 0;
 
   std::shared_ptr<NSSC> node;
   std::string msgCaller = "Mono Frame";
