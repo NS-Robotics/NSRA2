@@ -37,7 +37,7 @@ class RGBAStereoFrame: public stereoFrame
             }
             
             auto c_timedif = std::chrono::duration_cast<std::chrono::microseconds>(leftCamera->frameBuf.timestamp - rightCamera->frameBuf.timestamp);
-            this->timedif = c_timedif.count();
+            this->timedif = std::abs(c_timedif.count());
             
             if(this->timedif > this->node->g_config.frameConfig.max_frame_time_diff)
             {
