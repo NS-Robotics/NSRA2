@@ -9,12 +9,14 @@ class RGBAStereoFrame: public stereoFrame
             this->rightCamera = rightCamera;
             this->concatenated = concatenate;
 
+            cv::cuda::GpuMat dRGBAImageBufLeft(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, leftCamera->frameBuf.dImageBuf);
+
             if(concatenate)
             {
                 cv::cuda::GpuMat dMergedFrame(cv::Size(this->node->g_config.frameConfig.stereo_x_res, this->node->g_config.frameConfig.stereo_y_res), CV_8UC4, this->concatenateBuf.dImageBuf);
 
-                cv::cuda::GpuMat dRGBAImageBufRight(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, leftCamera->frameBuf.dImageBuf);
-                cv::cuda::GpuMat dRGBAImageBufLeft(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, rightCamera->frameBuf.dImageBuf);
+                cv::cuda::GpuMat dRGBAImageBufRight(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, rightCamera->frameBuf.dImageBuf);
+                //cv::cuda::GpuMat dRGBAImageBufLeft(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, leftCamera->frameBuf.dImageBuf);
 
                 dRGBAImageBufRight.copyTo(dMergedFrame.operator()(cv::Rect(0, 0, dRGBAImageBufRight.cols, dRGBAImageBufRight.rows)));
                 dRGBAImageBufLeft.copyTo(dMergedFrame.operator()(cv::Rect(dRGBAImageBufRight.cols, 0, dRGBAImageBufLeft.cols, dRGBAImageBufLeft.rows)));
