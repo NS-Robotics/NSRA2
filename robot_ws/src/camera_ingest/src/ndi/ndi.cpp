@@ -197,6 +197,8 @@ void NDI::monoStreamThread()
         this->camManager->returnBuf(stereoFrame);
 
         idx = (idx == 0) ? 1 : 0;
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
 }
