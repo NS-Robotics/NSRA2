@@ -9,7 +9,6 @@ class RGBAFrame: public monoFrame
             {
                 this->node->printWarning(this->msgCaller, "RGBA convertion failed");
             }
-            this->node->printInfo(this->msgCaller, "mono id: " + std::to_string(this->frameBuf.id));
         }
 
         void alloc(std::shared_ptr<NSSC>& node, int id)
