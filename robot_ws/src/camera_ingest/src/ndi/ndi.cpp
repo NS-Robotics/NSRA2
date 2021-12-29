@@ -78,7 +78,8 @@ NSSC_STATUS NDI::endStream()
 
 NSSC_STATUS NDI::closeNDI()
 {
-    if(this->is_closed) { return NSSC_STATUS_SUCCESS; }
+    if (this->is_closed) { return NSSC_STATUS_SUCCESS; }
+    if (this->streamON.load()) { endStream(); }
 
     NDIlib_send_destroy(this->pNDI_send);
     NDIlib_destroy();
@@ -196,6 +197,8 @@ void NDI::monoStreamThread()
         this->camManager->returnBuf(stereoFrame);
 
         idx = (idx == 0) ? 1 : 0;
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
 }
