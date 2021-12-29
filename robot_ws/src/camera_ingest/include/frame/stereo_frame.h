@@ -26,6 +26,7 @@ class stereoFrame
     frameBuffer resizeBuf;
 
     int         timedif;
+    bool        concatenated;
 };
 
 #endif  //NSSC_FRAME_STEREO_FRAME_
