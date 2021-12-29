@@ -47,7 +47,7 @@ public:
     NSSC_BUF_SIZE resize_buf_size;
 
     //NDI
-    bool mono_stream = true;
+    bool mono_stream = false;
     short stream_x_res;
     short stream_y_res;
     NSSC_BUF_SIZE stream_buf_size;

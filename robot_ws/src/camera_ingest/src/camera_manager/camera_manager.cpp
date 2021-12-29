@@ -70,7 +70,7 @@ NSSC_STATUS cameraManager::closeCameras()
     }
 }
 
-stereoFrame *cameraManager::getFrame(bool concatenate /*= false*/, bool resize /*= false*/)
+stereoFrame *cameraManager::getFrame(bool concatenate /*= true*/, bool resize /*= false*/)
 {
     stereoFrame* stereoFrame;
     this->emptyFrameBuf.wait_dequeue(stereoFrame);
