@@ -147,7 +147,7 @@ void NDI::stereoStreamThread()
 
 void NDI::monoStreamThread()
 {
-    stereoFrame *stereoFrame;
+    stereoFrame *stereoFrame[2];
 
     int idx = 0;
 
@@ -158,13 +158,13 @@ void NDI::monoStreamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
         }
 
-        stereoFrame = this->camManager->getFrame();
+        stereoFrame[idx] = this->camManager->getFrame();
 
-        //this->node->printInfo(this->msgCaller, std::to_string(stereoFrame->leftCamera->frameBuf.id));
+        //this->node->printInfo(this->msgCaller, std::to_string(stereoFrame[idx]->leftCamera->frameBuf.id));
 
         if (this->node->g_config.ingestConfig.is_running)
         {
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame[idx]->leftCamera->frameBuf.hImageBuf);
 
             cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
@@ -193,10 +193,10 @@ void NDI::monoStreamThread()
                         2);
         }
 
-        this->NDI_video_frame.p_data = (uint8_t *)stereoFrame->leftCamera->frameBuf.hImageBuf;
+        this->NDI_video_frame.p_data = (uint8_t *)stereoFrame[idx]->leftCamera->frameBuf.hImageBuf;
         NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
 
-        this->camManager->returnBuf(stereoFrame);
+        this->camManager->returnBuf(stereoFrame[idx & 1]);
 
         idx = (idx == 0) ? 1 : 0;
     }
