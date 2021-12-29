@@ -99,8 +99,8 @@ void Ingest::ingestThread()
 
         this->node->g_config.ingestConfig.image_taken = true;
 
-        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
-        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
+        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
+        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
 
         cv::Mat left_conv;
         cv::Mat right_conv;

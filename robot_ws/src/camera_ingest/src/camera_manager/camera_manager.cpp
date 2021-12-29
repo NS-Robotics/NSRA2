@@ -69,13 +69,13 @@ NSSC_STATUS cameraManager::closeCameras()
     }
 }
 
-stereoFrame* cameraManager::getFrame()
+stereoFrame *cameraManager::getFrame(bool concatenate = false, bool resize = false)
 {
     stereoFrame* stereoFrame;
     this->emptyFrameBuf.wait_dequeue(stereoFrame);
     this->numOfEmpty--;
 
-    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame());
+    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), concatenate, resize);
 
     return stereoFrame;
 }

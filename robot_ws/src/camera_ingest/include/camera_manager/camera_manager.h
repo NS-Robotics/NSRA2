@@ -19,7 +19,7 @@ class cameraManager : public NSSC_ERRORS
         NSSC_STATUS loadCameras();
         NSSC_STATUS closeCameras();
 
-        stereoFrame* getFrame();
+        stereoFrame *getFrame(bool concatenate = false, bool resize = false);
         NSSC_STATUS returnBuf(stereoFrame* stereoBuf);
 
     private:        

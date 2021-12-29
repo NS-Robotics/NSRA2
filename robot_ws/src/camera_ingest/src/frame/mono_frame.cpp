@@ -5,24 +5,7 @@ class RGBAFrame: public monoFrame
     public:
         void convert(frameBuffer* rgbBuf)
         {
-            if(this->node->g_config.frameConfig.resize_frame)
-            {
-                auto start0 = std::chrono::high_resolution_clock::now();
-                cv::cuda::GpuMat inputFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf->dImageBuf);
-                cv::cuda::GpuMat resizedFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC3, this->resizeBuf.dImageBuf);
-
-                cv::cuda::resize(inputFrame, resizedFrame, cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res));
-
-                this->inputBuf = &this->resizeBuf;
-                auto stop0 = std::chrono::high_resolution_clock::now();
-                auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
-                //this->node->printInfo(this->msgCaller, "Frame timing: resize - " + std::to_string(duration0.count()));
-            } else
-            {
-                this->inputBuf = rgbBuf;
-            }
-
-            if( CUDA_FAILED(cudaConvertColor(this->inputBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_RGBA8, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)) )
+            if (CUDA_FAILED(cudaConvertColor(rgbBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_RGBA8, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)))
             {
                 std::cout << "RGBA convert failed" << std::endl;
             } else
@@ -38,19 +21,11 @@ class RGBAFrame: public monoFrame
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->frameBuf.hImageBuf, this->node->g_config.frameConfig.mono_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->frameBuf.dImageBuf, (void *) this->frameBuf.hImageBuf , 0);
-
-            if(this->node->g_config.frameConfig.resize_frame)
-            {
-                cudaSetDeviceFlags(cudaDeviceMapHost);
-                cudaHostAlloc((void **)&this->resizeBuf.hImageBuf, this->node->g_config.frameConfig.mono_x_res * this->node->g_config.frameConfig.mono_y_res * 3, cudaHostAllocMapped);
-                cudaHostGetDevicePointer((void **)&this->resizeBuf.dImageBuf, (void *) this->resizeBuf.hImageBuf , 0);
-            }
         }
 
         ~RGBAFrame()
         {
             cudaFreeHost(this->frameBuf.hImageBuf);
-            cudaFreeHost(this->resizeBuf.hImageBuf);
         }
 };
 
@@ -59,19 +34,7 @@ class I420Frame: public monoFrame
     public:
         void convert(frameBuffer* rgbBuf)
         {
-            if(this->node->g_config.frameConfig.resize_frame)
-            {
-                cv::cuda::GpuMat inputFrame(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf->dImageBuf);
-                cv::cuda::GpuMat resizedFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC3, this->resizeBuf.dImageBuf);
-
-                cv::cuda::resize(inputFrame, resizedFrame, cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res));
-
-                this->inputBuf = &this->resizeBuf;
-            } else
-            {
-                this->inputBuf = rgbBuf;
-            }
-            if( CUDA_FAILED(cudaConvertColor(this->inputBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_I420, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)) )
+            if (CUDA_FAILED(cudaConvertColor(rgbBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_I420, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)))
             {
                 std::cout << "I420 convert failed" << std::endl;
             } else
@@ -87,19 +50,11 @@ class I420Frame: public monoFrame
             cudaSetDeviceFlags(cudaDeviceMapHost);
             cudaHostAlloc((void **)&this->frameBuf.hImageBuf, this->node->g_config.frameConfig.mono_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->frameBuf.dImageBuf, (void *) this->frameBuf.hImageBuf , 0);
-
-            if(this->node->g_config.frameConfig.resize_frame)
-            {
-                cudaSetDeviceFlags(cudaDeviceMapHost);
-                cudaHostAlloc((void **)&this->resizeBuf.hImageBuf, this->node->g_config.frameConfig.mono_x_res * this->node->g_config.frameConfig.mono_y_res * 3, cudaHostAllocMapped);
-                cudaHostGetDevicePointer((void **)&this->resizeBuf.dImageBuf, (void *) this->resizeBuf.hImageBuf , 0);
-            }
         }
 
         ~I420Frame()
         {
             cudaFreeHost(this->frameBuf.hImageBuf);
-            cudaFreeHost(this->resizeBuf.hImageBuf);
         }
 };
 

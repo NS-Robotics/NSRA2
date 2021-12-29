@@ -36,13 +36,13 @@ NSSC_STATUS NDI::init()
                                      "             version=\"1.000.000\" "
                                      "             session=\"default\" "
                                      "             model_name=\"S1\" "
-                                     "             serial=\"lolhahatest\"/>";
+                                     "             serial=\"1509\"/>";
         NDIlib_send_add_connection_metadata(this->pNDI_send, &NDI_connection_type);
 
         this->NDI_video_frame.xres = this->node->g_config.frameConfig.stream_x_res;
         this->NDI_video_frame.yres = this->node->g_config.frameConfig.stream_y_res;
         this->NDI_video_frame.FourCC = this->node->g_config.frameConfig.FourCC;
-        this->NDI_video_frame.p_data = (uint8_t *)malloc(this->node->g_config.frameConfig.stereo_buf_size);
+        this->NDI_video_frame.p_data = (uint8_t *)malloc(this->node->g_config.frameConfig.stream_buf_size);
         this->NDI_video_frame.line_stride_in_bytes = this->node->g_config.frameConfig.ndi_line_stride;
 
         status = NSSC_STATUS_SUCCESS;
@@ -99,7 +99,7 @@ void NDI::streamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
 	    }
 
-        stereoFrame = this->camManager->getFrame();
+        stereoFrame = this->camManager->getFrame(true, this->node->g_config.frameConfig.resize_frame);
 
         if(this->node->g_config.ingestConfig.is_running)
         {

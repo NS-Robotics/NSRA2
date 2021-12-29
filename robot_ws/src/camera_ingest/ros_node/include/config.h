@@ -20,28 +20,39 @@ struct frame_config
 public:
     //Frame
     NSSC_FRAME_TYPE g_type = NSSC_FRAME_RGBA;
+    bool resize_frame = true;
+
+    //Camera
     const short cam_x_res = 3088;
     const short cam_y_res = 2064;
 
     float cam_exposure_time = 50000.0; //microseconds
     float cam_gain = 15.0;
 
-    bool resize_frame = false;
-
     int max_frame_time_diff = 5000; //microseconds
 
+    //mono
     short mono_x_res;
     short mono_y_res;
+    NSSC_BUF_SIZE mono_buf_size;
+
+    //stereo
+    short stereo_x_res;
+    short stereo_y_res;
+    NSSC_BUF_SIZE stereo_buf_size;
+
+    //stereo resized
+    const short resize_x_res = 1920 * 2;
+    const short resize_y_res = 1080;
+    NSSC_BUF_SIZE resize_buf_size;
 
     //NDI
     short stream_x_res;
     short stream_y_res;
+    NSSC_BUF_SIZE stream_buf_size;
 
-    NDIlib_FourCC_video_type_e FourCC;
-
-    NSSC_BUF_SIZE stereo_buf_size;
-    NSSC_BUF_SIZE mono_buf_size;
-    NSSC_BUF_SIZE ndi_line_stride;
+    NDIlib_FourCC_video_type_e FourCC;    
+    int ndi_line_stride;
 
     frame_config()
     {
@@ -50,17 +61,23 @@ public:
 
     void calculate_params()
     {
-        mono_x_res = resize_frame ? 1920 : cam_x_res;
-        mono_y_res = resize_frame ? 1080 : cam_y_res;
-
-        stream_x_res = mono_x_res * 2;
-        stream_y_res = mono_y_res;
-
         switch (g_type)
         {
         case NSSC_FRAME_RGBA:
-            stereo_buf_size = mono_x_res * mono_y_res * 4 * 2;
+            mono_x_res = cam_x_res;
+            mono_y_res = cam_y_res;
             mono_buf_size = mono_x_res * mono_y_res * 4;
+
+            stereo_x_res = 2 * mono_x_res;
+            stereo_y_res = mono_y_res;
+            stereo_buf_size = stereo_x_res * stereo_y_res * 4;
+
+            resize_buf_size = resize_x_res * resize_y_res * 4;
+
+            stream_x_res = resize_frame ? resize_x_res : stereo_x_res;
+            stream_y_res = resize_frame ? resize_y_res : stereo_y_res;
+            stream_buf_size = resize_frame ? resize_buf_size : stereo_buf_size;
+
             ndi_line_stride = stream_x_res * 4;
             FourCC = NDIlib_FourCC_type_RGBX;
             break;
