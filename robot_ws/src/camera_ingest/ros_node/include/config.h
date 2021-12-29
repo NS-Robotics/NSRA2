@@ -83,14 +83,38 @@ public:
             break;
 
         case NSSC_FRAME_I420:
-            stereo_buf_size = mono_x_res * std::round(mono_y_res * 1.5) * 2;
+            mono_x_res = cam_x_res;
+            mono_y_res = cam_y_res;
             mono_buf_size = mono_x_res * std::round(mono_y_res * 1.5);
+
+            stereo_x_res = 2 * mono_x_res;
+            stereo_y_res = mono_y_res;
+            stereo_buf_size = mono_x_res * std::round(mono_y_res * 1.5) * 2;
+
+            resize_buf_size = resize_x_res * resize_y_res * 4;
+
+            stream_x_res = resize_frame ? resize_x_res : stereo_x_res;
+            stream_y_res = resize_frame ? resize_y_res : stereo_y_res;
+            stream_buf_size = resize_frame ? resize_buf_size : stereo_buf_size;
+
             ndi_line_stride = mono_x_res;
             FourCC = NDIlib_FourCC_type_I420;
             break;
         case NSSC_FRAME_UYVY:
-            stereo_buf_size = mono_x_res * mono_y_res * 2 * 2;
+            mono_x_res = cam_x_res;
+            mono_y_res = cam_y_res;
             mono_buf_size = mono_x_res * mono_y_res * 2;
+
+            stereo_x_res = 2 * mono_x_res;
+            stereo_y_res = mono_y_res;
+            stereo_buf_size = stereo_x_res * mono_y_res * 2;
+
+            resize_buf_size = resize_x_res * resize_y_res * 4;
+
+            stream_x_res = resize_frame ? resize_x_res : stereo_x_res;
+            stream_y_res = resize_frame ? resize_y_res : stereo_y_res;
+            stream_buf_size = resize_frame ? resize_buf_size : stereo_buf_size;
+
             ndi_line_stride = stream_x_res * 2;
             FourCC = NDIlib_FourCC_type_UYVY;
             break;

@@ -7,10 +7,7 @@ class RGBAFrame: public monoFrame
         {
             if (CUDA_FAILED(cudaConvertColor(rgbBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_RGBA8, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)))
             {
-                std::cout << "RGBA convert failed" << std::endl;
-            } else
-            {
-                
+                this->node->printWarning(this->msgCaller, "RGBA convertion failed");
             }
         }
 
@@ -36,10 +33,7 @@ class I420Frame: public monoFrame
         {
             if (CUDA_FAILED(cudaConvertColor(rgbBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_I420, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)))
             {
-                std::cout << "I420 convert failed" << std::endl;
-            } else
-            {
-                //std::cout << "successfully converted" << std::endl;
+                this->node->printWarning(this->msgCaller, "I420 convertion failed");
             }
         }
 
@@ -67,7 +61,7 @@ class UYVYFrame: public monoFrame
             int ret = nppiRGBToYUV422_8u_C3C2R((uint8_t*)rgbBuf->dImageBuf, this->node->g_config.frameConfig.mono_x_res * 3, (uint8_t*)frameBuf.dImageBuf, this->node->g_config.frameConfig.mono_x_res * 2, oSizeROI);
             if(ret != 0)
             {
-                std::cout << "NPPI conversion failed: " << ret << std::endl;
+                this->node->printWarning(this->msgCaller, "NPPI convertion failed");
             }
         }
 
