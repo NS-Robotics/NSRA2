@@ -178,7 +178,6 @@ void Camera::GXDQBufThreadNDI()
             status = GXQBuf(this->hDevice, pFrameBuffer);
 
             frame->convert(&rgbBuf);
-            this->node->printInfo(this->msgCaller, "mono id: " + std::to_string(frame->frameBuf.id));
 
             this->filledFrameBuf.enqueue(frame);
             this->numOfFilled++;
