@@ -103,7 +103,7 @@ void NDI::streamThread()
 
         if(this->node->g_config.ingestConfig.is_running)
         {
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf.hImageBuf);
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf->hImageBuf);
 
             cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
@@ -132,7 +132,7 @@ void NDI::streamThread()
                         2);
         }
         
-        this->NDI_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf.hImageBuf;
+        this->NDI_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf->hImageBuf;
 		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
 
         this->camManager->returnBuf(stereoFrame);
