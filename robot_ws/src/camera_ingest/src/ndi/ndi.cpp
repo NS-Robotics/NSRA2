@@ -158,7 +158,7 @@ void NDI::monoStreamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
         }
 
-        stereoFrame = this->camManager->getFrame(true, this->node->g_config.frameConfig.resize_frame);
+        stereoFrame = this->camManager->getFrame();
 
         if (this->node->g_config.ingestConfig.is_running)
         {
