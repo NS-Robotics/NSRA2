@@ -160,9 +160,7 @@ void NDI::monoStreamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
         }
 
-        stereoFrame[idx] = this->camManager->getFrame();
-
-        //this->node->printInfo(this->msgCaller, "mono id: " + std::to_string(stereoFrame[idx]->leftCamera->frameBuf.id) + " stereo id: " + std::to_string(stereoFrame[idx]->concatenateBuf.id));
+        stereoFrame[idx] = this->camManager->getFrame(true);
 
         if (this->node->g_config.ingestConfig.is_running)
         {

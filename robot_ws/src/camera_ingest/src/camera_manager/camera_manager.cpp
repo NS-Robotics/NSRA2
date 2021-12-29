@@ -77,7 +77,6 @@ stereoFrame *cameraManager::getFrame(bool concatenate /*= false*/, bool resize /
     this->numOfEmpty--;
 
     stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), concatenate, resize);
-    this->node->printInfo(this->msgCaller, "cam1 mono id: " + std::to_string(stereoFrame->leftCamera->frameBuf.id) + " cam2 mono id: " + std::to_string(stereoFrame->rightCamera->frameBuf.id));
 
     return stereoFrame;
 }

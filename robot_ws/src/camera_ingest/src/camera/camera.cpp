@@ -158,7 +158,7 @@ void Camera::GXDQBufThreadNDI()
     while(this->streamON.load())
     {
 
-        if(this->numOfFilled.load() < 2 && this->numOfEmpty.load() > 0)
+        if(this->numOfFilled.load() < 1 && this->numOfEmpty.load() > 0)
         {
             NSSC_STATUS status;
 
@@ -194,12 +194,8 @@ monoFrame* Camera::getFrame()
     
     monoFrame* frame;
 
-    auto start0 = std::chrono::high_resolution_clock::now();
     this->filledFrameBuf.wait_dequeue(frame);
     this->numOfFilled--;
-    auto stop0 = std::chrono::high_resolution_clock::now();
-    auto duration0 = std::chrono::duration_cast<std::chrono::microseconds>(stop0 - start0);
-    //this->node->printInfo(this->msgCaller, "Frame timing: getFrame - " + std::to_string(duration0.count()));
 
     return frame;    
 }
