@@ -31,7 +31,8 @@ private:
     
     std::string msgCaller = "NDI";
 
-    void streamThread();
+    void stereoStreamThread();
+    void monoStreamThread();
 
     std::atomic<bool> streamON{false};
 

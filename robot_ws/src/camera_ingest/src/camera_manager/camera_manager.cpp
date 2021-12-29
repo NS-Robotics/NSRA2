@@ -59,7 +59,7 @@ NSSC_STATUS cameraManager::closeCameras()
     if(status != NSSC_STATUS_SUCCESS)
     {
         this->cam2->CloseCamera();
-        this->node->printInfo(this->msgCaller, "Cameras closed");
+        this->node->printWarning(this->msgCaller, "Cameras closed");
         return status;
     } else
     {

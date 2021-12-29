@@ -58,9 +58,9 @@ NSSC_STATUS NDI::startStream()
 
     this->streamON = true;
 
-    this->sThread = std::thread(&NDI::streamThread, this);
+    this->sThread = this->node->g_config.frameConfig.mono_stream ? std::thread(&NDI::monoStreamThread, this) : std::thread(&NDI::stereoStreamThread, this);
 
-    this->node->printInfo(this->msgCaller, "Stream thread started");
+    this->node->printInfo(this->msgCaller, "Stream started");
 
     return status;
 }
@@ -86,7 +86,7 @@ NSSC_STATUS NDI::closeNDI()
     return NSSC_STATUS_SUCCESS;
 }
 
-void NDI::streamThread()
+void NDI::stereoStreamThread()
 {
     stereoFrame* stereoFrame;
 
@@ -140,4 +140,60 @@ void NDI::streamThread()
         idx = (idx == 0) ? 1 : 0;
 	}
 	NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
+}
+
+void NDI::monoStreamThread()
+{
+    stereoFrame *stereoFrame;
+
+    int idx = 0;
+
+    while (this->streamON.load())
+    {
+        while (!NDIlib_send_get_no_connections(this->pNDI_send, 10000) && this->streamON.load())
+        {
+            this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
+        }
+
+        stereoFrame = this->camManager->getFrame();
+
+        if (this->node->g_config.ingestConfig.is_running)
+        {
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
+
+            cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
+                        cv::FONT_HERSHEY_DUPLEX,
+                        2.0,
+                        cv::Scalar(254, 0, 0),
+                        2);
+
+            auto now = std::chrono::high_resolution_clock::now();
+            auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
+            int countdown_i = 5000 - time_left.count();
+            if (countdown_i < 0)
+            {
+                countdown_i = 0;
+            }
+            std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
+
+            if (countdown_i == 0 && this->node->g_config.ingestConfig.image_taken)
+            {
+                countdown = "Image taken!";
+            }
+
+            cv::putText(sendFrame, countdown, cv::Point(1000, 60),
+                        cv::FONT_HERSHEY_DUPLEX,
+                        2.0,
+                        cv::Scalar(254, 0, 0),
+                        2);
+        }
+
+        this->NDI_video_frame.p_data = (uint8_t *)stereoFrame->leftCamera->frameBuf.hImageBuf;
+        NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
+
+        this->camManager->returnBuf(stereoFrame);
+
+        idx = (idx == 0) ? 1 : 0;
+    }
+    NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
 }

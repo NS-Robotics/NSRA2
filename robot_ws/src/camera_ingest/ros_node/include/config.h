@@ -47,6 +47,7 @@ public:
     NSSC_BUF_SIZE resize_buf_size;
 
     //NDI
+    bool mono_stream = false;
     short stream_x_res;
     short stream_y_res;
     NSSC_BUF_SIZE stream_buf_size;
@@ -73,10 +74,19 @@ public:
             stereo_buf_size = stereo_x_res * stereo_y_res * 4;
 
             resize_buf_size = resize_x_res * resize_y_res * 4;
-
-            stream_x_res = resize_frame ? resize_x_res : stereo_x_res;
-            stream_y_res = resize_frame ? resize_y_res : stereo_y_res;
-            stream_buf_size = resize_frame ? resize_buf_size : stereo_buf_size;
+            
+            if(mono_stream)
+            {
+                stream_x_res = mono_x_res;
+                stream_y_res = mono_y_res;
+                stream_buf_size = mono_buf_size;
+            }
+            else
+            {
+                stream_x_res = resize_frame ? resize_x_res : stereo_x_res;
+                stream_y_res = resize_frame ? resize_y_res : stereo_y_res;
+                stream_buf_size = resize_frame ? resize_buf_size : stereo_buf_size;
+            }
 
             ndi_line_stride = stream_x_res * 4;
             FourCC = NDIlib_FourCC_type_RGBX;
@@ -100,7 +110,7 @@ public:
             ndi_line_stride = mono_x_res;
             FourCC = NDIlib_FourCC_type_I420;
             break;
-            
+
         case NSSC_FRAME_UYVY:
             mono_x_res = cam_x_res;
             mono_y_res = cam_y_res;
