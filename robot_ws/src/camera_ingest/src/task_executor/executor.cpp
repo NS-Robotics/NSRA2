@@ -50,6 +50,7 @@ void Executor::rawNDI()
     }
     else
     {
+        
         this->ndi->startStream();
         this->rawNDIstream = true;
     }
