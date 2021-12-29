@@ -84,7 +84,7 @@ void Ingest::ingestThread()
     {
         while (this->runIngest.load())
         {
-            stereoFrame = this->camManager->getFrame();
+            stereoFrame = this->camManager->getFrame(true);
             if (stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
             {
                 break;
