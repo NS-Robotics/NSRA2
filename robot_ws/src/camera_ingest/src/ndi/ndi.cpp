@@ -195,7 +195,7 @@ void NDI::monoStreamThread()
                         2);
         }
 
-        this->NDI_video_frame.p_data = (uint8_t *)stereoFrame[idx]->leftCamera->frameBuf.hImageBuf;
+        this->NDI_video_frame.p_data = (uint8_t *)stereoFrame[idx]->rightCamera->frameBuf.hImageBuf;
         NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
 
         this->camManager->returnBuf(stereoFrame[idx ^ 1]);
