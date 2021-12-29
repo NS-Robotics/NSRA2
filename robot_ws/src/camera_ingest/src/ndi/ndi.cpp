@@ -49,6 +49,8 @@ NSSC_STATUS NDI::init()
         this->node->printInfo(this->msgCaller, "initalized!");
     }
 
+    this->is_closed = false;
+
     return status;
 }
 
