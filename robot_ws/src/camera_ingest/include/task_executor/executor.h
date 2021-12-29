@@ -27,7 +27,8 @@ private:
 
     Ingest *ingest;
 
-    bool initialized = false;
+    bool ndi_initialized = false;
+    bool cam_manager_initialized = false;
     bool rawNDIstream = false;
 
     std::string msgCaller = "Executor";

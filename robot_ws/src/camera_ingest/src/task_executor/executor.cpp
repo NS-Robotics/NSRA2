@@ -16,11 +16,17 @@ void Executor::exit()
     if (this->rawNDIstream)
     {
         this->ndi->endStream();
+        this->rawNDIstream = false;
     }
-    if (this->initialized)
+    if (this->ndi_initialized)
     {
         this->ndi->closeNDI();
+        this->ndi_initialized = false;
+    }
+    if (this->cam_manager_initialized)
+    {
         this->camManager->closeCameras();
+        this->cam_manager_initialized = false;
     }
     this->node->printInfo(this->msgCaller, "Shutdown complete");
     this->node_executor->cancel();
@@ -32,13 +38,13 @@ void Executor::init()
     this->camManager = std::make_shared<cameraManager>(this->node);
     this->camManager->init();
     this->camManager->loadCameras();
+    this->cam_manager_initialized = true;
 
     this->ndi = std::make_shared<NDI>(this->node, this->camManager);
     this->ndi->init();
+    this->ndi_initialized = true;
 
-    CLI::openCLI(this->node);
-
-    this->initialized = true;
+    CLI::openCLI(this->node);   
 }
 
 void Executor::rawNDI(bool stream)
@@ -55,14 +61,16 @@ void Executor::rawNDI(bool stream)
     }
     else
     {
-        if (this->rawNDIstream)
+        if (this->ndi_initialized)
         {
-            this->ndi->endStream();
+            this->ndi->closeNDI();
+            this->ndi_initialized = false;
         }
         this->node->g_config.frameConfig.mono_stream = stream;
         this->node->g_config.frameConfig.calculate_params();
         
         this->ndi->init();
+        this->ndi_initialized = true;
         this->ndi->startStream();
         this->rawNDIstream = true;
     }
