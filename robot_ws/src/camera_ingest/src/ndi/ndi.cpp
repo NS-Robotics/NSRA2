@@ -149,9 +149,9 @@ void NDI::monoStreamThread()
 {
     stereoFrame *stereoFrame[2];
 
-    stereoFrame[1] = this->camManager->getFrame();
+    stereoFrame[0] = this->camManager->getFrame();
 
-    int idx = 0;
+    int idx = 1;
 
     while (this->streamON.load())
     {
