@@ -14,7 +14,9 @@
 struct StereoRepr
 {
 public:
-    StereoRepr();
+    StereoRepr()
+    {  
+    }
     StereoRepr(std::vector<cv::Point2f> left_image_points, std::vector<cv::Point2f> right_image_points)
     {
         this->left_image_points = left_image_points;
