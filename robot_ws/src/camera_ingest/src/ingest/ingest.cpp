@@ -108,8 +108,10 @@ void Ingest::ingestThread()
         cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
         cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
 
-        cv::imwrite(this->setPath + std::str(this->node->g_config.ingestConfig.right_img_name) + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
-        cv::imwrite(this->setPath + std::str(this->node->g_config.ingestConfig.left_img_name) + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
+        std::string right_name(this->node->g_config.ingestConfig.right_img_name);
+        cv::imwrite(this->setPath + right_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
+        std::string left_name(this->node->g_config.ingestConfig.left_img_name);
+        cv::imwrite(this->setPath + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
 
         this->camManager->returnBuf(stereoFrame);
 
