@@ -193,6 +193,7 @@ target_include_directories(
   include/calibration
   include/errors
   include/rapidxml-1.13
+  ${gxi_INCLUDES}
 )
 
 target_link_libraries(calibration ros_node)
