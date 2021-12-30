@@ -36,13 +36,21 @@ void Calibration::_prepareDataSet()
 
         sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
-        this->node->printInfo(this->msgCaller, img_file);
-        this->right_cam_repr.push_back(ret);
+        if(status == NSSC_CALIB_FILE_NOT_FOUND)
+            this->node->printWarning(this->msgCaller, "File not found");
+        else if(status == NSSC_CALIB_CBC_NOT_FOUND)
+            this->node->printWarning(this->msgCaller, "CBC not found");
+        else
+            this->right_cam_repr.push_back(ret);
 
         sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
-        this->node->printInfo(this->msgCaller, img_file);
-        this->left_cam_repr.push_back(ret);
+        if (status == NSSC_CALIB_FILE_NOT_FOUND)
+            this->node->printWarning(this->msgCaller, "File not found");
+        else if (status == NSSC_CALIB_CBC_NOT_FOUND)
+            this->node->printWarning(this->msgCaller, "CBC not found");
+        else
+            this->left_cam_repr.push_back(ret);
     }
 }
 
