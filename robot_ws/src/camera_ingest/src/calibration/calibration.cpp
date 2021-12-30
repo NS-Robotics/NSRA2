@@ -33,11 +33,11 @@ void Calibration::_prepareDataSet()
         ObjectRepr ret;
 
         sprintf(img_file, "%s%s%d.jpg", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
-        tie(status, ret) = __findCBC(img_file);
+        std::tie(status, ret) = __findCBC(img_file);
         this->right_cam_repr.push_back(ret);
 
         sprintf(img_file, "%s%s%d.jpg", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
-        tie(status, ret) = __findCBC(img_file);
+        std::tie(status, ret) = __findCBC(img_file);
         this->left_cam_repr.push_back(ret);
     }
 }
