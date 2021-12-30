@@ -28,14 +28,14 @@ void Calibration::_prepareDataSet()
 
     for (int i = 0; i < this->num_images; i++)
     {
-        char *img_file;
         NSSC_STATUS status;
         ObjectRepr ret;
 
+        char *img_file1;
         sprintf(img_file, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.right_img_name, i);
-        std::string info(img_file);
+        std::string info(img_file1);
         this->node->printWarning(this->msgCaller, info);
-        std::tie(status, ret) = __findCBC(img_file);
+        std::tie(status, ret) = __findCBC(img_file1);
         if(status == NSSC_CALIB_FILE_NOT_FOUND)
             this->node->printWarning(this->msgCaller, "File not found");
         else if(status == NSSC_CALIB_CBC_NOT_FOUND)
@@ -43,8 +43,9 @@ void Calibration::_prepareDataSet()
         else
             this->right_cam_repr.push_back(ret);
 
-        sprintf(img_file, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, i);
-        std::tie(status, ret) = __findCBC(img_file);
+        char *img_file2;
+        sprintf(img_file2, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, i);
+        std::tie(status, ret) = __findCBC(img_file2);
         if (status == NSSC_CALIB_FILE_NOT_FOUND)
             this->node->printWarning(this->msgCaller, "File not found");
         else if (status == NSSC_CALIB_CBC_NOT_FOUND)
