@@ -9,7 +9,7 @@ void Calibration::_calib_intrinsics()
 
     cv::calibrateCamera(left_cam_repr.object_points, left_cam_repr.image_points, cv::Size(3088, 2064), this->left_K, this->left_D, rvecs, tvecs, flag);
 
-    double ret = cv::computeReprojectionErrors(left_cam_repr, rvecs, tvecs, this->left_K, this->left_D);
+    double ret = __computeReprojectionErrors(left_cam_repr, rvecs, tvecs, this->left_K, this->left_D);
     this->node->printInfo(this->msgCaller, "Left camera intrinsics reprojection error: " + std::to_string(ret));
 }
 
