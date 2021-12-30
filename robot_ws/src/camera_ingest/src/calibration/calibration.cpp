@@ -44,7 +44,10 @@ void Calibration::_prepareDataSet()
         else if(status == NSSC_CALIB_CBC_NOT_FOUND)
             this->node->printWarning(this->msgCaller, "Right image " + std::to_string(i) + " CBC not found");
         else
-            this->right_cam_repr.push_back(ret);
+        {
+            this->right_cam_repr.object_points.push_back(ret.objects_points);
+            this->right_cam_repr.image_points.push_back(ret.image_points);
+        }
 
         char in_file2[100];
         char out_file2[100];
@@ -58,7 +61,10 @@ void Calibration::_prepareDataSet()
         else if (status == NSSC_CALIB_CBC_NOT_FOUND)
             this->node->printWarning(this->msgCaller, "Left image " + std::to_string(i) + " CBC not found");
         else
-            this->left_cam_repr.push_back(ret);
+        {
+            this->left_cam_repr.object_points.push_back(ret.objects_points);
+            this->left_cam_repr.image_points.push_back(ret.image_points);
+        }
     }
 }
 

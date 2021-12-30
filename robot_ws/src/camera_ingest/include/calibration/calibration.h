@@ -18,6 +18,13 @@ public:
     std::vector<cv::Point2f> image_points;
 };
 
+struct ObjectReprVec
+{
+public:
+    std::vector<std::vector<cv::Point3f>> object_points;
+    std::vector<std::vector<cv::Point2f>> image_points;
+};
+
 class Calibration : public NSSC_ERRORS
 {
 public:
@@ -44,7 +51,7 @@ private:
     int num_images;
     cv::Size board_size;
 
-    std::vector<ObjectRepr> left_cam_repr, right_cam_repr;
+    ObjectReprVec left_cam_repr, right_cam_repr;
     std::vector<cv::Point3f> obj;
 
     cv::Mat left_K, right_K;
