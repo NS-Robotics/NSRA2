@@ -198,7 +198,7 @@ target_include_directories(
   ${gxi_INCLUDES}
 )
 
-target_link_libraries(calibration ros_node)
+target_link_libraries(calibration ros_node ${Boost_SYSTEM_LIBRARY})
 
 ament_target_dependencies(calibration rclcpp OpenCV)
 
