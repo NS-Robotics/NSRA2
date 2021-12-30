@@ -6,7 +6,7 @@ void Calibration::_calib_intrinsics()
     int flag = 0;
 }
 
-void Calibration::__computeReprojectionErrors(const std::vector<ObjectRepr> &obj_repr, const std::vector<cv::Mat> &rvecs, const std::vector<cv::Mat> &tvecs,
+double Calibration::__computeReprojectionErrors(const std::vector<ObjectRepr> &obj_repr, const std::vector<cv::Mat> &rvecs, const std::vector<cv::Mat> &tvecs,
                                               const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs)
 {
     std::vector<cv::Point2f> imagePoints2;
