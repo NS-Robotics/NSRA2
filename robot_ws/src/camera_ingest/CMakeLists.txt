@@ -186,6 +186,7 @@ add_library(
   calibration
   src/calibration/calibration.cpp
   src/calibration/intrinsic_calib.cpp
+  src/calibration/stereo_calib.cpp
 )
 
 target_include_directories(
