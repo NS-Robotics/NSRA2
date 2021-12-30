@@ -7,10 +7,13 @@ void Calibration::_calib_intrinsics()
     flag |= cv::CALIB_FIX_K4;
     flag |= cv::CALIB_FIX_K5;
 
-    double rms = cv::calibrateCamera(left_cam_repr.object_points, left_cam_repr.image_points, cv::Size(3088, 2064), this->left_K, this->left_D, rvecs, tvecs, flag);
+    double rms_l = cv::calibrateCamera(left_cam_repr.object_points, left_cam_repr.image_points, cv::Size(3088, 2064), this->left_K, this->left_D, rvecs, tvecs, flag);
 
-    double ret = __computeReprojectionErrors(left_cam_repr, rvecs, tvecs, this->left_K, this->left_D);
-    this->node->printInfo(this->msgCaller, "Left camera intrinsics reprojection error: " + std::to_string(ret) + " - " + std::to_string(rms));
+    this->node->printInfo(this->msgCaller, "Left camera intrinsics reprojection error: " + std::to_string(rms_l));
+
+    double rms_r = cv::calibrateCamera(right_cam_repr.object_points, right_cam_repr.image_points, cv::Size(3088, 2064), this->right_K, this->right_D, rvecs, tvecs, flag);
+
+    this->node->printInfo(this->msgCaller, "Right camera intrinsics reprojection error: " + std::to_string(rms_r));
 }
 
 double Calibration::__computeReprojectionErrors(const ObjectReprVec &obj_repr, const std::vector<cv::Mat> &rvecs, const std::vector<cv::Mat> &tvecs,

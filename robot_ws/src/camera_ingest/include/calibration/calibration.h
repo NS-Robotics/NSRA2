@@ -52,9 +52,13 @@ private:
     cv::Size board_size;
 
     ObjectReprVec left_cam_repr, right_cam_repr;
+    ObjectReprVec left_img_repr, right_img_repr;
     std::vector<cv::Point3f> obj;
 
     cv::Mat left_K, right_K, left_D, right_D;
+    cv::Mat R, F, E;
+    cv::Vec3d T;
+    cv::Mat RL, RR, PL, PR, Q;
 };
 
 #endif //NSSC_CALIBRATION_

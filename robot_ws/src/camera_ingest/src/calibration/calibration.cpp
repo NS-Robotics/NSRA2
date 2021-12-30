@@ -8,6 +8,7 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     this->board_height = this->node->g_config.calibConfig.board_height;
     _prepareDataSet();
     _calib_intrinsics();
+    _calib_stereo();
 }
 
 void Calibration::_prepareDataSet()
@@ -65,6 +66,20 @@ void Calibration::_prepareDataSet()
             this->left_cam_repr.object_points.push_back(ret.object_points);
             this->left_cam_repr.image_points.push_back(ret.image_points);
         }
+    }
+
+    for (int i = 0; i < this->left_cam_repr.image_points.size(); i++)
+    {
+        std::vector<cv::Point2f> v1, v2;
+        for (int j = 0; j < this->left_cam_repr.image_points[i].size(); j++)
+        {
+            v1.push_back(Point2f((double)this->left_cam_repr.image_points[i][j].x, (double)this->left_cam_repr.image_points[i][j].y));
+            v2.push_back(Point2f((double)this->right_cam_repr.image_points[i][j].x, (double)this->right_cam_repr.image_points[i][j].y));
+        }
+        this->left_img_repr.image_points.push_back(v1);
+        this->left_img_repr.object_points.push_back(this->left_cam_repr.object_points);
+        this->right_img_repr.image_points.push_back(v2);
+        this->right_img_repr.object_points.push_back(this->right_cam_repr.object_points);
     }
 }
 
