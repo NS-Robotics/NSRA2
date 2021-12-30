@@ -42,7 +42,7 @@ void Calibration::_prepareDataSet()
 
     for (int i = 0; i < this->num_images; i++)
     {
-        this->ioService.post(boost::bind(__CBCthreadTask, i));
+        this->ioService.post(boost::bind(__CBCthreadTask, i);
     }
 
     this->ioService.stop();
