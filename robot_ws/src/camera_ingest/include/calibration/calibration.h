@@ -43,7 +43,7 @@ private:
 
     void _prepareDataSet();
     void __CBCthreadTask(int img_num);
-    std::tuple<NSSC_STATUS, std::vector<cv::Point2f> image_points> __findCBC(char *in_file, char *out_file);
+    std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> __findCBC(char *in_file, char *out_file);
     void _calib_intrinsics();
     void _calib_stereo();
     void _undistort_rectify();

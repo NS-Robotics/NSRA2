@@ -97,7 +97,7 @@ void Calibration::__CBCthreadTask(int img_num)
     }
 }
 
-std::tuple<NSSC_STATUS, std::vector<cv::Point2f> image_points> Calibration::__findCBC(char *in_file, char *out_file)
+std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> Calibration::__findCBC(char *in_file, char *out_file)
 {
     cv::Mat img, gray;
     std::vector<cv::Point2f> corners;
