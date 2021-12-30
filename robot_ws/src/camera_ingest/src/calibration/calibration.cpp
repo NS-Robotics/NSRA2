@@ -33,7 +33,7 @@ void Calibration::_prepareDataSet()
     }
 }
 
-std::tuple<bool, ObjectRepr> Calibration::__findCBC(char *img_file)
+std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *img_file)
 {
     ObjectRepr ret;
     cv::Mat img, gray;
