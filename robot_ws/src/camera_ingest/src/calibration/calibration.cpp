@@ -21,7 +21,7 @@ void Calibration::_prepareDataSet()
     cv::FileStorage data_config((this->setPath + "config.xml").c_str(), cv::FileStorage::READ);
     if(!data_config.isOpened())
     {
-        this->node->printWarning(this->msgCaller, "Config file failed to open");
+        this->node->printWarning(this->msgCaller, "Config file not found");
         return;
     }
     data_config["ingestAmount"] >> this->num_images;
