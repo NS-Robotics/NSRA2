@@ -255,6 +255,8 @@ ament_target_dependencies(main_node rclcpp)
 
 target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
 
+target_compile_options(main_node PRIVATE -lboost_system)
+
 install(
   TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration #nssc_image_transport
   ARCHIVE DESTINATION lib
