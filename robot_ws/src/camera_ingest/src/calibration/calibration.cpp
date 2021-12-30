@@ -66,8 +66,8 @@ void Calibration::__CBCthreadTask(int img_num)
         this->node->printWarning(this->msgCaller, "Right image " + std::to_string(img_num) + " CBC not found");
     else
     {
-        this->right_repr.image_points.append(right_img_points);
-        this->right_repr.object_points.append(this->obj);
+        this->right_repr.image_points.push_back(right_img_points);
+        this->right_repr.object_points.push_back(this->obj);
     } 
 
     NSSC_STATUS left_status;
@@ -85,15 +85,15 @@ void Calibration::__CBCthreadTask(int img_num)
         this->node->printWarning(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC not found");
     else
     {
-        this->left_repr.image_points.append(right_img_points);
-        this->left_repr.object_points.append(this->obj);
+        this->left_repr.image_points.push_back(right_img_points);
+        this->left_repr.object_points.push_back(this->obj);
     }
 
     if(right_status == NSSC_STATUS_SUCCESS && left_status == NSSC_STATUS_SUCCESS)
     {   
         StereoRepr ret(left_img_points, right_img_points);
-        this->stereo_image_points.append(ret);
-        this->stereo_object_points.append(this->obj);
+        this->stereo_image_points.push_back(ret);
+        this->stereo_object_points.push_back(this->obj);
     }
 }
 
