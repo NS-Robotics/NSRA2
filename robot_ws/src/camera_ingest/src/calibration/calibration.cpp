@@ -43,7 +43,7 @@ void Calibration::_prepareDataSet()
         else
             this->right_cam_repr.push_back(ret);
 
-        sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
+        sprintf(img_file, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
         if (status == NSSC_CALIB_FILE_NOT_FOUND)
             this->node->printWarning(this->msgCaller, "File not found");
