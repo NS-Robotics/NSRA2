@@ -199,6 +199,7 @@ target_include_directories(
   include/errors
   include/rapidxml-1.13
   ${gxi_INCLUDES}
+  ${Boost_INCLUDE_DIRS}
 )
 
 target_link_libraries(calibration ros_node ${Boost_LIBRARIES})
