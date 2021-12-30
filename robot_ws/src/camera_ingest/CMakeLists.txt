@@ -202,7 +202,7 @@ target_link_libraries(calibration ros_node ${Boost_SYSTEM_LIBRARY})
 
 ament_target_dependencies(calibration rclcpp OpenCV)
 
-target_compile_options(my_target PRIVATE -lboost_system)
+target_compile_options(calibration PRIVATE -lboost_system)
 
 #add_library(
 #  nssc_image_transport
