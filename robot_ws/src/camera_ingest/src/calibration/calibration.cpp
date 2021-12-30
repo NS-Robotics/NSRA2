@@ -36,10 +36,10 @@ void Calibration::_prepareDataSet()
     for (int i = 0; i < this->stereo_image_points.size(); i++)
     {
         std::vector<cv::Point2f> n_left, n_right;
-        for (int j = 0; j < this->stereo_image_points.left_image_points[i].size(); j++)
+        for (int j = 0; j < this->stereo_image_points[i].left_image_points[i].size(); j++)
         {
-            n_left.push_back(cv::Point2f((double)this->stereo_image_points.left_image_points[i][j].x, (double)this->stereo_image_points.left_image_points[i][j].y));
-            n_right.push_back(cv::Point2f((double)this->stereo_image_points.right_image_points[i][j].x, (double)this->stereo_image_points.right_image_points[i][j].y));
+            n_left.push_back(cv::Point2f((double)this->stereo_image_points[i].left_image_points[j].x, (double)this->stereo_image_points[i].left_image_points[j].y));
+            n_right.push_back(cv::Point2f((double)this->stereo_image_points[i].right_image_points[j].x, (double)this->stereo_image_points[i].right_image_points[j].y));
         }
         this->stereo_left_image_points.push_back(n_left);
         this->stereo_right_image_points.push_back(n_right);
@@ -49,7 +49,7 @@ void Calibration::_prepareDataSet()
 
 void Calibration::__CBCthreadTask(int img_num)
 {
-    ObjectRepr ret;
+    StereoRepr ret;
 
     NSSC_STATUS right_status;
     std::vector<cv::Point2f> right_img_points;
