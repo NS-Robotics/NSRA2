@@ -10,6 +10,6 @@ void Calibration::_calib_stereo()
 
     this->node->printInfo(this->msgCaller, "Stereo calibration reprojection error: " + std::to_string(rms));
 
-    cv::stereoRectify(this->left_K, this->left_D, this->right_K, this->right_D, img1.size(),
+    cv::stereoRectify(this->left_K, this->left_D, this->right_K, this->right_D, cv::Size(3088, 2064),
                       this->R, this->T, this->RL, this->RR, this->PL, this->PR, this->Q);
 }
