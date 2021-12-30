@@ -18,7 +18,6 @@ void Calibration::_prepareDataSet()
         for (int j = 0; j < this->board_width; j++)
             this->obj.push_back(cv::Point3f((float)j * this->node->g_config.calibConfig.square_size, (float)k * this->node->g_config.calibConfig.square_size, 0));
 
-    this->node->printInfo(this->msgCaller, "read config");
     cv::FileStorage data_config((this->setPath + "config.xml").c_str(), cv::FileStorage::READ);
     if(!data_config.isOpened())
     {
@@ -26,7 +25,6 @@ void Calibration::_prepareDataSet()
         return;
     }
     data_config["ingestAmount"] >> this->num_images;
-    this->node->printInfo(this->msgCaller, std::to_string(this->num_images));
 
     for (int i = 0; i < this->num_images; i++)
     {
@@ -35,6 +33,8 @@ void Calibration::_prepareDataSet()
         ObjectRepr ret;
 
         sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
+        std::string info(img_file);
+        this->node->printWarning(this->msgCaller, info);
         std::tie(status, ret) = __findCBC(img_file);
         if(status == NSSC_CALIB_FILE_NOT_FOUND)
             this->node->printWarning(this->msgCaller, "File not found");
@@ -70,8 +70,6 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *img_file)
     found = cv::findChessboardCorners(img, this->board_size, corners,
                                       cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
     
-    this->node->printInfo(this->msgCaller, "CBC test");
-
     if (!found)
         return std::make_tuple(NSSC_CALIB_CBC_NOT_FOUND, ret);
 
@@ -85,8 +83,8 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *img_file)
     return std::make_tuple(NSSC_STATUS_SUCCESS, ret);
 }
 
-bool Calibration::__fileExists(const char *fileName)
+bool Calibration::__fileExists(const std::string &name)
 {
     struct stat buffer;
-    return (stat(fileName, &buffer) == 0);
+    return (stat(name.c_str(), &buffer) == 0);
 }
