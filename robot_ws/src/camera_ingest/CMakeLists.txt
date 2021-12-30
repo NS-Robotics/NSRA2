@@ -22,6 +22,7 @@ find_package(cv_bridge REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(jetson-utils REQUIRED)
 find_package(jetson-inference REQUIRED)
+find_package(Boost REQUIRED)
 
 add_subdirectory(ros_node)
 
@@ -203,9 +204,7 @@ target_include_directories(
 
 target_link_libraries(calibration ros_node ${Boost_SYSTEM_LIBRARY})
 
-ament_target_dependencies(calibration rclcpp OpenCV)
-
-target_compile_options(calibration PRIVATE -lboost_system)
+ament_target_dependencies(calibration rclcpp OpenCV Boost)
 
 #add_library(
 #  nssc_image_transport
@@ -257,8 +256,6 @@ add_executable(main_node src/main_node.cpp)
 ament_target_dependencies(main_node rclcpp)
 
 target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
-
-target_compile_options(main_node PRIVATE -lboost_system)
 
 install(
   TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration #nssc_image_transport
