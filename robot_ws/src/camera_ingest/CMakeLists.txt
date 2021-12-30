@@ -185,6 +185,7 @@ ament_target_dependencies(ingest rclcpp OpenCV)
 add_library(
   calibration
   src/calibration/calibration.cpp
+  src/calibration/intrinsic_calib.cpp
 )
 
 target_include_directories(
