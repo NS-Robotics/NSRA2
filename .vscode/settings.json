@@ -128,7 +128,8 @@
         "span": "cpp",
         "syncstream": "cpp",
         "valarray": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "filesystem": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "cmake.configureOnOpen": false
