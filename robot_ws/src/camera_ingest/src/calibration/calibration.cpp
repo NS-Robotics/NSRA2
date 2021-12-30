@@ -29,7 +29,16 @@ void Calibration::_prepareDataSet()
     for (int i = 0; i < num_images; i++)
     {
         char *img_file;
-        sprintf(img_file, "%s%s%d.jpg", this->setPath, "fileName", i);
+        NSSC_STATUS status;
+        ObjectRepr ret;
+
+        sprintf(img_file, "%s%s%d.jpg", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
+        tie(status, ret) = __findCBC(img_file);
+        this->right_cam_repr.push_back(ret);
+
+        sprintf(img_file, "%s%s%d.jpg", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
+        tie(status, ret) = __findCBC(img_file);
+        this->left_cam_repr.push_back(ret);
     }
 }
 

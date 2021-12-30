@@ -139,6 +139,9 @@ public:
     short max_frame_time_diff = 1000; //microseconds
     int wait_duration = 5000;         //milliseconds
     bool is_running = false;
+    const char *left_img_name = "img_right_";
+    const char *right_img_name = "img_left_";
+
     short current_frame_idx = 0;
     int ingest_amount = 0;
     char *set_name = "N/A";
