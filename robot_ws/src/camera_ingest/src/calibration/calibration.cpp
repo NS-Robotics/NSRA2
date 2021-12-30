@@ -25,6 +25,7 @@ void Calibration::_prepareDataSet()
         return;
     }
     data_config["ingestAmount"] >> this->num_images;
+    this->node->printInfo(this->msgCaller, std::to_string(this->num_images));
 
     for (int i = 0; i < this->num_images; i++)
     {
@@ -34,10 +35,12 @@ void Calibration::_prepareDataSet()
 
         sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
+        this->node->printInfo(this->msgCaller, img_file));
         this->right_cam_repr.push_back(ret);
 
         sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
+        this->node->printInfo(this->msgCaller, img_file));
         this->left_cam_repr.push_back(ret);
     }
 }
@@ -57,6 +60,8 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *img_file)
     bool found = false;
     found = cv::findChessboardCorners(img, this->board_size, corners,
                                       cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
+    
+    this->node->printInfo(this->msgCaller, "CBC test"));
 
     if (!found)
         return std::make_tuple(NSSC_CALIB_CBC_NOT_FOUND, ret);
