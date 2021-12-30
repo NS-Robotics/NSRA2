@@ -83,10 +83,10 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *in_file, char *
 
     cv::cornerSubPix(gray, corners, cv::Size(5, 5), cv::Size(-1, -1),
                      cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
-    cv::drawChessboardCorners(gray, this->board_size, corners, found);
+    cv::drawChessboardCorners(img, this->board_size, corners, found);
 
     std::string file_name(out_file);
-    cv::imwrite(file_name, gray);
+    cv::imwrite(file_name, img);
 
     ret.object_points = this->obj;
     ret.image_points = corners;
