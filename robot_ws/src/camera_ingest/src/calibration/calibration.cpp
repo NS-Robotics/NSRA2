@@ -26,17 +26,17 @@ void Calibration::_prepareDataSet()
     }
     data_config["ingestAmount"] >> this->num_images;
 
-    for (int i = 0; i < num_images; i++)
+    for (int i = 0; i < this->num_images; i++)
     {
         char *img_file;
         NSSC_STATUS status;
         ObjectRepr ret;
 
-        sprintf(img_file, "%s%s%d.jpg", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
+        sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
         this->right_cam_repr.push_back(ret);
 
-        sprintf(img_file, "%s%s%d.jpg", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
+        sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.left_img_name, i);
         std::tie(status, ret) = __findCBC(img_file);
         this->left_cam_repr.push_back(ret);
     }
