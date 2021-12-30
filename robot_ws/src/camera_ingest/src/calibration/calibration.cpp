@@ -49,7 +49,7 @@ void Calibration::_prepareDataSet()
         char in_file2[100];
         char out_file2[100];
         sprintf(in_file2, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, i);
-        sprintf(out_file1, "%s%s%s%d.png", (this->setPath).c_str(), "corners_", this->node->g_config.ingestConfig.left_img_name, i);
+        sprintf(out_file2, "%s%s%s%d.png", (this->setPath).c_str(), "corners_", this->node->g_config.ingestConfig.left_img_name, i);
         std::string s_img_file2(in_file2);
 
         std::tie(status, ret) = __findCBC(in_file2, out_file2);
@@ -86,7 +86,6 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *in_file, char *
     cv::drawChessboardCorners(gray, this->board_size, corners, found);
 
     std::string file_name(out_file);
-    this->node->printInfo(this->msgCaller, file_name);
     cv::imwrite(file_name, gray);
 
     ret.object_points = this->obj;
