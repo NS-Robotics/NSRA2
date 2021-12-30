@@ -48,6 +48,10 @@ typedef enum NSSC_STATUS_LIST
     //CLI error codes
     NSSC_CLI_ARGUMENT_TYPE_ERROR        = -40,                              // Invalid argument
 
+    //Calibration error codes
+    NSSC_CALIB_FILE_NOT_FOUND           = -50,
+    NSSC_CALIB_CBC_NOT_FOUND            = -51,
+
 } NSSC_STATUS_LIST;
 
 class NSSC_ERRORS

@@ -18,7 +18,7 @@ public:
     std::vector<cv::Point2f> image_points;
 };
 
-class Calibration
+class Calibration : public NSSC_ERRORS
 {
 public:
     Calibration(std::shared_ptr<NSSC> &node, char *setName);
@@ -38,7 +38,7 @@ private:
     std::vector<cv::Point3f> obj;
 
     void _prepareDataSet();
-    std::tuple<bool, ObjectRepr> __findCBC(char *fileName);
+    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(char *fileName);
     void _calib_intrinsics();
     void _calib_stereo();
     void _undistort_rectify();
