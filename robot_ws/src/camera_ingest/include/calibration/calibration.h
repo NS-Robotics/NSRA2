@@ -38,11 +38,11 @@ private:
     std::vector<cv::Point3f> obj;
 
     void _prepareDataSet();
-    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(const std::string &name);
+    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(char *fileName);
     void _calib_intrinsics();
     void _calib_stereo();
     void _undistort_rectify();
-    bool __fileExists(const char* fileName);
+    bool __fileExists(const std::string &name);
 };
 
 #endif //NSSC_CALIBRATION_
