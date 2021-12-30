@@ -36,7 +36,7 @@ void Calibration::_prepareDataSet()
     for (int i = 0; i < this->stereo_image_points.size(); i++)
     {
         std::vector<cv::Point2f> n_left, n_right;
-        for (int j = 0; j < this->stereo_image_points[i].left_image_points[i].size(); j++)
+        for (int j = 0; j < this->stereo_image_points[i].left_image_points.size(); j++)
         {
             n_left.push_back(cv::Point2f((double)this->stereo_image_points[i].left_image_points[j].x, (double)this->stereo_image_points[i].left_image_points[j].y));
             n_right.push_back(cv::Point2f((double)this->stereo_image_points[i].right_image_points[j].x, (double)this->stereo_image_points[i].right_image_points[j].y));
