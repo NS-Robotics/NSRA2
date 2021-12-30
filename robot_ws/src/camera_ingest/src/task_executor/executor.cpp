@@ -83,7 +83,7 @@ void Executor::run_ingest()
 
 void Executor::run_calibration(char *setName)
 {
-    
+    this->calibration = new Calibration(this->node, setName);
 }
 
 void Executor::cancel()

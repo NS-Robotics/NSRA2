@@ -7,6 +7,7 @@
 #include "camera_manager.h"
 #include "ndi.h"
 #include "ingest.h"
+#include "calibration.h"
 
 class Executor : public NSSC_ERRORS, public CLI
 {
@@ -26,6 +27,7 @@ private:
     std::shared_ptr<NDI> ndi;
 
     Ingest *ingest;
+    Calibration *calibration;
 
     bool ndi_initialized = false;
     bool cam_manager_initialized = false;
