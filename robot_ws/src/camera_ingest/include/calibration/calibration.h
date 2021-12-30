@@ -11,18 +11,24 @@
 
 #include <sys/stat.h>
 
-struct ObjectRepr
+struct StereoRepr
 {
 public:
-    std::vector<cv::Point3f> object_points;
-    std::vector<cv::Point2f> image_points;
+    StereoRepr();
+    StereoRepr(std::vector<cv::Point2f> left_image_points, std::vector<cv::Point2f> right_image_points)
+    {
+        this->left_image_points = left_image_points;
+        this->right_image_points = right_image_points;
+    }
+    std::vector<cv::Point2f> left_image_points;
+    std::vector<cv::Point2f> right_image_points;
 };
 
-struct ObjectReprVec
+struct MonoRepr
 {
 public:
-    std::vector<std::vector<cv::Point3f>> object_points;
     std::vector<std::vector<cv::Point2f>> image_points;
+    std::vector<std::vector<cv::Point3f>> object_points;
 };
 
 class Calibration : public NSSC_ERRORS
@@ -36,14 +42,12 @@ private:
     std::string msgCaller = "Calibration";
 
     void _prepareDataSet();
-    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(char *in_file, char *out_file);
+    void __CBCthreadTask(int img_num);
+    std::tuple<NSSC_STATUS, std::vector<cv::Point2f> image_points> __findCBC(char *in_file, char *out_file);
     void _calib_intrinsics();
     void _calib_stereo();
     void _undistort_rectify();
     bool __fileExists(const std::string &name);
-    double __computeReprojectionErrors(const ObjectReprVec &obj_repr,
-                                       const std::vector<cv::Mat> &rvecs, const std::vector<cv::Mat> &tvecs,
-                                       const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs);
 
     std::string setPath;
     int board_width;
@@ -51,8 +55,14 @@ private:
     int num_images;
     cv::Size board_size;
 
-    ObjectReprVec left_cam_repr, right_cam_repr;
-    ObjectReprVec left_img_repr, right_img_repr;
+    MonoRepr left_repr;
+    MonoRepr right_repr;
+
+    std::vector<std::vector<cv::Point3f>> stereo_object_points;
+    std::vector<StereoRepr> stereo_image_points;
+    std::vector<std::vector<cv::Point2f>> stereo_left_image_points;
+    std::vector<std::vector<cv::Point2f>> stereo_right_image_points;
+
     std::vector<cv::Point3f> obj;
 
     cv::Mat left_K, right_K, left_D, right_D;
