@@ -66,6 +66,8 @@ void Calibration::__CBCthreadTask(int img_num)
 {
     StereoRepr ret;
 
+    this->node->printInfo(this->msgCaller, "Thread image task: " + std::to_string(img_num));
+
     NSSC_STATUS right_status;
     std::vector<cv::Point2f> right_img_points;
     char in_file1[100];
