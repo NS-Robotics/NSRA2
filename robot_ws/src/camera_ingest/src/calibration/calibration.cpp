@@ -60,9 +60,9 @@ void Calibration::__CBCthreadTask(int img_num)
     std::string s_img_file1(in_file1);
 
     std::tie(right_status, right_img_points) = __findCBC(in_file1, out_file1);
-    if (status == NSSC_CALIB_FILE_NOT_FOUND)
+    if (right_status == NSSC_CALIB_FILE_NOT_FOUND)
         this->node->printError(this->msgCaller, "File " + s_img_file1 + " not found");
-    else if (status == NSSC_CALIB_CBC_NOT_FOUND)
+    else if (right_status == NSSC_CALIB_CBC_NOT_FOUND)
         this->node->printWarning(this->msgCaller, "Right image " + std::to_string(img_num) + " CBC not found");
     else
     {
@@ -79,9 +79,9 @@ void Calibration::__CBCthreadTask(int img_num)
     std::string s_img_file2(in_file2);
 
     std::tie(left_status, left_img_points) = __findCBC(in_file2, out_file2);
-    if (status == NSSC_CALIB_FILE_NOT_FOUND)
+    if (left_status == NSSC_CALIB_FILE_NOT_FOUND)
         this->node->printError(this->msgCaller, "File " + s_img_file2 + " not found");
-    else if (status == NSSC_CALIB_CBC_NOT_FOUND)
+    else if (left_status == NSSC_CALIB_CBC_NOT_FOUND)
         this->node->printWarning(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC not found");
     else
     {
@@ -103,7 +103,7 @@ std::tuple<NSSC_STATUS, std::vector<cv::Point2f> image_points> Calibration::__fi
     std::vector<cv::Point2f> corners;
 
     if (!__fileExists(in_file))
-        return std::make_tuple(NSSC_CALIB_FILE_NOT_FOUND, ret);
+        return std::make_tuple(NSSC_CALIB_FILE_NOT_FOUND, corners);
 
     img = cv::imread(in_file, cv::IMREAD_COLOR);
     cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
@@ -113,7 +113,7 @@ std::tuple<NSSC_STATUS, std::vector<cv::Point2f> image_points> Calibration::__fi
                                       cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FILTER_QUADS);
     
     if (!found)
-        return std::make_tuple(NSSC_CALIB_CBC_NOT_FOUND, ret);
+        return std::make_tuple(NSSC_CALIB_CBC_NOT_FOUND, corners);
 
     cv::cornerSubPix(gray, corners, cv::Size(5, 5), cv::Size(-1, -1),
                      cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
