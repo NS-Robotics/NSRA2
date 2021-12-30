@@ -38,7 +38,7 @@ private:
     std::vector<cv::Point3f> obj;
 
     void _prepareDataSet();
-    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(char *fileName);
+    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(const std::string &name);
     void _calib_intrinsics();
     void _calib_stereo();
     void _undistort_rectify();
