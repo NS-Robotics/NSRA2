@@ -7,6 +7,7 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     this->board_width = this->node->g_config.calibConfig.board_width;
     this->board_height = this->node->g_config.calibConfig.board_height;
     _prepareDataSet();
+    _calib_intrinsics();
 }
 
 void Calibration::_prepareDataSet()
@@ -31,11 +32,13 @@ void Calibration::_prepareDataSet()
         NSSC_STATUS status;
         ObjectRepr ret;
 
-        char img_file1[100];
-        sprintf(img_file1, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.right_img_name, i);
-        std::string s_img_file1(img_file1);
+        char in_file1[100];
+        char out_file1[100];
+        sprintf(in_file1, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.right_img_name, i);
+        sprintf(out_file1, "%s%s%s%d.png", (this->setPath).c_str(), "corners_", this->node->g_config.ingestConfig.right_img_name, i);
+        std::string s_img_file1(in_file1);
 
-        std::tie(status, ret) = __findCBC(img_file1);
+        std::tie(status, ret) = __findCBC(in_file1, out_file1);
         if(status == NSSC_CALIB_FILE_NOT_FOUND)
             this->node->printError(this->msgCaller, "File " + s_img_file1 + " not found");
         else if(status == NSSC_CALIB_CBC_NOT_FOUND)
@@ -43,11 +46,13 @@ void Calibration::_prepareDataSet()
         else
             this->right_cam_repr.push_back(ret);
 
-        char img_file2[100];
-        sprintf(img_file2, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, i);
-        std::string s_img_file2(img_file2);
+        char in_file2[100];
+        char out_file2[100];
+        sprintf(in_file2, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, i);
+        sprintf(out_file1, "%s%s%s%d.png", (this->setPath).c_str(), "corners_", this->node->g_config.ingestConfig.left_img_name, i);
+        std::string s_img_file2(in_file2);
 
-        std::tie(status, ret) = __findCBC(img_file2);
+        std::tie(status, ret) = __findCBC(in_file2, out_file2);
         if (status == NSSC_CALIB_FILE_NOT_FOUND)
             this->node->printError(this->msgCaller, "File " + s_img_file2 + " not found");
         else if (status == NSSC_CALIB_CBC_NOT_FOUND)
@@ -57,16 +62,16 @@ void Calibration::_prepareDataSet()
     }
 }
 
-std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *img_file)
+std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *in_file, char *out_file)
 {
     ObjectRepr ret;
     cv::Mat img, gray;
     std::vector<cv::Point2f> corners;
 
-    if (!__fileExists(img_file))
+    if (!__fileExists(in_file))
         return std::make_tuple(NSSC_CALIB_FILE_NOT_FOUND, ret);
 
-    img = cv::imread(img_file, cv::IMREAD_COLOR);
+    img = cv::imread(in_file, cv::IMREAD_COLOR);
     cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
 
     bool found = false;
@@ -79,6 +84,9 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *img_file)
     cv::cornerSubPix(gray, corners, cv::Size(5, 5), cv::Size(-1, -1),
                      cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
     cv::drawChessboardCorners(gray, this->board_size, corners, found);
+
+    std::string file_name(this->node->g_config.ingestConfig.right_img_name);
+    cv::imwrite(out_file, gray);
 
     ret.object_points = this->obj;
     ret.image_points = corners;

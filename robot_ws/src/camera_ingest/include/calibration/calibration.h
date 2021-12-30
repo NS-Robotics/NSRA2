@@ -28,6 +28,13 @@ private:
     std::shared_ptr<NSSC> node;
     std::string msgCaller = "Calibration";
 
+    void _prepareDataSet();
+    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(char *in_file, char *out_file);
+    void _calib_intrinsics();
+    void _calib_stereo();
+    void _undistort_rectify();
+    bool __fileExists(const std::string &name);
+
     std::string setPath;
     int board_width;
     int board_height;
@@ -36,13 +43,6 @@ private:
 
     std::vector<ObjectRepr> left_cam_repr, right_cam_repr;
     std::vector<cv::Point3f> obj;
-
-    void _prepareDataSet();
-    std::tuple<NSSC_STATUS, ObjectRepr> __findCBC(char *fileName);
-    void _calib_intrinsics();
-    void _calib_stereo();
-    void _undistort_rectify();
-    bool __fileExists(const std::string &name);
 };
 
 #endif //NSSC_CALIBRATION_
