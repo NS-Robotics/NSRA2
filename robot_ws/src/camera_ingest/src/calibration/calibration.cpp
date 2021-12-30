@@ -47,7 +47,7 @@ void Calibration::_prepareDataSet()
 
 }
 
-void __CBCthreadTask(int img_num)
+void Calibration::__CBCthreadTask(int img_num)
 {
     ObjectRepr ret;
 
