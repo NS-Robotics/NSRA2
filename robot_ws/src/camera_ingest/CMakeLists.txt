@@ -63,6 +63,8 @@ set(readline_LIBRARY /usr/lib/aarch64-linux-gnu/libreadline.so)
 add_library(readline SHARED IMPORTED)
 set_target_properties(readline PROPERTIES IMPORTED_LOCATION ${readline_LIBRARY})
 
+set(boost_INCLUDES /usr/include/boost)
+
 add_library(
   nssc_errors
   src/errors/nssc_errors.cpp
@@ -196,6 +198,7 @@ target_include_directories(
   include/errors
   include/rapidxml-1.13
   ${gxi_INCLUDES}
+  ${boost_INCLUDES}
 )
 
 target_link_libraries(calibration ros_node ${Boost_SYSTEM_LIBRARY})
