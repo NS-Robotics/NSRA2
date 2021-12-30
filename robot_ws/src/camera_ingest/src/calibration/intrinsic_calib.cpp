@@ -19,8 +19,8 @@ double Calibration::__computeReprojectionErrors(const std::vector<ObjectRepr> &o
     {
         cv::projectPoints(cv::Mat(obj_repr->object_points[i]), rvecs[i], tvecs[i], cameraMatrix,
                           distCoeffs, imagePoints2);
-        err = norm(cv::Mat(imagePoints[i]), cv::Mat(imagePoints2), cv::L2);
-        int n = (int)objectPoints[i].size();
+        err = norm(cv::Mat(obj_repr->image_points[i]), cv::Mat(imagePoints2), cv::L2);
+        int n = (int)obj_repr->object_points[i].size();
         perViewErrors[i] = (float)std::sqrt(err * err / n);
         totalErr += err * err;
         totalPoints += n;
