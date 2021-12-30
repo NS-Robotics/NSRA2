@@ -86,6 +86,7 @@ std::tuple<NSSC_STATUS, ObjectRepr> Calibration::__findCBC(char *in_file, char *
     cv::drawChessboardCorners(gray, this->board_size, corners, found);
 
     std::string file_name(out_file);
+    this->node->printInfo(this->msgCaller, file_name);
     cv::imwrite(file_name, gray);
 
     ret.object_points = this->obj;
