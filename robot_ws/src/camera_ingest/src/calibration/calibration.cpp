@@ -18,7 +18,7 @@ void Calibration::_prepareDataSet()
         for (int j = 0; j < this->board_width; j++)
             this->obj.push_back(cv::Point3f((float)j * this->node->g_config.calibConfig.square_size, (float)k * this->node->g_config.calibConfig.square_size, 0));
 
-    cv::FileStorage data_config(this->setPath + "config.xml", cv::FileStorage::READ);
+    cv::FileStorage data_config((this->setPath + "config.xml").c_str(), cv::FileStorage::READ);
     if(!data_config.isOpened())
     {
         this->node->printWarning(this->msgCaller, "Config file failed to open");
