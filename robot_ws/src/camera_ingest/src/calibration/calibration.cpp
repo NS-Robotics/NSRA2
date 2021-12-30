@@ -6,9 +6,21 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
     this->board_width = this->node->g_config.calibConfig.board_width;
     this->board_height = this->node->g_config.calibConfig.board_height;
+
+    boost::asio::io_service::work work(this->ioService);
+    for(int i = 0; i < 10; i++)
+    {
+        this->threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &this->ioService));
+    }
     _prepareDataSet();
     _calib_intrinsics();
     _calib_stereo();
+}
+
+Calibration::~Calibration()
+{
+    this->ioService.stop();
+    this->threadpool.join_all();
 }
 
 void Calibration::_prepareDataSet()
@@ -30,8 +42,11 @@ void Calibration::_prepareDataSet()
 
     for (int i = 0; i < this->num_images; i++)
     {
-        __CBCthreadTask(i);
+        this->ioService.post(boost::bind(__CBCthreadTask, i));
     }
+
+    this->ioService.stop();
+    this->threadpool.join_all();
 
     for (int i = 0; i < this->stereo_image_points.size(); i++)
     {

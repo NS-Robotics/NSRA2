@@ -10,6 +10,9 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <sys/stat.h>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 
 struct StereoRepr
 {
@@ -37,6 +40,7 @@ class Calibration : public NSSC_ERRORS
 {
 public:
     Calibration(std::shared_ptr<NSSC> &node, char *setName);
+    ~Calibration();
     void cancel_calibration();
 
 private:
@@ -50,6 +54,9 @@ private:
     void _calib_stereo();
     void _undistort_rectify();
     bool __fileExists(const std::string &name);
+
+    boost::asio::io_service ioService;
+    boost::thread_group threadpool;
 
     std::string setPath;
     int board_width;
