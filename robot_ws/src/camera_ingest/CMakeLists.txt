@@ -199,10 +199,9 @@ target_include_directories(
   include/errors
   include/rapidxml-1.13
   ${gxi_INCLUDES}
-  ${boost_INCLUDES}
 )
 
-target_link_libraries(calibration ros_node ${Boost_SYSTEM_LIBRARY})
+target_link_libraries(calibration ros_node)
 
 ament_target_dependencies(calibration rclcpp OpenCV Boost)
 
