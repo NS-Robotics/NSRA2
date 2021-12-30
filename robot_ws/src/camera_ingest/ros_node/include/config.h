@@ -149,8 +149,11 @@ public:
 struct calib_config
 {
 public:
-    bool is_running = false;
-    char *set_name = "N/A";
+    bool is_running   = false;
+    char *set_name    = "N/A";
+    int board_width   = 9;
+    int board_height  = 6;
+    float square_size = 35.0; //millimeters
 };
 
 struct globalConfig : public frame_config, public ingest_config, public calib_config

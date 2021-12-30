@@ -127,7 +127,8 @@
         "scoped_allocator": "cpp",
         "span": "cpp",
         "syncstream": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "stack": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "cmake.configureOnOpen": false
