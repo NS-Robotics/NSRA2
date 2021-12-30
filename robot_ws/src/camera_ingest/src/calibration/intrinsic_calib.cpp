@@ -1,6 +1,6 @@
 #include "calibration.h"
 
-Calibration::_calib_intrinsics()
+void Calibration::_calib_intrinsics()
 {
-    
+
 }
