@@ -32,7 +32,7 @@ void Calibration::_prepareDataSet()
         NSSC_STATUS status;
         ObjectRepr ret;
 
-        sprintf(img_file, "%s%s%d.png", this->setPath, this->node->g_config.ingestConfig.right_img_name, i);
+        sprintf(img_file, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.right_img_name, i);
         std::string info(img_file);
         this->node->printWarning(this->msgCaller, info);
         std::tie(status, ret) = __findCBC(img_file);
