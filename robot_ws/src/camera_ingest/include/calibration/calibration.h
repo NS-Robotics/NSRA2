@@ -28,13 +28,14 @@ private:
     std::shared_ptr<NSSC> node;
     std::string msgCaller = "Calibration";
 
-    char* setPath;
+    std::string setPath;
     int board_width;
     int board_height;
     int num_images;
     cv::Size board_size;
 
     std::vector<ObjectRepr> left_cam_repr, right_cam_repr;
+    std::vector<cv::Point3f> obj;
 
     void _prepareDataSet();
     std::tuple<bool, ObjectRepr> __findCBC(char *fileName);
