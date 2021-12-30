@@ -7,7 +7,7 @@ void Calibration::_calib_intrinsics()
     flag |= cv::CALIB_FIX_K4;
     flag |= cv::CALIB_FIX_K5;
 
-    cv::calibrateCamera(left_cam_repr, image_points, img.size(), K, D, rvecs, tvecs, flag);
+    cv::calibrateCamera(left_cam_repr.object_points, left_cam_repr.image_points, cv::Size(3088, 2064), this->left_K, this->left_D, rvecs, tvecs, flag);
 }
 
 double Calibration::__computeReprojectionErrors(const ObjectReprVec &obj_repr, const std::vector<cv::Mat> &rvecs, const std::vector<cv::Mat> &tvecs,

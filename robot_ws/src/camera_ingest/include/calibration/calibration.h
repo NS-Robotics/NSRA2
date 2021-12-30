@@ -41,7 +41,7 @@ private:
     void _calib_stereo();
     void _undistort_rectify();
     bool __fileExists(const std::string &name);
-    double __computeReprojectionErrors(const std::vector<ObjectRepr> &obj_repr, 
+    double __computeReprojectionErrors(const ObjectReprVec &obj_repr,
                                        const std::vector<cv::Mat> &rvecs, const std::vector<cv::Mat> &tvecs,
                                        const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs);
 
@@ -54,7 +54,7 @@ private:
     ObjectReprVec left_cam_repr, right_cam_repr;
     std::vector<cv::Point3f> obj;
 
-    cv::Mat left_K, right_K;
+    cv::Mat left_K, right_K, left_D, right_D;
 };
 
 #endif //NSSC_CALIBRATION_

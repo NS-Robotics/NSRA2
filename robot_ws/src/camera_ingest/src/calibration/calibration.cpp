@@ -45,7 +45,7 @@ void Calibration::_prepareDataSet()
             this->node->printWarning(this->msgCaller, "Right image " + std::to_string(i) + " CBC not found");
         else
         {
-            this->right_cam_repr.object_points.push_back(ret.objects_points);
+            this->right_cam_repr.object_points.push_back(ret.object_points);
             this->right_cam_repr.image_points.push_back(ret.image_points);
         }
 
@@ -62,7 +62,7 @@ void Calibration::_prepareDataSet()
             this->node->printWarning(this->msgCaller, "Left image " + std::to_string(i) + " CBC not found");
         else
         {
-            this->left_cam_repr.object_points.push_back(ret.objects_points);
+            this->left_cam_repr.object_points.push_back(ret.object_points);
             this->left_cam_repr.image_points.push_back(ret.image_points);
         }
     }
