@@ -66,8 +66,6 @@ void Calibration::__CBCthreadTask(int img_num)
 {
     StereoRepr ret;
 
-    this->node->printInfo(this->msgCaller, "Thread image task: " + std::to_string(img_num));
-
     NSSC_STATUS right_status;
     std::vector<cv::Point2f> right_img_points;
     char in_file1[100];
@@ -85,6 +83,7 @@ void Calibration::__CBCthreadTask(int img_num)
     {
         this->right_repr.image_points.push_back(right_img_points);
         this->right_repr.object_points.push_back(this->obj);
+        this->node->printInfo(this->msgCaller, "Right image " + std::to_string(img_num) + " CBC detection successfull");
     } 
 
     NSSC_STATUS left_status;
@@ -104,6 +103,7 @@ void Calibration::__CBCthreadTask(int img_num)
     {
         this->left_repr.image_points.push_back(right_img_points);
         this->left_repr.object_points.push_back(this->obj);
+        this->node->printInfo(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC detection successfull");
     }
 
     if(right_status == NSSC_STATUS_SUCCESS && left_status == NSSC_STATUS_SUCCESS)
