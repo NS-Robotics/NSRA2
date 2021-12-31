@@ -22,7 +22,7 @@ find_package(cv_bridge REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(jetson-utils REQUIRED)
 find_package(jetson-inference REQUIRED)
-find_package(Boost REQUIRED COMPONENTS thread asio)
+find_package(Boost REQUIRED COMPONENTS thread)
 
 add_subdirectory(ros_node)
 
