@@ -22,7 +22,7 @@ find_package(cv_bridge REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(jetson-utils REQUIRED)
 find_package(jetson-inference REQUIRED)
-find_package(Boost REQUIRED)
+find_package(Boost REQUIRED COMPONENTS thread asio)
 
 add_subdirectory(ros_node)
 
@@ -202,9 +202,9 @@ target_include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
-target_link_libraries(calibration ros_node ${Boost_LIBRARIES})
+target_link_libraries(calibration ros_node)
 
-ament_target_dependencies(calibration rclcpp OpenCV)
+ament_target_dependencies(calibration rclcpp OpenCV Boost)
 
 #add_library(
 #  nssc_image_transport
