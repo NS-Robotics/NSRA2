@@ -19,7 +19,7 @@ void Calibration::_prepareDataSet()
 
     for (int i = 0; i < this->num_images; i++)
     {
-        this->io_service_->post(boost::bind(&Calibration::__CBCthreadTask, this, i));
+        this->_io_service->post(boost::bind(&Calibration::__CBCthreadTask, this, i));
     }
 
     while(this->CBCThreads.load() != this->num_images)
@@ -27,8 +27,8 @@ void Calibration::_prepareDataSet()
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
-    this->io_service_->stop();
-    this->threadpool_.join_all();
+    this->_io_service->stop();
+    this->_threadpool.join_all();
     this->node->printWarning(this->msgCaller, "CBC done");
 
     for (int i = 0; i < this->stereo_image_points.size(); i++)

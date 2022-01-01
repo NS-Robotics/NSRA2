@@ -178,7 +178,6 @@ target_include_directories(
   include/errors
   include/camera_manager
   include/frame/frame_struct
-  include/rapidxml-1.13
 )
 
 target_link_libraries(ingest ros_node camera_manager)
@@ -196,7 +195,6 @@ target_include_directories(
   PUBLIC
   include/calibration
   include/errors
-  include/rapidxml-1.13
   ${gxi_INCLUDES}
   ${Boost_INCLUDE_DIRS}
 )

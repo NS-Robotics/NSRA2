@@ -15,7 +15,9 @@ Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camM
     }
     else
     {
-        saveConfig();
+        cv::FileStorage config_file((this->setPath + "config.xml").c_str(), cv::FileStorage::WRITE);
+        config_file << "setName" << this->node->g_config.ingestConfig.set_name;
+        config_file << "ingestAmount" << this->node->g_config.ingestConfig.ingest_amount;
 
         this->runIngest = true;
         this->iThread = std::thread(&Ingest::ingestThread, this);
@@ -130,7 +132,9 @@ void Ingest::ingestThread()
 
 void Ingest::cancelIngest()
 {
-    editConfig();
+    cv::FileStorage config_file((this->setPath + "config.xml").c_str(), cv::FileStorage::WRITE);
+    config_file << "ingestAmount" << this->node->g_config.ingestConfig.current_frame_idx;
+
     this->runIngest = false;
     this->node->g_config.ingestConfig.is_running = false;
     this->iThread.join();

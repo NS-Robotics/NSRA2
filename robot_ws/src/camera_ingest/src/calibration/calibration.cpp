@@ -7,15 +7,17 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     this->board_width = this->node->g_config.calibConfig.board_width;
     this->board_height = this->node->g_config.calibConfig.board_height;
 
-    this->io_service_ = boost::make_shared<boost::asio::io_service>();
-    this->work_ = boost::make_shared<boost::asio::io_service::work>(*this->io_service_);
+    this->_io_service = boost::make_shared<boost::asio::io_service>();
+    this->_work = boost::make_shared<boost::asio::io_service::work>(*this->_io_service);
     for(int i = 0; i < 10; i++)
     {
-        this->threadpool_.create_thread(boost::bind(&boost::asio::io_service::run, this->io_service_));
+        this->_threadpool.create_thread(boost::bind(&boost::asio::io_service::run, this->_io_service));
     }
+
     _prepareDataSet();
-    _calib_intrinsics();
-    _calib_stereo();
+    _calibIntrinsics();
+    _calibStereo();
+    _saveConfig();
 }
 
 Calibration::~Calibration()
@@ -23,7 +25,7 @@ Calibration::~Calibration()
 
 }
 
-void Calibration::_calib_intrinsics()
+void Calibration::_calibIntrinsics()
 {
     std::vector<cv::Mat> rvecs, tvecs;
     int flag = 0;
@@ -39,7 +41,7 @@ void Calibration::_calib_intrinsics()
     this->node->printInfo(this->msgCaller, "Right camera intrinsics reprojection error: " + std::to_string(rms_r));
 }
 
-void Calibration::_calib_stereo()
+void Calibration::_calibStereo()
 {
     int flag = 0;
     flag |= cv::CALIB_FIX_INTRINSIC;
@@ -53,4 +55,25 @@ void Calibration::_calib_stereo()
                       this->R, this->T, this->RL, this->RR, this->PL, this->PR, this->Q);
 
     this->node->printInfo(this->msgCaller, "Stereo rectification complete");
+}
+
+void Calibration::_saveConfig()
+{
+    cv::FileStorage config_file((this->setPath + "config.xml").c_str(), cv::FileStorage::WRITE);
+    //intrinsics
+    config_file << "left_K" << this->left_L;
+    config_file << "left_D" << this->left_D;
+    config_file << "right_K" << this->right_K;
+    config_file << "right_D" << this->right_D;
+    //stereo
+    config_file << "R" << this->R;
+    config_file << "T" << this->T;
+    config_file << "E" << this->E;
+    config_file << "F" << this->F;
+    //rectification
+    config_file << "RL" << this->RL;
+    config_file << "RR" << this->RR;
+    config_file << "PL" << this->PL;
+    config_file << "PR" << this->PR;
+    config_file << "Q" << this->Q;
 }

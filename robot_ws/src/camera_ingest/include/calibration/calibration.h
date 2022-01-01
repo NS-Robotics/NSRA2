@@ -42,7 +42,7 @@ class Calibration : public NSSC_ERRORS
 public:
     Calibration(std::shared_ptr<NSSC> &node, char *setName);
     ~Calibration();
-    void cancel_calibration();
+    void cancelCalibration();
 
 private:
     std::shared_ptr<NSSC> node;
@@ -51,14 +51,15 @@ private:
     void _prepareDataSet();
     void __CBCthreadTask(int img_num);
     std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> __findCBC(char *in_file, char *out_file);
-    void _calib_intrinsics();
-    void _calib_stereo();
+    void _calibIntrinsics();
+    void _calibStereo();
     void _undistort_rectify();
     bool __fileExists(const std::string &name);
+    void _saveConfig();
 
-    boost::shared_ptr<boost::asio::io_service> io_service_;
-    boost::shared_ptr<boost::asio::io_service::work> work_;
-    boost::thread_group threadpool_;
+    boost::shared_ptr<boost::asio::io_service> _io_service;
+    boost::shared_ptr<boost::asio::io_service::work> _work;
+    boost::thread_group _threadpool;
 
     std::string setPath;
     int board_width;
