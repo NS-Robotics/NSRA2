@@ -42,7 +42,6 @@ class Calibration : public NSSC_ERRORS
 public:
     Calibration(std::shared_ptr<NSSC> &node, char *setName);
     ~Calibration();
-    void cancelCalibration();
 
 private:
     std::shared_ptr<NSSC> node;
@@ -83,6 +82,10 @@ private:
     cv::Mat R, F, E;
     cv::Vec3d T;
     cv::Mat RL, RR, PL, PR, Q;
+
+    double rms_left;
+    double rms_right;
+    double rms_stereo;
 };
 
 #endif //NSSC_CALIBRATION_
