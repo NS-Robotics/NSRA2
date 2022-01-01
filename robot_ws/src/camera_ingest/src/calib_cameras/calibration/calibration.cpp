@@ -34,11 +34,11 @@ void Calibration::_calibIntrinsics()
 
     this->rms_left = cv::calibrateCamera(left_repr.object_points, left_repr.image_points, cv::Size(3088, 2064), this->left_K, this->left_D, rvecs, tvecs, flag);
 
-    this->node->printInfo(this->msgCaller, "Left camera intrinsics reprojection error: " + std::to_string(rms_l));
+    this->node->printInfo(this->msgCaller, "Left camera intrinsics reprojection error: " + std::to_string(rms_left));
 
     this->rms_right = cv::calibrateCamera(right_repr.object_points, right_repr.image_points, cv::Size(3088, 2064), this->right_K, this->right_D, rvecs, tvecs, flag);
 
-    this->node->printInfo(this->msgCaller, "Right camera intrinsics reprojection error: " + std::to_string(rms_r));
+    this->node->printInfo(this->msgCaller, "Right camera intrinsics reprojection error: " + std::to_string(rms_right));
 }
 
 void Calibration::_calibStereo()
@@ -49,7 +49,7 @@ void Calibration::_calibStereo()
     this->rms_stereo = cv::stereoCalibrate(this->stereo_object_points, this->stereo_left_image_points, this->stereo_right_image_points,
                                      this->left_K, this->left_D, this->right_K, this->right_D, cv::Size(3088, 2064), this->R, this->T, this->E, this->F);
 
-    this->node->printInfo(this->msgCaller, "Stereo calibration reprojection error: " + std::to_string(rms));
+    this->node->printInfo(this->msgCaller, "Stereo calibration reprojection error: " + std::to_string(rms_stereo));
 
     cv::stereoRectify(this->left_K, this->left_D, this->right_K, this->right_D, cv::Size(3088, 2064),
                       this->R, this->T, this->RL, this->RR, this->PL, this->PR, this->Q);
