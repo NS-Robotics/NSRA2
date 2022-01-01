@@ -22,8 +22,8 @@ void Calibration::_prepareDataSet()
         this->ioService.post(boost::bind(&Calibration::__CBCthreadTask, this, i));
     }
 
-    this->ioService.stop();
     this->threadpool.join_all();
+    this->ioService.stop();
 
     for (int i = 0; i < this->stereo_image_points.size(); i++)
     {

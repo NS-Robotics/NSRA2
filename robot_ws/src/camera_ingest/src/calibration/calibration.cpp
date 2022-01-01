@@ -51,4 +51,6 @@ void Calibration::_calib_stereo()
 
     cv::stereoRectify(this->left_K, this->left_D, this->right_K, this->right_D, cv::Size(3088, 2064),
                       this->R, this->T, this->RL, this->RR, this->PL, this->PR, this->Q);
+
+    this->node->printInfo(this->msgCaller, "Stereo rectification complete");
 }
