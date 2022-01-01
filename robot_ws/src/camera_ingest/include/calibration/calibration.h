@@ -13,6 +13,7 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/make_shared.hpp>
 
 struct StereoRepr
 {
