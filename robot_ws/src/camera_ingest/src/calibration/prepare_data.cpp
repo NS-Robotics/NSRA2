@@ -24,6 +24,7 @@ void Calibration::_prepareDataSet()
 
     this->threadpool.join_all();
     this->ioService.stop();
+    this->node->printWarning(this->msgCaller, "CBC done");
 
     for (int i = 0; i < this->stereo_image_points.size(); i++)
     {
