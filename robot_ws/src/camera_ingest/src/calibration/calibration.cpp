@@ -11,7 +11,7 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     this->work_ = boost::make_shared<boost::asio::io_service::work>(*this->io_service_);
     for(int i = 0; i < 10; i++)
     {
-        this->threadpool.create_thread(boost::bind(&boost::asio::io_service::run, this->io_service_));
+        this->threadpool_.create_thread(boost::bind(&boost::asio::io_service::run, this->io_service_));
     }
     _prepareDataSet();
     _calib_intrinsics();
