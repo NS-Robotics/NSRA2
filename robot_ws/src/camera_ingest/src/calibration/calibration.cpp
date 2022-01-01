@@ -61,7 +61,7 @@ void Calibration::_saveConfig()
 {
     cv::FileStorage config_file((this->setPath + "config.xml").c_str(), cv::FileStorage::WRITE);
     //intrinsics
-    config_file << "left_K" << this->left_L;
+    config_file << "left_K" << this->left_K;
     config_file << "left_D" << this->left_D;
     config_file << "right_K" << this->right_K;
     config_file << "right_D" << this->right_D;

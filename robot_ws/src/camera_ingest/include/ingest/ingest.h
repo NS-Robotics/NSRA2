@@ -5,6 +5,10 @@
 #include "camera_manager.h"
 #include "node.h"
 
+#include "rapidxml.hpp"
+#include "rapidxml_utils.hpp"
+#include "rapidxml_print.hpp"
+
 #include <opencv2/core/core.hpp>
 
 #include <bits/stdc++.h>
