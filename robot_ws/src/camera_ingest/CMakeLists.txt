@@ -68,13 +68,13 @@ set(boost_INCLUDES /usr/include/boost)
 
 add_library(
   nssc_errors
-  src/errors/nssc_errors.cpp
+  src/application/errors/nssc_errors.cpp
 )
 
 target_include_directories(
   nssc_errors
   PUBLIC
-  include/errors
+  include/application/errors
   ${gxi_INCLUDES}
 )
 
@@ -84,16 +84,16 @@ ament_target_dependencies(nssc_errors rclcpp)
 
 add_library(
   frame
-  src/frame/mono_frame.cpp
-  src/frame/stereo_frame.cpp
+  src/camera_api/frame/mono_frame.cpp
+  src/camera_api/frame/stereo_frame.cpp
 )
 
 target_include_directories(
   frame
   PUBLIC
-  include/frame
-  include/frame/frame_struct
-  include/errors
+  include/camera_api/frame
+  include/camera_api/frame/frame_struct
+  include/application/errors
   ${gxi_INCLUDES}
   ${CUDA_INCLUDE_DIRS}
   ${jetson_INCLUDES}
@@ -105,18 +105,18 @@ ament_target_dependencies(frame OpenCV CUDA rclcpp)
 
 add_library(
   camera
-  src/camera/camera.cpp
-  src/camera/load_camera.cpp
+  src/camera_api/camera/camera.cpp
+  src/camera_api/camera/load_camera.cpp
 )
 
 target_include_directories(
   camera
   PUBLIC
-  include/camera
-  include/errors
-  include/concurrentqueue
-  include/frame/frame_struct
-  include/camera_manager/cam_sync
+  include/camera_api/camera
+  include/application/errors
+  include/camera_api/concurrentqueue
+  include/camera_api/frame/frame_struct
+  include/camera_api/camera_manager/cam_sync
   ${gxi_INCLUDES}
   ${CUDA_INCLUDE_DIRS}
   ${jetson_INCLUDES}
@@ -128,17 +128,17 @@ ament_target_dependencies(camera OpenCV CUDA rclcpp)
 
 add_library(
   camera_manager
-  src/camera_manager/camera_manager.cpp
+  src/camera_api/camera_manager/camera_manager.cpp
 )
 
 target_include_directories(
   camera_manager
   PUBLIC
-  include/errors
-  include/camera_manager
-  include/camera_manager/cam_sync
-  include/camera
-  include/frame/frame_struct
+  include/application/errors
+  include/camera_api/camera_manager
+  include/camera_api/camera_manager/cam_sync
+  include/camera_api/camera
+  include/camera_api/frame/frame_struct
 )
 
 target_link_libraries(camera_manager ros_node camera)
@@ -147,16 +147,16 @@ ament_target_dependencies(camera_manager rclcpp)
 
 add_library(
   ndi_send
-  src/ndi/ndi.cpp
+  src/viewer_api/ndi/ndi.cpp
 )
 
 target_include_directories(
   ndi_send
   PUBLIC
-  include/ndi
-  include/errors
-  include/camera_manager
-  include/frame/frame_struct
+  include/viewer_api/ndi
+  include/application/errors
+  include/camera_api/camera_manager
+  include/camera_api/frame/frame_struct
   ${ndi_INCLUDES}
   ${CUDA_INCLUDE_DIRS}
   ${jetson_INCLUDES}
@@ -168,17 +168,17 @@ ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
 
 add_library(
   ingest
-  src/ingest/ingest.cpp
+  src/calib_cameras/ingest/ingest.cpp
 )
 
 target_include_directories(
   ingest
   PUBLIC
-  include/ingest
-  include/errors
-  include/camera_manager
-  include/frame/frame_struct
-  include/rapidxml-1.13
+  include/calib_cameras/ingest
+  include/application/errors
+  include/camera_api/camera_manager
+  include/camera_api/frame/frame_struct
+  include/calib_cameras/rapidxml-1.13
 )
 
 target_link_libraries(ingest ros_node camera_manager)
@@ -187,16 +187,16 @@ ament_target_dependencies(ingest rclcpp OpenCV)
 
 add_library(
   calibration
-  src/calibration/calibration.cpp
-  src/calibration/prepare_data.cpp
+  src/calib_cameras/calibration/calibration.cpp
+  src/calib_cameras/calibration/prepare_data.cpp
 )
 
 target_include_directories(
   calibration
   PUBLIC
-  include/calibration
-  include/errors
-  include/rapidxml-1.13
+  include/calib_cameras/calibration
+  include/application/errors
+  include/calib_cameras/rapidxml-1.13
   ${gxi_INCLUDES}
   ${Boost_INCLUDE_DIRS}
 )
@@ -214,9 +214,9 @@ ament_target_dependencies(calibration rclcpp OpenCV Boost)
 #  nssc_image_transport
 #  PUBLIC
 #  include/ndi
-#  include/errors
+#  include/application/errors
 #  include/image_transport
-#  include/camera_manager
+#  include/camera_api/camera_manager
 #  include/concurrentqueue
 #)
 
@@ -226,21 +226,21 @@ ament_target_dependencies(calibration rclcpp OpenCV Boost)
 
 add_library(
   task_executor
-  src/task_executor/executor.cpp
-  src/task_executor/cli/cli.cpp
-  src/task_executor/cli/cli_args.cpp
+  src/application/task_executor/executor.cpp
+  src/application/task_executor/cli/cli.cpp
+  src/application/task_executor/cli/cli_args.cpp
 )
 
 target_include_directories(
   task_executor
   PUBLIC
-  include/task_executor
-  include/task_executor/cli
-  include/errors
-  include/camera_manager
-  include/ndi
-  include/ingest
-  include/calibration
+  include/application/task_executor
+  include/application/task_executor/cli
+  include/application/errors
+  include/camera_api/camera_manager
+  include/viewer_api/ndi
+  include/calib_cameras/ingest
+  include/calib_cameras/calibration
   ${readline_INCLUDES}
   ${gxi_INCLUDES}
 )
@@ -250,7 +250,7 @@ target_link_libraries(task_executor readline ros_node ndi_send camera_manager in
 ament_target_dependencies(task_executor rclcpp)
 
 
-add_executable(main_node src/main_node.cpp)
+add_executable(main_node src/application/main.cpp)
 
 ament_target_dependencies(main_node rclcpp)
 

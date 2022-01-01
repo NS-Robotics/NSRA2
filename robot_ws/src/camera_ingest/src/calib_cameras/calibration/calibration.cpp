@@ -80,4 +80,6 @@ void Calibration::_saveConfig()
     config_file << "PL" << this->PL;
     config_file << "PR" << this->PR;
     config_file << "Q" << this->Q;
+
+    this->node->printInfo(this->msgCaller, "Configuration saved");
 }
