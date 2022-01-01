@@ -83,7 +83,7 @@ void Calibration::__CBCthreadTask(int img_num)
         this->node->printWarning(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC not found");
     else
     {
-        this->left_repr.image_points.push_back(right_img_points);
+        this->left_repr.image_points.push_back(left_img_points);
         this->left_repr.object_points.push_back(this->obj);
         this->node->printInfo(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC detection successfull");
     }
