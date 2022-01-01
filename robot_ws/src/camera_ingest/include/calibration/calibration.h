@@ -55,8 +55,9 @@ private:
     void _undistort_rectify();
     bool __fileExists(const std::string &name);
 
-    boost::asio::io_service ioService;
-    boost::thread_group threadpool;
+    boost::shared_ptr<boost::asio::io_service> io_service_;
+    boost::shared_ptr<boost::asio::io_service::work> work_;
+    boost::thread_group threadpool_;
 
     std::string setPath;
     int board_width;
@@ -66,6 +67,8 @@ private:
 
     MonoRepr left_repr;
     MonoRepr right_repr;
+
+    std::atomic<int> CBCThreads{0};
 
     std::vector<std::vector<cv::Point3f>> stereo_object_points;
     std::vector<StereoRepr> stereo_image_points;

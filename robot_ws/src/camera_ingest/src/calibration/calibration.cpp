@@ -7,10 +7,11 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     this->board_width = this->node->g_config.calibConfig.board_width;
     this->board_height = this->node->g_config.calibConfig.board_height;
 
-    boost::asio::io_service::work work(this->ioService);
+    this->io_service_ = boost::make_shared<boost::asio::io_service>();
+    this->work_ = boost::make_shared<boost::asio::io_service::work>(*this->io_service_);
     for(int i = 0; i < 10; i++)
     {
-        this->threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &this->ioService));
+        this->threadpool.create_thread(boost::bind(&boost::asio::io_service::run, this->io_service_));
     }
     _prepareDataSet();
     _calib_intrinsics();
@@ -19,8 +20,7 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
 
 Calibration::~Calibration()
 {
-    this->ioService.stop();
-    this->threadpool.join_all();
+
 }
 
 void Calibration::_calib_intrinsics()

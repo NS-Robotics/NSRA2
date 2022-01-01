@@ -19,11 +19,16 @@ void Calibration::_prepareDataSet()
 
     for (int i = 0; i < this->num_images; i++)
     {
-        this->ioService.post(boost::bind(&Calibration::__CBCthreadTask, this, i));
+        this->io_service_.post(boost::bind(&Calibration::__CBCthreadTask, this, i));
     }
 
-    this->threadpool.join_all();
-    this->ioService.stop();
+    while(this->CBCThreads.load() != this->num_images)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+
+    this->io_service_.stop();
+    this->threadpool_.join_all();
     this->node->printWarning(this->msgCaller, "CBC done");
 
     for (int i = 0; i < this->stereo_image_points.size(); i++)
@@ -89,6 +94,8 @@ void Calibration::__CBCthreadTask(int img_num)
         this->stereo_image_points.push_back(ret);
         this->stereo_object_points.push_back(this->obj);
     }
+
+    this->CBCThreads++;
 }
 
 std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> Calibration::__findCBC(char *in_file, char *out_file)
