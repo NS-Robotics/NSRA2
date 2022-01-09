@@ -52,6 +52,10 @@ typedef enum NSSC_STATUS_LIST
     NSSC_CALIB_FILE_NOT_FOUND           = -50,
     NSSC_CALIB_CBC_NOT_FOUND            = -51,
 
+    //Triangulation error codes
+    NSSC_TRIANGULATION_FILE_NOT_FOUND   = -60,
+    NSSC_TRIANGULATION_MARKERS_NOT_FOUND= -61
+
 } NSSC_STATUS_LIST;
 
 class NSSC_ERRORS

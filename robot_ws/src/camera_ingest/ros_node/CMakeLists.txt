@@ -4,7 +4,10 @@ find_package(fastcdr REQUIRED)
 find_package(foonathan_memory REQUIRED)
 find_package(fastrtps REQUIRED)
 
-set(ndi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/libndi)
+set(private_LIBRARIES ${PROJECT_SOURCE_DIR}/../../../../NSSC_private_libs)
+set(rclcpp_INCLUDES /opt/ros/foxy/install/rclcpp/include/rclcpp)
+
+set(ndi_INCLUDES ${private_LIBRARIES}/include/libndi)
 
 add_library(
     ros_node
@@ -16,6 +19,7 @@ target_include_directories(
     PUBLIC
     include
     ${ndi_INCLUDES}
+        ${rclcpp_INCLUDES}
 )
 
 ament_target_dependencies(ros_node rclcpp ament_index_cpp)

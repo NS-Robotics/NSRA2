@@ -9,24 +9,26 @@
 
 class stereoFrame
 {
-  public:
+public:
     static stereoFrame *make_frame(NSSC_FRAME_TYPE type);
 
-    virtual void convert(monoFrame *leftCamera, monoFrame *rightCamera, bool concatenate, bool resize) = 0;
-    virtual void alloc(std::shared_ptr<NSSC>& node) = 0;
+    virtual void convert(monoFrame *leftCamera, monoFrame *rightCamera, bool resize) = 0;
+
+    virtual void alloc(std::shared_ptr<NSSC> &node) = 0;
+
+    virtual void process(bool resize) = 0;
 
     std::shared_ptr<NSSC> node;
     std::string msgCaller = "Stereo Frame";
 
     frameBuffer *stereoBuf;
-    monoFrame   *leftCamera;
-    monoFrame   *rightCamera;
+    monoFrame *leftCamera;
+    monoFrame *rightCamera;
 
     frameBuffer concatenateBuf;
     frameBuffer resizeBuf;
 
-    int         timedif;
-    bool        concatenated;
+    int timedif;
 };
 
 #endif  //NSSC_FRAME_STEREO_FRAME_

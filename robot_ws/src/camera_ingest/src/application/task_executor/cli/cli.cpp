@@ -4,7 +4,7 @@ void CLI::CLIFunc()
 {
     char *buf;
 
-    while ((buf = readline("\033[1;32m[NSSC client] >> \033[0m")) != nullptr && this->cliON.load())
+    while ((buf = readline("\033[1;32m[NSSC client]\033[0m >> ")) != nullptr && this->cliON.load())
     {
         if (strlen(buf) > 0)
         {
@@ -27,16 +27,35 @@ void CLI::CLIFunc()
         {
             if(cmd.size() == 1)
             {
-                rawNDI(this->node->g_config.frameConfig.mono_stream);
+                toggleNDI(this->node->g_config.frameConfig.mono_stream);
                 continue;
             }
-            bool stream;
-            if (getBoolArg(cmd, 'm', stream) != NSSC_STATUS_SUCCESS)
+            if(cmd.size() == 2)
             {
-                this->printError("Bad argument!");
-                continue;
+                bool raw_stream;
+                if (getBoolArg(cmd, 'r', raw_stream) != NSSC_STATUS_SUCCESS)
+                {
+                    this->printError("Bad argument!");
+                    continue;
+                }
+                _toggleNDIsource(NDI_SEND_RAW);
+            } else
+            {
+                bool mono_stream;
+                if (getBoolArg(cmd, 'm', mono_stream) != NSSC_STATUS_SUCCESS)
+                {
+                    this->printError("Bad argument!");
+                    continue;
+                }
+                toggleNDI(false);
+                bool raw_stream;
+                if (getBoolArg(cmd, 'r', raw_stream) != NSSC_STATUS_SUCCESS)
+                {
+                    this->printError("Bad argument!");
+                    continue;
+                }
+                _toggleNDIsource(NDI_SEND_RAW);
             }
-            rawNDI(stream);
         }
         else if (strcmp(cmd[0], "ingest") == 0)
         {
@@ -70,6 +89,32 @@ void CLI::CLIFunc()
                 delete[] setName;
             }
         }
+        else if (strcmp(cmd[0], "triangulate") == 0)
+        {
+            if (cmd.size() == 1)
+            {
+                run_triangulation(const_cast<char *>(this->node->g_config.triangulationConfig.standard_config_file));
+                continue;
+            }
+            char *setName;
+            if (getStrArg(cmd, 'd', &setName) != NSSC_STATUS_SUCCESS)
+            {
+                this->printError("Bad argument!");
+            }
+            else
+            {
+                run_triangulation(setName);
+                delete[] setName;
+            }
+        }
+        else if (strcmp(cmd[0], "detect") == 0)
+        {
+            run_detection();
+        }
+        else if (strcmp(cmd[0], "calib_origin") == 0)
+        {
+            find_triangulation_origin();
+        }
         else if (strcmp(cmd[0], "cancel") == 0)
         {
             cancel();
@@ -86,7 +131,10 @@ void CLI::CLIFunc()
                    "  NDI                                       - Toggle raw NDI stream\n"
                    "  ingest [-n number of images -d set name]  - Start the calibration capture\n"
                    "  calibrate [-d image set name]             - Run the calibration\n"
-                   "  run [-c calibration config]               - Run NSSC\n"
+                   "  triangulate [-d calibration config]       - Prepare NSSC for object detection\n"
+                   "  calib_origin                              - Recalibrate the robot origin\n"
+                   "  detect                                    - Run the NSSC object detection\n"
+                   "  cancel                                    - Cancel the currently running process\n"
                    "  exit                                      - Close the application\n");
         }
         else

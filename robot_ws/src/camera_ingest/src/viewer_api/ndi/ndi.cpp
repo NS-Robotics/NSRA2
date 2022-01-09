@@ -3,10 +3,10 @@
 #include <chrono>
 #include <ctime>    
 
-NDI::NDI(std::shared_ptr<NSSC>& node, std::shared_ptr<cameraManager>& camManager) : NSSC_ERRORS(node)
+NDI::NDI(std::shared_ptr<NSSC>& node, std::unique_ptr<NDIframeManager>* frameManager) : NSSC_ERRORS(node)
 {
     this->node = node;
-    this->camManager = camManager;
+    this->frameManager = frameManager;
 }
 
 NDI::~NDI()
@@ -59,6 +59,7 @@ NSSC_STATUS NDI::startStream()
     NSSC_STATUS status = NSSC_STATUS_SUCCESS;
 
     this->streamON = true;
+    this->node->g_config.frameConfig.stream_on = true;
 
     this->sThread = this->node->g_config.frameConfig.mono_stream ? std::thread(&NDI::monoStreamThread, this) : std::thread(&NDI::stereoStreamThread, this);
 
@@ -70,6 +71,7 @@ NSSC_STATUS NDI::startStream()
 NSSC_STATUS NDI::endStream()
 {
     this->streamON = false;
+    this->node->g_config.frameConfig.stream_on = false;
     this->sThread.join();
     this->node->printInfo(this->msgCaller, "Stream ended");
 
@@ -102,7 +104,8 @@ void NDI::stereoStreamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
 	    }
 
-        stereoFrame = this->camManager->getFrame(true, this->node->g_config.frameConfig.resize_frame);
+        stereoFrame = (*this->frameManager)->getFrame();
+        if(stereoFrame == nullptr) { break; }
 
         if(this->node->g_config.ingestConfig.is_running)
         {
@@ -138,7 +141,7 @@ void NDI::stereoStreamThread()
         this->NDI_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf->hImageBuf;
 		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
 
-        this->camManager->returnBuf(stereoFrame);
+        (*this->frameManager)->returnBuf(stereoFrame);
 
         idx = (idx == 0) ? 1 : 0;
 	}
@@ -149,7 +152,7 @@ void NDI::monoStreamThread()
 {
     stereoFrame *stereoFrame[2];
 
-    stereoFrame[0] = this->camManager->getFrame(true);
+    stereoFrame[0] = (*this->frameManager)->getFrame();
 
     int idx = 1;
 
@@ -160,7 +163,7 @@ void NDI::monoStreamThread()
             this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
         }
 
-        stereoFrame[idx] = this->camManager->getFrame(true);
+        stereoFrame[idx] = (*this->frameManager)->getFrame();
 
         if (this->node->g_config.ingestConfig.is_running)
         {
@@ -196,7 +199,7 @@ void NDI::monoStreamThread()
         this->NDI_video_frame.p_data = (uint8_t *)stereoFrame[idx]->rightCamera->frameBuf.hImageBuf;
         NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
 
-        this->camManager->returnBuf(stereoFrame[idx ^ 1]);
+        (*this->frameManager)->returnBuf(stereoFrame[idx ^ 1]);
 
         idx = (idx == 0) ? 1 : 0;
     }

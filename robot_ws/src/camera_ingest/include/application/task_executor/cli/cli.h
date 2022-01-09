@@ -20,9 +20,13 @@ public:
     void closeCLI();
 
     virtual void exit() = 0;
-    virtual void rawNDI(bool stream) = 0;
+    virtual void toggleNDI(bool mono_stream) = 0;
+    virtual void _toggleNDIsource(NSSC_NDI_SEND type) = 0;
     virtual void run_ingest() = 0;
     virtual void run_calibration(char *setName) = 0;
+    virtual void run_triangulation(char *setName) = 0;
+    virtual void find_triangulation_origin() = 0;
+    virtual void run_detection() = 0;
     virtual void cancel() = 0;
 
     std::atomic<bool> cliON{false};

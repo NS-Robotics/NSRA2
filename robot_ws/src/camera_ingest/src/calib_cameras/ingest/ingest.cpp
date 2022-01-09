@@ -15,7 +15,7 @@ Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camM
     }
     else
     {
-        cv::FileStorage config_file((this->setPath + "config.xml").c_str(), cv::FileStorage::WRITE);
+        cv::FileStorage config_file(this->setPath + "config.xml", cv::FileStorage::WRITE);
         config_file << "setName" << this->node->g_config.ingestConfig.set_name;
         config_file << "ingestAmount" << this->node->g_config.ingestConfig.ingest_amount;
 
@@ -27,7 +27,7 @@ Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camM
     }
 }
 
-void Ingest::saveConfig()
+__attribute__((unused)) void Ingest::saveConfig()
 {
     rapidxml::xml_document<> new_doc;
 
@@ -55,10 +55,10 @@ void Ingest::saveConfig()
     new_doc.clear();
 }
 
-void Ingest::editConfig()
+__attribute__((unused)) void Ingest::editConfig()
 {
     rapidxml::xml_document<> doc;
-    rapidxml::xml_node<> *root_node = NULL;
+    rapidxml::xml_node<> *root_node = nullptr;
 
     std::ifstream xmlFile(this->setPath + "config.xml");
     std::vector<char> buffer((std::istreambuf_iterator<char>(xmlFile)), std::istreambuf_iterator<char>());
@@ -86,7 +86,7 @@ void Ingest::ingestThread()
     {
         while (this->runIngest.load())
         {
-            stereoFrame = this->camManager->getFrame(true);
+            stereoFrame = this->camManager->getFrame();
             if (stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
             {
                 break;
@@ -132,7 +132,7 @@ void Ingest::ingestThread()
 
 void Ingest::cancelIngest()
 {
-    cv::FileStorage config_file((this->setPath + "config.xml").c_str(), cv::FileStorage::WRITE);
+    cv::FileStorage config_file(this->setPath + "config.xml", cv::FileStorage::WRITE);
     config_file << "ingestAmount" << this->node->g_config.ingestConfig.current_frame_idx;
 
     this->runIngest = false;

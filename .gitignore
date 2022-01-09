@@ -13,3 +13,7 @@ robot_ws/src/.DS_Store
 robot_ws/src/camera_ingest/.DS_Store
 robot_ws/src/camera_ingest/include/.DS_Store
 robot_ws/src/camera_ingest/src/.DS_Store
+robot_ws/src/camera_ingest/cmake-build-debug
+robot_ws/src/camera_ingest/cmake-build-nssc
+robot_ws/src/camera_ingest/cmake-build-release
+robot_ws/src/camera_ingest/.idea

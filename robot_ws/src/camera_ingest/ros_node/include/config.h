@@ -3,6 +3,7 @@
 
 #include <Processing.NDI.Advanced.h>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <chrono>
 
 typedef int NSSC_BUF_SIZE;
 
@@ -15,12 +16,20 @@ typedef enum NSSC_FRAME_TYPES
 
 } NSSC_FRAME_TYPE;
 
+typedef enum NSSC_NDI_SEND_TYPES
+{
+    NDI_SEND_RAW            = 0,
+    NDI_SEND_TRIANGULATION  = 1,
+    NDI_SEND_INGEST         = 2,
+    NDI_SEND_CALIBRATION    = 3,
+} NSSC_NDI_SEND;
+
 struct frame_config
 {
 public:
     //Frame
     NSSC_FRAME_TYPE g_type = NSSC_FRAME_RGBA;
-    bool resize_frame = true;
+    bool resize_frame = false;
 
     //Camera
     const short cam_x_res = 3088;
@@ -48,6 +57,7 @@ public:
 
     //NDI
     bool mono_stream = false;
+    bool stream_on = false;
     short stream_x_res;
     short stream_y_res;
     NSSC_BUF_SIZE stream_buf_size;
@@ -159,7 +169,15 @@ public:
     float square_size = 35.0; //millimeters
 };
 
-struct globalConfig : public frame_config, public ingest_config, public calib_config
+struct triangulation_config
+{
+public:
+    short max_origin_frame_time_diff = 1000; //microseconds
+    std::vector<int> origin_ids = { 1, 2, 3 };
+    char const *standard_config_file = "config1";
+};
+
+struct globalConfig : public frame_config, public ingest_config, public calib_config, public triangulation_config
 {
 public:
     std::string package_name = "camera_ingest";
@@ -168,6 +186,7 @@ public:
     frame_config frameConfig;
     ingest_config ingestConfig;
     calib_config calibConfig;
+    triangulation_config triangulationConfig;
 
     globalConfig()
     {

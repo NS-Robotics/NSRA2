@@ -36,13 +36,13 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszVendorName;
-        pszVendorName = NULL;
+        pszVendorName = nullptr;
         return emStatus;
     }
 
     //printf("<Vendor Name : %s>\n", pszVendorName);
     delete[] pszVendorName;
-    pszVendorName = NULL;
+    pszVendorName = nullptr;
 
     emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_MODEL_NAME, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
@@ -56,13 +56,13 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszModelName;
-        pszModelName = NULL;
+        pszModelName = nullptr;
         return emStatus;
     }
 
     //printf("<Model Name : %s>\n", pszModelName);
     delete[] pszModelName;
-    pszModelName = NULL;
+    pszModelName = nullptr;
 
     emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_SERIAL_NUMBER, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
@@ -76,13 +76,13 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszSerialNumber;
-        pszSerialNumber = NULL;
+        pszSerialNumber = nullptr;
         return emStatus;
     }
 
     //printf("<Serial Number : %s>\n", pszSerialNumber);
     delete[] pszSerialNumber;
-    pszSerialNumber = NULL;
+    pszSerialNumber = nullptr;
 
     emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_VERSION, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
@@ -95,13 +95,13 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszDeviceVersion;
-        pszDeviceVersion = NULL;
+        pszDeviceVersion = nullptr;
         return emStatus;
     }
 
     //printf("<Device Version : %s>\n", pszDeviceVersion);
     delete[] pszDeviceVersion;
-    pszDeviceVersion = NULL;
+    pszDeviceVersion = nullptr;
     //printf("***********************************************\n");
     return emStatus;
 }
@@ -116,9 +116,9 @@ NSSC_STATUS Camera::CloseCamera()
 
     this->streamON = false;
     this->GXDQThreadNDI.join();
-    
+
     status = GXCloseDevice(this->hDevice);
-    this->hDevice = NULL;
+    this->hDevice = nullptr;
     GXCloseLib();
 
     this->node->printInfo(this->msgCaller, "Camera closed");
@@ -153,11 +153,10 @@ void Camera::GXDQBufThreadNDI()
     cv::Mat h_rgb(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
     cv::cuda::GpuMat d_rgb(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf.dImageBuf);
 
-    PGX_FRAME_BUFFER pFrameBuffer = NULL;
+    PGX_FRAME_BUFFER pFrameBuffer = nullptr;
 
     while(this->streamON.load())
     {
-
         if(this->numOfFilled.load() < 1 && this->numOfEmpty.load() > 0)
         {
             NSSC_STATUS status;
@@ -169,6 +168,7 @@ void Camera::GXDQBufThreadNDI()
             this->cb->Await();
             status = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
+            this->last_trigger = std::chrono::high_resolution_clock::now();
 
             status = GXDQBuf(this->hDevice, &pFrameBuffer, 5000);
 
@@ -181,12 +181,35 @@ void Camera::GXDQBufThreadNDI()
 
             this->filledFrameBuf.enqueue(frame);
             this->numOfFilled++;
-        } else
+        }
+        else if (__checkFrameAge() && this->stop_age_check.load())
+        {
+            monoFrame* frame;
+
+            this->filledFrameBuf.wait_dequeue(frame);
+            this->numOfFilled--;
+
+            this->emptyFrameBuf.enqueue(frame);
+            this->numOfEmpty++;
+        }
+        else
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     }
     cudaFreeHost(rgbBuf.hImageBuf);
+}
+
+bool Camera::__checkFrameAge()
+{
+    auto timestamp = std::chrono::high_resolution_clock::now();
+    auto timedif = std::chrono::duration_cast<std::chrono::milliseconds>(
+            timestamp - this->last_trigger);
+
+    if (timedif > std::chrono::milliseconds(200))
+        return true;
+
+    return false;
 }
 
 monoFrame* Camera::getFrame()

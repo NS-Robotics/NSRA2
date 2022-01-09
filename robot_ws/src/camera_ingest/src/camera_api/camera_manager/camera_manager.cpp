@@ -19,7 +19,7 @@ NSSC_STATUS cameraManager::init()
     _CM_VERIFY_EXIT(this->cam1->init());
     _CM_VERIFY_EXIT(this->cam2->init());
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 5; i++)
     {
         stereoFrame* frame = stereoFrame::make_frame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node);
@@ -55,6 +55,11 @@ NSSC_STATUS cameraManager::closeCameras()
 
     this->is_closed = true;
 
+    this->cam1->stop_age_check = false;
+    this->cam2->stop_age_check = false;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
     this->cb->Break();
     NSSC_STATUS status = this->cam1->CloseCamera();
     if(status != NSSC_STATUS_SUCCESS)
@@ -70,13 +75,13 @@ NSSC_STATUS cameraManager::closeCameras()
     }
 }
 
-stereoFrame *cameraManager::getFrame(bool concatenate /*= true*/, bool resize /*= false*/)
+stereoFrame *cameraManager::getFrame()
 {
     stereoFrame* stereoFrame;
     this->emptyFrameBuf.wait_dequeue(stereoFrame);
     this->numOfEmpty--;
 
-    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), concatenate, resize);
+    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), this->node->g_config.frameConfig.resize_frame);
 
     return stereoFrame;
 }

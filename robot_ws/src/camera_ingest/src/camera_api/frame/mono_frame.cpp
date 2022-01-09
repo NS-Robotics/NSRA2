@@ -3,7 +3,7 @@
 class RGBAFrame: public monoFrame
 {
     public:
-        void convert(frameBuffer* rgbBuf)
+        void convert(frameBuffer* rgbBuf) override
         {
             if (CUDA_FAILED(cudaConvertColor(rgbBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_RGBA8, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)))
             {
@@ -11,7 +11,7 @@ class RGBAFrame: public monoFrame
             }
         }
 
-        void alloc(std::shared_ptr<NSSC>& node, int id)
+        void alloc(std::shared_ptr<NSSC>& node, int id) override
         {
             this->node = node;
             
@@ -30,7 +30,7 @@ class RGBAFrame: public monoFrame
 class I420Frame: public monoFrame
 {
     public:
-        void convert(frameBuffer* rgbBuf)
+        void convert(frameBuffer* rgbBuf) override
         {
             if (CUDA_FAILED(cudaConvertColor(rgbBuf->dImageBuf, IMAGE_RGB8, this->frameBuf.dImageBuf, IMAGE_I420, this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res)))
             {
@@ -38,7 +38,7 @@ class I420Frame: public monoFrame
             }
         }
 
-        void alloc(std::shared_ptr<NSSC> &node, int id)
+        void alloc(std::shared_ptr<NSSC> &node, int id) override
         {
             this->node = node;
 
@@ -56,7 +56,7 @@ class I420Frame: public monoFrame
 class UYVYFrame: public monoFrame
 {
     public:
-        void convert(frameBuffer* rgbBuf)
+        void convert(frameBuffer* rgbBuf) override
         {
             NppiSize oSizeROI = {(int)this->node->g_config.frameConfig.mono_x_res, (int)this->node->g_config.frameConfig.mono_y_res};
             int ret = nppiRGBToYUV422_8u_C3C2R((uint8_t*)rgbBuf->dImageBuf, this->node->g_config.frameConfig.mono_x_res * 3, (uint8_t*)frameBuf.dImageBuf, this->node->g_config.frameConfig.mono_x_res * 2, oSizeROI);
@@ -66,7 +66,7 @@ class UYVYFrame: public monoFrame
             }
         }
 
-        void alloc(std::shared_ptr<NSSC> &node, int id)
+        void alloc(std::shared_ptr<NSSC> &node, int id) override
         {
             this->node = node;
 

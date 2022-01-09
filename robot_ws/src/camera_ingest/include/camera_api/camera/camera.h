@@ -29,26 +29,26 @@ class Camera : public NSSC_ERRORS
 public:
     Camera(std::shared_ptr<NSSC> &node, std::shared_ptr<CyclicBarrier> &cb);
     ~Camera();
-    NSSC_STATUS init();
+    static NSSC_STATUS init();
 
     NSSC_STATUS LoadCamera(char device_serial_number[]);
     NSSC_STATUS startAcquisition();
     NSSC_STATUS CloseCamera();
 
-    NSSC_STATUS getEmStatus();
-
     monoFrame* getFrame();
     NSSC_STATUS returnBuf(monoFrame* frame);
 
+    std::atomic<bool> stop_age_check{true};
+
 protected:
     std::shared_ptr<NSSC> node;
-    GX_DEV_HANDLE hDevice = NULL;
+    GX_DEV_HANDLE hDevice = nullptr;
 
 private:
     NSSC_STATUS _PrintDeviceInfo();
 
-    void GXDQBufThread();
     void GXDQBufThreadNDI();
+    bool __checkFrameAge();
 
     std::thread GXDQThread;
     std::thread GXDQThreadNDI;
@@ -69,6 +69,8 @@ private:
 
     moodycamel::BlockingConcurrentQueue<monoFrame*> filledFrameBuf;
     moodycamel::BlockingConcurrentQueue<monoFrame*> emptyFrameBuf;
+
+    std::chrono::time_point<std::chrono::system_clock> last_trigger;
 
     bool is_closed = false;
 };

@@ -1,0 +1,180 @@
+/*
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Noa Sendlhofer
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include "frame_manager.h"
+
+class sendRaw: public NDIframeManager
+{
+public:
+    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    {
+        this->node = node;
+        this->camManager = camManager;
+    }
+
+    stereoFrame *getCameraFrame() override
+    {
+    }
+
+    stereoFrame *getFrame() override
+    {
+        return this->camManager->getFrame();;
+    }
+
+    void sendFrame(stereoFrame* stereoFrame) override
+    {
+    }
+
+    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    {
+        return this->camManager->returnBuf(stereoFrame);
+    }
+};
+
+class sendTriangulation : public NDIframeManager
+{
+public:
+    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    {
+        this->node = node;
+        this->camManager = camManager;
+    }
+
+    stereoFrame *getCameraFrame() override
+    {
+        while(!this->goGet.load())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        this->goGet = false;
+        return this->camManager->getFrame();
+    }
+
+    stereoFrame *getFrame() override
+    {
+        stereoFrame* stereo_frame;
+        while(this->node->g_config.frameConfig.stream_on)
+        {
+            if (this->filledFrameBuf.wait_dequeue_timed(stereo_frame, std::chrono::seconds(1)))
+            {
+                this->numOfFilled--;
+                return stereo_frame;
+            }
+        }
+        return nullptr;
+    }
+
+    void sendFrame(stereoFrame* stereo_frame) override
+    {
+        stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
+        this->filledFrameBuf.enqueue(stereo_frame);
+        this->numOfFilled++;
+    }
+
+    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    {
+        this->goGet = true;
+        return this->camManager->returnBuf(stereoFrame);
+    }
+};
+
+class sendIngest : public NDIframeManager
+{
+public:
+    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    {
+        this->node = node;
+        this->camManager = camManager;
+    }
+
+    stereoFrame *getCameraFrame() override
+    {
+    }
+
+    stereoFrame *getFrame() override
+    {
+
+    }
+
+    void sendFrame(stereoFrame* stereoFrame) override
+    {
+
+    }
+
+    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    {
+        return this->camManager->returnBuf(stereoFrame);
+    }
+};
+
+class sendCalibration : public NDIframeManager
+{
+public:
+    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    {
+        this->node = node;
+        this->camManager = camManager;
+    }
+
+    stereoFrame *getCameraFrame() override
+    {
+    }
+
+    stereoFrame *getFrame() override
+    {
+    }
+
+    void sendFrame(stereoFrame* stereoFrame) override
+    {
+
+    }
+
+    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    {
+        return this->camManager->returnBuf(stereoFrame);
+    }
+};
+
+std::unique_ptr<NDIframeManager> NDIframeManager::make_frame(NSSC_NDI_SEND type)
+{
+    switch(type)
+    {
+        case NDI_SEND_RAW:
+            return std::make_unique<sendRaw>();
+        case NDI_SEND_TRIANGULATION:
+            return std::make_unique<sendTriangulation>();
+        case NDI_SEND_INGEST:
+            return std::make_unique<sendIngest>();
+        case NDI_SEND_CALIBRATION:
+            return std::make_unique<sendCalibration>();
+    }
+}

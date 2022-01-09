@@ -1,49 +1,52 @@
 cmake_minimum_required(VERSION 3.5)
 project(camera_ingest)
 
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
+if (NOT CMAKE_C_STANDARD)
+    set(CMAKE_C_STANDARD 99)
+endif ()
 
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
+if (NOT CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 14)
+endif ()
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif ()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 #find_package(image_transport REQUIRED)
 find_package(OpenCV 4.5.3 REQUIRED)
-find_package(cv_bridge REQUIRED)
+#find_package(cv_bridge REQUIRED)
 #find_package(compressed_image_transport REQUIRED)
 find_package(CUDA REQUIRED)
 find_package(jetson-utils REQUIRED)
 find_package(jetson-inference REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
+find_package(Eigen3 REQUIRED)
 
 add_subdirectory(ros_node)
 
-set(gxi_LIBRARY ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/lib/gxilib/libgxiapi.so)
-set(gxi_GVTL ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/lib/gxilib/GxGVTL.cti)
-set(gxi_U3VTL ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/lib/gxilib/GxU3VTL.cti)
-set(gxi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/gxilib)
+set(private_LIBRARIES ${PROJECT_SOURCE_DIR}/../../../../NSSC_private_libs)
+
+set(gxi_LIBRARY ${private_LIBRARIES}/lib/gxilib/libgxiapi.so)
+set(gxi_GVTL ${private_LIBRARIES}/lib/gxilib/GxGVTL.cti)
+set(gxi_U3VTL ${private_LIBRARIES}/lib/gxilib/GxU3VTL.cti)
+set(gxi_INCLUDES ${private_LIBRARIES}/include/gxilib)
 
 add_library(gxiapi SHARED IMPORTED)
 set_target_properties(gxiapi PROPERTIES IMPORTED_LOCATION ${gxi_LIBRARY} ${gxi_GVTL} ${gxi_U3VTL})
 
-set(ndi_LIBRARY ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/lib/libndi/libndi.so)
-set(ndi5_LIBRARY ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/lib/libndi/libndi.so.5)
-set(ndi_INCLUDES ${PROJECT_SOURCE_DIR}/../../../NSSC_private_libs/include/libndi)
+set(ndi_LIBRARY ${private_LIBRARIES}/lib/libndi/libndi.so)
+set(ndi5_LIBRARY ${private_LIBRARIES}/lib/libndi/libndi.so.5)
+set(ndi_INCLUDES ${private_LIBRARIES}/include/libndi)
 
 add_library(libndi SHARED IMPORTED)
 set_target_properties(libndi PROPERTIES IMPORTED_LOCATION ${ndi5_LIBRARY})
 
-set(jutils_LIBRARY ${PROJECT_SOURCE_DIR}/../../../aarch64/lib/libjetson-utils.so)
-set(jinference_LIBRARY ${PROJECT_SOURCE_DIR}/../../../aarch64/lib/libjetson-inference.so)
-set(jetson_INCLUDES ${PROJECT_SOURCE_DIR}/../../../aarch64/include)
+set(jutils_LIBRARY ${private_LIBRARIES}/aarch64/lib/libjetson-utils.so)
+set(jinference_LIBRARY ${private_LIBRARIES}/aarch64/lib/libjetson-inference.so)
+set(jetson_INCLUDES ${private_LIBRARIES}/aarch64/include)
 
 add_library(jinference SHARED IMPORTED)
 set_target_properties(jinference PROPERTIES IMPORTED_LOCATION ${jinference_LIBRARY})
@@ -67,15 +70,15 @@ set_target_properties(readline PROPERTIES IMPORTED_LOCATION ${readline_LIBRARY})
 set(boost_INCLUDES /usr/include/boost)
 
 add_library(
-  nssc_errors
-  src/application/errors/nssc_errors.cpp
+        nssc_errors
+        src/application/errors/nssc_errors.cpp
 )
 
 target_include_directories(
-  nssc_errors
-  PUBLIC
-  include/application/errors
-  ${gxi_INCLUDES}
+        nssc_errors
+        PUBLIC
+        include/application/errors
+        ${gxi_INCLUDES}
 )
 
 target_link_libraries(nssc_errors ros_node gxiapi)
@@ -83,20 +86,20 @@ target_link_libraries(nssc_errors ros_node gxiapi)
 ament_target_dependencies(nssc_errors rclcpp)
 
 add_library(
-  frame
-  src/camera_api/frame/mono_frame.cpp
-  src/camera_api/frame/stereo_frame.cpp
+        frame
+        src/camera_api/frame/mono_frame.cpp
+        src/camera_api/frame/stereo_frame.cpp
 )
 
 target_include_directories(
-  frame
-  PUBLIC
-  include/camera_api/frame
-  include/camera_api/frame/frame_struct
-  include/application/errors
-  ${gxi_INCLUDES}
-  ${CUDA_INCLUDE_DIRS}
-  ${jetson_INCLUDES}
+        frame
+        PUBLIC
+        include/camera_api/frame
+        include/camera_api/frame/frame_struct
+        include/application/errors
+        ${gxi_INCLUDES}
+        ${CUDA_INCLUDE_DIRS}
+        ${jetson_INCLUDES}
 )
 
 target_link_libraries(frame ros_node gxiapi jutils jinference NPP NPPI)
@@ -104,22 +107,22 @@ target_link_libraries(frame ros_node gxiapi jutils jinference NPP NPPI)
 ament_target_dependencies(frame OpenCV CUDA rclcpp)
 
 add_library(
-  camera
-  src/camera_api/camera/camera.cpp
-  src/camera_api/camera/load_camera.cpp
+        camera
+        src/camera_api/camera/camera.cpp
+        src/camera_api/camera/load_camera.cpp
 )
 
 target_include_directories(
-  camera
-  PUBLIC
-  include/camera_api/camera
-  include/application/errors
-  include/camera_api/concurrentqueue
-  include/camera_api/frame/frame_struct
-  include/camera_api/camera_manager/cam_sync
-  ${gxi_INCLUDES}
-  ${CUDA_INCLUDE_DIRS}
-  ${jetson_INCLUDES}
+        camera
+        PUBLIC
+        include/camera_api/camera
+        include/application/errors
+        include/camera_api/concurrentqueue
+        include/camera_api/frame/frame_struct
+        include/camera_api/camera_manager/cam_sync
+        ${gxi_INCLUDES}
+        ${CUDA_INCLUDE_DIRS}
+        ${jetson_INCLUDES}
 )
 
 target_link_libraries(camera frame ros_node gxiapi jutils jinference)
@@ -127,18 +130,18 @@ target_link_libraries(camera frame ros_node gxiapi jutils jinference)
 ament_target_dependencies(camera OpenCV CUDA rclcpp)
 
 add_library(
-  camera_manager
-  src/camera_api/camera_manager/camera_manager.cpp
+        camera_manager
+        src/camera_api/camera_manager/camera_manager.cpp
 )
 
 target_include_directories(
-  camera_manager
-  PUBLIC
-  include/application/errors
-  include/camera_api/camera_manager
-  include/camera_api/camera_manager/cam_sync
-  include/camera_api/camera
-  include/camera_api/frame/frame_struct
+        camera_manager
+        PUBLIC
+        include/application/errors
+        include/camera_api/camera_manager
+        include/camera_api/camera_manager/cam_sync
+        include/camera_api/camera
+        include/camera_api/frame/frame_struct
 )
 
 target_link_libraries(camera_manager ros_node camera)
@@ -146,64 +149,103 @@ target_link_libraries(camera_manager ros_node camera)
 ament_target_dependencies(camera_manager rclcpp)
 
 add_library(
-  ndi_send
-  src/viewer_api/ndi/ndi.cpp
+        frame_manager
+        src/viewer_api/frame_manager/frame_manager.cpp
 )
 
 target_include_directories(
-  ndi_send
-  PUBLIC
-  include/viewer_api/ndi
-  include/application/errors
-  include/camera_api/camera_manager
-  include/camera_api/frame/frame_struct
-  ${ndi_INCLUDES}
-  ${CUDA_INCLUDE_DIRS}
-  ${jetson_INCLUDES}
+        frame_manager
+        PUBLIC
+        include/viewer_api/frame_manager
+        include/application/errors
+        include/camera_api/frame/frame_struct
 )
 
-target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference)
+target_link_libraries(frame_manager camera_manager ros_node)
 
-ament_target_dependencies(ndi_send rclcpp OpenCV CUDA cv_bridge)
+ament_target_dependencies(frame_manager OpenCV rclcpp)
 
 add_library(
-  ingest
-  src/calib_cameras/ingest/ingest.cpp
+        ndi_send
+        src/viewer_api/ndi/ndi.cpp
 )
 
 target_include_directories(
-  ingest
-  PUBLIC
-  include/calib_cameras/ingest
-  include/application/errors
-  include/camera_api/camera_manager
-  include/camera_api/frame/frame_struct
-  include/calib_cameras/rapidxml-1.13
+        ndi_send
+        PUBLIC
+        include/viewer_api/ndi
+        include/application/errors
+        include/camera_api/camera_manager
+        include/camera_api/frame/frame_struct
+        ${ndi_INCLUDES}
+        ${CUDA_INCLUDE_DIRS}
+        ${jetson_INCLUDES}
 )
 
-target_link_libraries(ingest ros_node camera_manager)
+target_link_libraries(ndi_send ros_node camera_manager libndi jutils jinference frame_manager)
+
+ament_target_dependencies(ndi_send rclcpp OpenCV CUDA)
+
+add_library(
+        ingest
+        src/calib_cameras/ingest/ingest.cpp
+)
+
+target_include_directories(
+        ingest
+        PUBLIC
+        include/calib_cameras/ingest
+        include/application/errors
+        include/camera_api/camera_manager
+        include/camera_api/frame/frame_struct
+        include/calib_cameras/rapidxml-1.13
+)
+
+target_link_libraries(ingest ros_node camera_manager frame_manager)
 
 ament_target_dependencies(ingest rclcpp OpenCV)
 
 add_library(
-  calibration
-  src/calib_cameras/calibration/calibration.cpp
-  src/calib_cameras/calibration/prepare_data.cpp
+        calibration
+        src/calib_cameras/calibration/calibration.cpp
+        src/calib_cameras/calibration/prepare_data.cpp
 )
 
 target_include_directories(
-  calibration
-  PUBLIC
-  include/calib_cameras/calibration
-  include/application/errors
-  include/calib_cameras/rapidxml-1.13
-  ${gxi_INCLUDES}
-  ${Boost_INCLUDE_DIRS}
+        calibration
+        PUBLIC
+        include/calib_cameras/calibration
+        include/application/errors
+        include/calib_cameras/rapidxml-1.13
+        ${gxi_INCLUDES}
+        ${Boost_INCLUDE_DIRS}
 )
 
-target_link_libraries(calibration ros_node)
+target_link_libraries(calibration ros_node frame_manager)
 
 ament_target_dependencies(calibration rclcpp OpenCV Boost)
+
+add_library(
+        triangulation
+        src/obj_calc/triangulation/triangulation.cpp
+        src/obj_calc/triangulation/triangulation_interface.cpp
+        src/obj_calc/object_detection.cpp
+)
+
+target_include_directories(
+        triangulation
+        PUBLIC
+        include/obj_calc/triangulation/
+        include/obj_calc/
+        include/application/errors
+        include/camera_api/camera_manager
+        include/camera_api/frame
+        ${EIGEN3_INCLUDE_DIR}
+)
+
+target_link_libraries(triangulation ros_node camera_manager frame_manager)
+
+ament_target_dependencies(triangulation rclcpp OpenCV Eigen3)
 
 #add_library(
 #  nssc_image_transport
@@ -225,27 +267,28 @@ ament_target_dependencies(calibration rclcpp OpenCV Boost)
 #ament_target_dependencies(nssc_image_transport rclcpp image_transport compressed_image_transport OpenCV cv_bridge)
 
 add_library(
-  task_executor
-  src/application/task_executor/executor.cpp
-  src/application/task_executor/cli/cli.cpp
-  src/application/task_executor/cli/cli_args.cpp
+        task_executor
+        src/application/task_executor/executor.cpp
+        src/application/task_executor/cli/cli.cpp
+        src/application/task_executor/cli/cli_args.cpp
 )
 
 target_include_directories(
-  task_executor
-  PUBLIC
-  include/application/task_executor
-  include/application/task_executor/cli
-  include/application/errors
-  include/camera_api/camera_manager
-  include/viewer_api/ndi
-  include/calib_cameras/ingest
-  include/calib_cameras/calibration
-  ${readline_INCLUDES}
-  ${gxi_INCLUDES}
+        task_executor
+        PUBLIC
+        include/application/task_executor
+        include/application/task_executor/cli
+        include/application/errors
+        include/camera_api/camera_manager
+        include/viewer_api/ndi
+        include/calib_cameras/ingest
+        include/calib_cameras/calibration
+        include/obj_calc/triangulation
+        ${readline_INCLUDES}
+        ${gxi_INCLUDES}
 )
 
-target_link_libraries(task_executor readline ros_node ndi_send camera_manager ingest calibration)
+target_link_libraries(task_executor readline ros_node ndi_send camera_manager ingest calibration triangulation)
 
 ament_target_dependencies(task_executor rclcpp)
 
@@ -257,30 +300,30 @@ ament_target_dependencies(main_node rclcpp)
 target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
 
 install(
-  TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration #nssc_image_transport
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+        TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration #nssc_image_transport
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
 )
 
 install(
-  FILES ${gxi_LIBRARY} ${gxi_GVTL} ${gxi_U3VTL} ${ndi_LIBRARY} ${ndi5_LIBRARY} ${jinference_LIBRARY} ${jutils_LIBRARY} ${readline_INCLUDES}
-  DESTINATION lib
+        FILES ${gxi_LIBRARY} ${gxi_GVTL} ${gxi_U3VTL} ${ndi_LIBRARY} ${ndi5_LIBRARY} ${jinference_LIBRARY} ${jutils_LIBRARY} #${readline_INCLUDES}
+        DESTINATION lib
 )
 
 install(
-  TARGETS main_node
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
+        TARGETS main_node
+        RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY include/
-  DESTINATION include
+        DIRECTORY include/
+        DESTINATION include
 )
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
+if (BUILD_TESTING)
+    find_package(ament_lint_auto REQUIRED)
+    ament_lint_auto_find_test_dependencies()
+endif ()
 
 ament_package()
