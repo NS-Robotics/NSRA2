@@ -1,3 +1,37 @@
+/*
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Noa Sendlhofer
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+// Author: Noa Sendlhofer
+
 #include "cli.h"
 
 void CLI::CLIFunc()
@@ -115,6 +149,30 @@ void CLI::CLIFunc()
         {
             find_triangulation_origin();
         }
+        else if (strcmp(cmd[0], "set_exposure") == 0)
+        {
+            int exposure_time;
+            if (getIntArg(cmd, 'e', exposure_time) != NSSC_STATUS_SUCCESS || exposure_time < 1)
+            {
+                this->printError("Bad argument!");
+            }
+            else
+            {
+                set_exposure((float)exposure_time);
+            }
+        }
+        else if (strcmp(cmd[0], "set_gain") == 0)
+        {
+            int gain;
+            if (getIntArg(cmd, 'g', gain) != NSSC_STATUS_SUCCESS || gain < 1)
+            {
+                this->printError("Bad argument!");
+            }
+            else
+            {
+                set_gain((float)gain);
+            }
+        }
         else if (strcmp(cmd[0], "cancel") == 0)
         {
             cancel();
@@ -134,6 +192,8 @@ void CLI::CLIFunc()
                    "  triangulate [-d calibration config]       - Prepare NSSC for object detection\n"
                    "  calib_origin                              - Recalibrate the robot origin\n"
                    "  detect                                    - Run the NSSC object detection\n"
+                   "  set_exposure [-e time in microseconds]    - Change the camera exposure time\n"
+                   "  set_gain [-g gain]                        - Change the camera gain\n"
                    "  cancel                                    - Cancel the currently running process\n"
                    "  exit                                      - Close the application\n");
         }

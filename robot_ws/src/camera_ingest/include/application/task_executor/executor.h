@@ -25,6 +25,8 @@ public:
     void run_triangulation(char *setName) override;
     void find_triangulation_origin() override;
     void run_detection() override;
+    void set_exposure(float exposure_time) override;
+    void set_gain(float gain) override;
     void cancel() override;
 
 private:

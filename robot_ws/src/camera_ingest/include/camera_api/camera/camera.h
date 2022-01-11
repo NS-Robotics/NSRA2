@@ -38,6 +38,9 @@ public:
     monoFrame* getFrame();
     NSSC_STATUS returnBuf(monoFrame* frame);
 
+    NSSC_STATUS setExposure(float exposure_time);
+    NSSC_STATUS setGain(float gain);
+
     std::atomic<bool> stop_age_check{true};
 
 protected:

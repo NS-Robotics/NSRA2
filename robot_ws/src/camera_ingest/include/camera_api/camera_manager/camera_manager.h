@@ -19,6 +19,9 @@ class cameraManager : public NSSC_ERRORS
         NSSC_STATUS loadCameras();
         NSSC_STATUS closeCameras();
 
+        NSSC_STATUS setExposure(float exposure_time);
+        NSSC_STATUS setGain(float gain);
+
         stereoFrame *getFrame();
         NSSC_STATUS returnBuf(stereoFrame* stereoBuf);
 

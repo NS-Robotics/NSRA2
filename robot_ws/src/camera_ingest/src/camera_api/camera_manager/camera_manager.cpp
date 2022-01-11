@@ -34,6 +34,20 @@ NSSC_STATUS cameraManager::init()
     return NSSC_STATUS_SUCCESS;
 }
 
+NSSC_STATUS cameraManager::setExposure(float exposure_time)
+{
+    this->cam1->setExposure(exposure_time);
+    this->cam2->setExposure(exposure_time);
+    return NSSC_STATUS_SUCCESS;
+}
+
+NSSC_STATUS cameraManager::setGain(float gain)
+{
+    this->cam1->setGain(gain);
+    this->cam2->setGain(gain);
+    return NSSC_STATUS_SUCCESS;
+}
+
 NSSC_STATUS cameraManager::loadCameras()
 {
     this->node->printInfo(this->msgCaller, "Loading Cameras");

@@ -1,5 +1,17 @@
 #include "camera.h"
 
+NSSC_STATUS Camera::setExposure(float exposure_time)
+{
+    this->node->g_config.frameConfig.cam_exposure_time = exposure_time;
+    return GXSetFloat(this->hDevice, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.frameConfig.cam_exposure_time);
+}
+
+NSSC_STATUS Camera::setGain(float gain)
+{
+    this->node->g_config.frameConfig.cam_gain = gain;
+    return GXSetFloat(this->hDevice, GX_FLOAT_GAIN, this->node->g_config.frameConfig.cam_gain);
+}
+
 NSSC_STATUS Camera::LoadCamera(char device_serial_number[])
 {
     this->camSerial = std::string(device_serial_number);
@@ -30,8 +42,8 @@ NSSC_STATUS Camera::LoadCamera(char device_serial_number[])
     if(status != GX_STATUS_SUCCESS)
     {
         GXCloseLib();
-        RCLCPP_INFO(this->node->get_logger(), "Cameras not connected!");
-        return NSSC_CAM_STATUS_NOT_CONNECTED;         
+        this->node->printError(this->msgCaller, "Cameras not connected!");
+        return NSSC_CAM_STATUS_NOT_CONNECTED;
     }
 
     status = _PrintDeviceInfo();

@@ -21,7 +21,7 @@ typedef enum NSSC_STATUS_LIST
     NSSC_STATUS_SUCCESS                 =  0,                               // Success
     NSSC_STATUS_ERROR                   = -1,                               // There is an unspecified internal error that is not expected to occur
 
-    // Error code -2 up to -14 is reserved for GxIAPI
+    // Error codes -2 up to -14 are reserved for GxIAPI
     NSSC_CAM_STATUS_NOT_FOUND_TL        = GX_STATUS_NOT_FOUND_TL,           // The TL library cannot be found
     NSSC_CAM_STATUS_NOT_FOUND_DEVICE    = GX_STATUS_NOT_FOUND_DEVICE,       // The device is not found
     NSSC_CAM_STATUS_OFFLINE             = GX_STATUS_OFFLINE,                // The current device is in an offline status

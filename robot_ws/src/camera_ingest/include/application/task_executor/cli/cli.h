@@ -27,6 +27,8 @@ public:
     virtual void run_triangulation(char *setName) = 0;
     virtual void find_triangulation_origin() = 0;
     virtual void run_detection() = 0;
+    virtual void set_exposure(float exposure_time) = 0;
+    virtual void set_gain(float gain) = 0;
     virtual void cancel() = 0;
 
     std::atomic<bool> cliON{false};
