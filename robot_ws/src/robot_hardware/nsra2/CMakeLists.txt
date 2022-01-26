@@ -2,7 +2,7 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
-find_package(robot_descriptions REQUIRED)
+#find_package(robot_descriptions REQUIRED)
 
 add_library(
   nsra2
@@ -22,5 +22,5 @@ ament_target_dependencies(
   pluginlib
   rclcpp
   rclcpp_lifecycle
-  robot_descriptions
+  #robot_descriptions
 )
