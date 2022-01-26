@@ -21,20 +21,20 @@ public:
 
     virtual void exit() = 0;
     virtual void toggleNDI(bool mono_stream) = 0;
-    virtual void _toggleNDIsource(NSSC_NDI_SEND type) = 0;
-    virtual void run_ingest() = 0;
-    virtual void run_calibration(char *setName) = 0;
-    virtual void run_triangulation(char *setName) = 0;
-    virtual void find_triangulation_origin() = 0;
-    virtual void run_detection() = 0;
-    virtual void set_exposure(float exposure_time) = 0;
-    virtual void set_gain(float gain) = 0;
+    virtual void toggleNDIsource(NSSC_NDI_SEND type) = 0;
+    virtual void runIngest() = 0;
+    virtual void runCalibration(char *setName) = 0;
+    virtual void runTriangulation(char *setName) = 0;
+    virtual void findTriangulationOrigin() = 0;
+    virtual void runDetection() = 0;
+    virtual void setExposure(float exposure_time) = 0;
+    virtual void setGain(float gain) = 0;
     virtual void cancel() = 0;
 
-    std::atomic<bool> cliON{false};
+    std::atomic<bool> cli_running{false};
 
 private:
-    std::thread CLIThread;
+    std::thread cli_thread;
 
     std::shared_ptr<NSSC> node;
 

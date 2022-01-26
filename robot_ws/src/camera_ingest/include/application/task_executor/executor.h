@@ -15,26 +15,27 @@
 class Executor : public NSSC_ERRORS, public CLI
 {
 public:
-    Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
-    void exit() override;
+    Executor(std::shared_ptr<NSSC> &node,
+             std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
     void init();
+    void exit() override;
     void toggleNDI(bool mono_stream) override;
-    void _toggleNDIsource(NSSC_NDI_SEND type) override;
-    void run_ingest() override;
-    void run_calibration(char *setName) override;
-    void run_triangulation(char *setName) override;
-    void find_triangulation_origin() override;
-    void run_detection() override;
-    void set_exposure(float exposure_time) override;
-    void set_gain(float gain) override;
+    void toggleNDIsource(NSSC_NDI_SEND type) override;
+    void runIngest() override;
+    void runCalibration(char *setName) override;
+    void runTriangulation(char *setName) override;
+    void findTriangulationOrigin() override;
+    void runDetection() override;
+    void setExposure(float exposure_time) override;
+    void setGain(float gain) override;
     void cancel() override;
 
 private:
     std::shared_ptr<NSSC> node;
     std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
-    std::shared_ptr<cameraManager> camManager;
+    std::shared_ptr<cameraManager> cam_manager;
     std::shared_ptr<NDI> ndi;
-    std::unique_ptr<NDIframeManager> frameManager;
+    std::unique_ptr<NDIframeManager> frame_manager;
 
     Ingest *ingest;
     Calibration *calibration;
@@ -43,12 +44,12 @@ private:
 
     bool ndi_initialized = false;
     bool cam_manager_initialized = false;
-    bool NDI_running = false;
+    bool ndi_running = false;
     bool triangulation_initialized = false;
     bool detection_running = false;
     bool detection_initalized = false;
 
-    std::string msgCaller = "Executor";
+    std::string msg_caller = "Executor";
 
     bool is_closed = false;
 };

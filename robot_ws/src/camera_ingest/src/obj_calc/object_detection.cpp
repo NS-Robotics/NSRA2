@@ -41,10 +41,10 @@ ObjectDetection::ObjectDetection(std::shared_ptr<NSSC> &node,
     this->triangulation_interface = triangulation_interface;
     this->node = node;
 
-    this->detectionON = true;
-    this->dThread = std::thread(&ObjectDetection::detectionThread, this);
+    this->detection_running = true;
+    this->d_thread = std::thread(&ObjectDetection::detectionThread, this);
 
-    this->node->printInfo(this->msgCaller, "Object Detection started");
+    this->node->printInfo(this->msg_caller, "Object Detection started");
 }
 
 ObjectDetection::~ObjectDetection()
@@ -57,28 +57,26 @@ void ObjectDetection::closeDetection()
     if(this->is_closed) { return; }
     this->is_closed = true;
 
-    if (this->detectionON.load())
+    if (this->detection_running.load())
         stopDetection();
 
-    this->node->printInfo(this->msgCaller, "Object Detection closed");
+    this->node->printInfo(this->msg_caller, "Object Detection closed");
 }
 
 void ObjectDetection::stopDetection()
 {
-    this->detectionON = false;
-    this->dThread.join();
-    this->node->printInfo(this->msgCaller, "Object Detection stopped");
+    this->detection_running = false;
+    this->d_thread.join();
+    this->node->printInfo(this->msg_caller, "Object Detection stopped");
 }
 
 std::string vector_content(std::vector<float> v){
     std::string s;
     s += '[';
     for (int i = 0; i < v.size(); i++){
-        s += "\"";
         s += std::to_string((int) std::round(v[i])) ;
-        s += "\"";
         if (v[i] != v.back())
-            s += " ,";
+            s += ", ";
     }
     s += ']';
     return s;
@@ -96,7 +94,7 @@ void ObjectDetection::detectionThread()
     cv::Mat left_conv;
     cv::Mat right_conv;
 
-    while(this->detectionON.load())
+    while(this->detection_running.load())
     {
         stereo_frame = this->triangulation_interface->getFrame();
 
@@ -140,7 +138,7 @@ void ObjectDetection::detectionThread()
         std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_originMarkers, right_originMarkers);
 
         std::vector<float> print_v = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
-        std::cout << vector_content(print_v) << std::endl;
+        //std::cout << vector_content(print_v) << std::endl;
 
         cv::circle(left_inp, left_originMarkers[0], 10, (0,0,255), 2);
         cv::circle(right_inp, right_originMarkers[0], 10, (0,0,255), 2);
@@ -148,16 +146,16 @@ void ObjectDetection::detectionThread()
                     vector_content(print_v),
                     cv::Point2f(left_originMarkers[0].x - 100, left_originMarkers[0].y - 30),
                     cv::FONT_HERSHEY_COMPLEX_SMALL,
-                    1.2,
-                    cv::Scalar(255, 255, 255),
+                    1.4,
+                    cv::Scalar(255, 0, 0),
                     2,
                     cv::LINE_AA);
         cv::putText(right_inp,
                     vector_content(print_v),
                     cv::Point2f(right_originMarkers[0].x - 100, right_originMarkers[0].y - 30),
                     cv::FONT_HERSHEY_COMPLEX_SMALL,
-                    1.2,
-                    cv::Scalar(255, 255, 255),
+                    1.4,
+                    cv::Scalar(255, 0, 0),
                     2,
                     cv::LINE_AA);
 

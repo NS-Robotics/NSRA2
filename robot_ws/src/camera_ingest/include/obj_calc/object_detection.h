@@ -48,7 +48,8 @@
 class ObjectDetection
 {
 public:
-    ObjectDetection(std::shared_ptr<NSSC> &node, std::shared_ptr<TriangulationInterface> &triangulation_interface);
+    ObjectDetection(std::shared_ptr<NSSC> &node,
+                    std::shared_ptr<TriangulationInterface> &triangulation_interface);
     ~ObjectDetection();
     void stopDetection();
     void closeDetection();
@@ -57,12 +58,12 @@ private:
     std::shared_ptr<TriangulationInterface> triangulation_interface;
     std::shared_ptr<NSSC> node;
 
-    std::string msgCaller = "Detection";
+    std::string msg_caller = "Detection";
 
     void detectionThread();
 
-    std::atomic<bool> detectionON{false};
-    std::thread dThread;
+    std::atomic<bool> detection_running{false};
+    std::thread d_thread;
 
     bool is_closed = false;
 };

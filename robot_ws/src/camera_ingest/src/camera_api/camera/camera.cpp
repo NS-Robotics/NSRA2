@@ -9,7 +9,7 @@ Camera::Camera(std::shared_ptr<NSSC>& node, std::shared_ptr<CyclicBarrier>& cb) 
 
 Camera::~Camera()
 {
-    CloseCamera();
+    closeCamera();
 }
 
 NSSC_STATUS Camera::init()
@@ -17,14 +17,14 @@ NSSC_STATUS Camera::init()
     return GXInitLib();
 }
 
-NSSC_STATUS Camera::_PrintDeviceInfo()
+NSSC_STATUS Camera::_printDeviceInfo()
 {
     //RCLCPP_INFO(this->node->get_logger(), "***********************************************");
     //printf("<Libary Version : %s>\n", GXGetLibVersion());
     size_t nSize = 0;
     NSSC_STATUS emStatus = NSSC_STATUS_SUCCESS;
 
-    emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_VENDOR_NAME, &nSize);
+    emStatus = GXGetStringLength(this->h_device, GX_STRING_DEVICE_VENDOR_NAME, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
     {
         return emStatus;
@@ -32,7 +32,7 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
 
     char *pszVendorName = new char[nSize];
 
-    emStatus = GXGetString(this->hDevice, GX_STRING_DEVICE_VENDOR_NAME, pszVendorName, &nSize);
+    emStatus = GXGetString(this->h_device, GX_STRING_DEVICE_VENDOR_NAME, pszVendorName, &nSize);
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszVendorName;
@@ -44,7 +44,7 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     delete[] pszVendorName;
     pszVendorName = nullptr;
 
-    emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_MODEL_NAME, &nSize);
+    emStatus = GXGetStringLength(this->h_device, GX_STRING_DEVICE_MODEL_NAME, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
     {
         return emStatus;
@@ -52,7 +52,7 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
 
     char *pszModelName = new char[nSize];
 
-    emStatus = GXGetString(this->hDevice, GX_STRING_DEVICE_MODEL_NAME, pszModelName, &nSize);
+    emStatus = GXGetString(this->h_device, GX_STRING_DEVICE_MODEL_NAME, pszModelName, &nSize);
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszModelName;
@@ -64,7 +64,7 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     delete[] pszModelName;
     pszModelName = nullptr;
 
-    emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_SERIAL_NUMBER, &nSize);
+    emStatus = GXGetStringLength(this->h_device, GX_STRING_DEVICE_SERIAL_NUMBER, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
     {
         return emStatus;
@@ -72,7 +72,7 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
 
     char *pszSerialNumber = new char[nSize];
 
-    emStatus = GXGetString(this->hDevice, GX_STRING_DEVICE_SERIAL_NUMBER, pszSerialNumber, &nSize);
+    emStatus = GXGetString(this->h_device, GX_STRING_DEVICE_SERIAL_NUMBER, pszSerialNumber, &nSize);
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszSerialNumber;
@@ -84,14 +84,14 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     delete[] pszSerialNumber;
     pszSerialNumber = nullptr;
 
-    emStatus = GXGetStringLength(this->hDevice, GX_STRING_DEVICE_VERSION, &nSize);
+    emStatus = GXGetStringLength(this->h_device, GX_STRING_DEVICE_VERSION, &nSize);
     if(emStatus != NSSC_STATUS_SUCCESS)
     {
         return emStatus;
     }
     char *pszDeviceVersion = new char[nSize];
 
-    emStatus = GXGetString(this->hDevice, GX_STRING_DEVICE_VERSION, pszDeviceVersion, &nSize);
+    emStatus = GXGetString(this->h_device, GX_STRING_DEVICE_VERSION, pszDeviceVersion, &nSize);
     if (emStatus != NSSC_STATUS_SUCCESS)
     {
         delete[] pszDeviceVersion;
@@ -106,7 +106,7 @@ NSSC_STATUS Camera::_PrintDeviceInfo()
     return emStatus;
 }
 
-NSSC_STATUS Camera::CloseCamera()
+NSSC_STATUS Camera::closeCamera()
 {
     if(this->is_closed) { return NSSC_STATUS_SUCCESS; }
 
@@ -114,31 +114,31 @@ NSSC_STATUS Camera::CloseCamera()
 
     NSSC_STATUS status;
 
-    this->streamON = false;
-    this->GXDQThreadNDI.join();
+    this->stream_running = false;
+    this->GXDQ_thread.join();
 
-    status = GXCloseDevice(this->hDevice);
-    this->hDevice = nullptr;
+    status = GXCloseDevice(this->h_device);
+    this->h_device = nullptr;
     GXCloseLib();
 
-    this->node->printInfo(this->msgCaller, "Camera closed");
+    this->node->printInfo(this->msg_caller, "Camera closed");
     return status;
 }
 
 NSSC_STATUS Camera::startAcquisition()
 {
-    this->streamON = true;
+    this->stream_running = true;
 
     for (int i = 0; i < 5; i++)
     {
         monoFrame* frame = monoFrame::make_frame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node, i);
 
-        this->emptyFrameBuf.enqueue(frame);
-        this->numOfEmpty++;
+        this->buf_empty.enqueue(frame);
+        this->n_empty++;
     }
 
-    this->GXDQThreadNDI = std::thread(&Camera::GXDQBufThreadNDI, this);
+    this->GXDQ_thread = std::thread(&Camera::GXDQBufThreadNDI, this);
 
     return NSSC_STATUS_SUCCESS;
 }
@@ -155,42 +155,42 @@ void Camera::GXDQBufThreadNDI()
 
     PGX_FRAME_BUFFER pFrameBuffer = nullptr;
 
-    while(this->streamON.load())
+    while(this->stream_running.load())
     {
-        if(this->numOfFilled.load() < 1 && this->numOfEmpty.load() > 0)
+        if(this->n_filled.load() < 1 && this->n_empty.load() > 0)
         {
             NSSC_STATUS status;
 
             monoFrame* frame;
-            this->emptyFrameBuf.wait_dequeue(frame);
-            this->numOfEmpty--;
+            this->buf_empty.wait_dequeue(frame);
+            this->n_empty--;
 
             this->cb->Await();
-            status = GXSendCommand(this->hDevice, GX_COMMAND_TRIGGER_SOFTWARE);
+            status = GXSendCommand(this->h_device, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
             this->last_trigger = std::chrono::high_resolution_clock::now();
 
-            status = GXDQBuf(this->hDevice, &pFrameBuffer, 5000);
+            status = GXDQBuf(this->h_device, &pFrameBuffer, 5000);
 
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, rgbBuf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
 
-            status = GXQBuf(this->hDevice, pFrameBuffer);
+            status = GXQBuf(this->h_device, pFrameBuffer);
 
             frame->convert(&rgbBuf);
 
-            this->filledFrameBuf.enqueue(frame);
-            this->numOfFilled++;
+            this->buf_filled.enqueue(frame);
+            this->n_filled++;
         }
         else if (__checkFrameAge() && this->stop_age_check.load())
         {
             monoFrame* frame;
 
-            this->filledFrameBuf.wait_dequeue(frame);
-            this->numOfFilled--;
+            this->buf_filled.wait_dequeue(frame);
+            this->n_filled--;
 
-            this->emptyFrameBuf.enqueue(frame);
-            this->numOfEmpty++;
+            this->buf_empty.enqueue(frame);
+            this->n_empty++;
         }
         else
         {
@@ -217,15 +217,15 @@ monoFrame* Camera::getFrame()
     
     monoFrame* frame;
 
-    this->filledFrameBuf.wait_dequeue(frame);
-    this->numOfFilled--;
+    this->buf_filled.wait_dequeue(frame);
+    this->n_filled--;
 
     return frame;    
 }
 
 NSSC_STATUS Camera::returnBuf(monoFrame* frame)
 {
-    this->emptyFrameBuf.enqueue(frame);
-    this->numOfEmpty++;
+    this->buf_empty.enqueue(frame);
+    this->n_empty++;
     return NSSC_STATUS_SUCCESS;
 }

@@ -38,7 +38,7 @@ void CLI::CLIFunc()
 {
     char *buf;
 
-    while ((buf = readline("\033[1;32m[NSSC client]\033[0m >> ")) != nullptr && this->cliON.load())
+    while ((buf = readline("\033[1;32m[NSSC client]\033[0m >> ")) != nullptr && this->cli_running.load())
     {
         if (strlen(buf) > 0)
         {
@@ -72,7 +72,7 @@ void CLI::CLIFunc()
                     this->printError("Bad argument!");
                     continue;
                 }
-                _toggleNDIsource(NDI_SEND_RAW);
+                toggleNDIsource(NDI_SEND_RAW);
             } else
             {
                 bool mono_stream;
@@ -88,7 +88,7 @@ void CLI::CLIFunc()
                     this->printError("Bad argument!");
                     continue;
                 }
-                _toggleNDIsource(NDI_SEND_RAW);
+                toggleNDIsource(NDI_SEND_RAW);
             }
         }
         else if (strcmp(cmd[0], "ingest") == 0)
@@ -107,7 +107,7 @@ void CLI::CLIFunc()
             }
             this->node->g_config.ingestConfig.set_name = setName;
             this->node->g_config.ingestConfig.ingest_amount = ingestAmount;
-            run_ingest();
+            runIngest();
             delete[] setName;
         }
         else if (strcmp(cmd[0], "calibrate") == 0)
@@ -119,7 +119,7 @@ void CLI::CLIFunc()
             }
             else
             {
-                run_calibration(setName);
+                runCalibration(setName);
                 delete[] setName;
             }
         }
@@ -127,7 +127,7 @@ void CLI::CLIFunc()
         {
             if (cmd.size() == 1)
             {
-                run_triangulation(const_cast<char *>(this->node->g_config.triangulationConfig.standard_config_file));
+                runTriangulation(const_cast<char *>(this->node->g_config.triangulationConfig.standard_config_file));
                 continue;
             }
             char *setName;
@@ -137,19 +137,19 @@ void CLI::CLIFunc()
             }
             else
             {
-                run_triangulation(setName);
+                runTriangulation(setName);
                 delete[] setName;
             }
         }
         else if (strcmp(cmd[0], "detect") == 0)
         {
-            run_detection();
+            runDetection();
         }
         else if (strcmp(cmd[0], "calib_origin") == 0)
         {
-            find_triangulation_origin();
+            findTriangulationOrigin();
         }
-        else if (strcmp(cmd[0], "set_exposure") == 0)
+        else if (strcmp(cmd[0], "setExposure") == 0)
         {
             int exposure_time;
             if (getIntArg(cmd, 'e', exposure_time) != NSSC_STATUS_SUCCESS || exposure_time < 1)
@@ -158,10 +158,10 @@ void CLI::CLIFunc()
             }
             else
             {
-                set_exposure((float)exposure_time);
+                setExposure((float) exposure_time);
             }
         }
-        else if (strcmp(cmd[0], "set_gain") == 0)
+        else if (strcmp(cmd[0], "setGain") == 0)
         {
             int gain;
             if (getIntArg(cmd, 'g', gain) != NSSC_STATUS_SUCCESS || gain < 1)
@@ -170,7 +170,7 @@ void CLI::CLIFunc()
             }
             else
             {
-                set_gain((float)gain);
+                setGain((float) gain);
             }
         }
         else if (strcmp(cmd[0], "cancel") == 0)
@@ -179,7 +179,7 @@ void CLI::CLIFunc()
         }
         else if (strcmp(cmd[0], "exit") == 0)
         {
-            this->cliON = false;
+            this->cli_running = false;
             exit();
             break;
         }
@@ -192,8 +192,8 @@ void CLI::CLIFunc()
                    "  triangulate [-d calibration config]       - Prepare NSSC for object detection\n"
                    "  calib_origin                              - Recalibrate the robot origin\n"
                    "  detect                                    - Run the NSSC object detection\n"
-                   "  set_exposure [-e time in microseconds]    - Change the camera exposure time\n"
-                   "  set_gain [-g gain]                        - Change the camera gain\n"
+                   "  setExposure [-e time in microseconds]    - Change the camera exposure time\n"
+                   "  setGain [-g gain]                        - Change the camera gain\n"
                    "  cancel                                    - Cancel the currently running process\n"
                    "  exit                                      - Close the application\n");
         }
@@ -214,12 +214,12 @@ void CLI::printError(const char *message)
 void CLI::openCLI(std::shared_ptr<NSSC> &node)
 {
     this->node = node;
-    this->cliON = true;
-    this->CLIThread = std::thread(&CLI::CLIFunc, this);
+    this->cli_running = true;
+    this->cli_thread = std::thread(&CLI::CLIFunc, this);
 }
 
 void CLI::closeCLI()
 {
-    this->cliON = false;
-    this->CLIThread.join();
+    this->cli_running = false;
+    this->cli_thread.join();
 }

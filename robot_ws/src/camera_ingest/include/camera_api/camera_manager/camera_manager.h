@@ -25,14 +25,11 @@ class cameraManager : public NSSC_ERRORS
         stereoFrame *getFrame();
         NSSC_STATUS returnBuf(stereoFrame* stereoBuf);
 
-    private:        
+    private:
         std::shared_ptr<NSSC>   node;
         std::unique_ptr<Camera> cam1;
         std::unique_ptr<Camera> cam2;
         std::shared_ptr<CyclicBarrier> cb;
-
-        std::thread camLeftThread;
-        std::thread camRightThread;
 
         std::string msgCaller = "CameraManager";
 

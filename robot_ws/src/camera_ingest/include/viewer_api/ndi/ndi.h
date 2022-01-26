@@ -23,17 +23,17 @@ public:
     NSSC_STATUS closeNDI();
 
 private:
-    std::shared_ptr<NSSC>           node;
-    std::unique_ptr<NDIframeManager>* frameManager;
-    NDIlib_send_instance_t          pNDI_send;
-    NDIlib_video_frame_v2_t         NDI_video_frame;
+    std::shared_ptr<NSSC>               node;
+    std::unique_ptr<NDIframeManager>*   frame_manager;
+    NDIlib_send_instance_t              pNDI_send;
+    NDIlib_video_frame_v2_t             ndi_video_frame;
     
-    std::string msgCaller = "NDI";
+    std::string msg_caller = "NDI";
 
     void stereoStreamThread();
     void monoStreamThread();
 
-    std::atomic<bool> streamON{false};
+    std::atomic<bool> stream_running{false};
 
     std::thread sThread;
 

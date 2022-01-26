@@ -18,20 +18,21 @@
 class Ingest : public NSSC_ERRORS
 {
     public:
-        Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager>& camManager);
+        Ingest(std::shared_ptr<NSSC> &node,
+               std::shared_ptr<cameraManager>& camManager);
         void cancelIngest();
 
     private:
         std::shared_ptr<NSSC> node;
-        std::shared_ptr<cameraManager>  camManager;
+        std::shared_ptr<cameraManager>  cam_manager;
 
-        std::string msgCaller = "Ingest";
+        std::string msg_caller = "Ingest";
 
-        std::string setPath;
+        std::string set_path;
 
         void ingestThread();
-        std::thread iThread;
-        std::atomic<bool> runIngest{false};
+        std::thread i_thread;
+        std::atomic<bool> run_ingest{false};
 
     __attribute__((unused)) void saveConfig();
 

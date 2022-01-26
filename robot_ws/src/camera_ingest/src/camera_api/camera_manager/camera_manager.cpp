@@ -52,8 +52,8 @@ NSSC_STATUS cameraManager::loadCameras()
 {
     this->node->printInfo(this->msgCaller, "Loading Cameras");
 
-    _CM_VERIFY_EXIT(this->cam1->LoadCamera("TV0200110012"));
-    _CM_VERIFY_EXIT(this->cam2->LoadCamera("TV0200110013"));
+    _CM_VERIFY_EXIT(this->cam1->loadCamera("TV0200110012"));
+    _CM_VERIFY_EXIT(this->cam2->loadCamera("TV0200110013"));
 
     _CM_VERIFY_EXIT(this->cam1->startAcquisition());
     _CM_VERIFY_EXIT(this->cam2->startAcquisition());
@@ -75,15 +75,15 @@ NSSC_STATUS cameraManager::closeCameras()
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     this->cb->Break();
-    NSSC_STATUS status = this->cam1->CloseCamera();
+    NSSC_STATUS status = this->cam1->closeCamera();
     if(status != NSSC_STATUS_SUCCESS)
     {
-        this->cam2->CloseCamera();
+        this->cam2->closeCamera();
         this->node->printWarning(this->msgCaller, "Cameras closed");
         return status;
     } else
     {
-        status = this->cam2->CloseCamera();
+        status = this->cam2->closeCamera();
         this->node->printInfo(this->msgCaller, "Cameras closed");
         return status;
     }

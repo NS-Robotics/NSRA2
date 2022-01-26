@@ -45,7 +45,7 @@ public:
 
 private:
     std::shared_ptr<NSSC> node;
-    std::string msgCaller = "Calibration";
+    std::string msg_caller = "Calibration";
 
     void _prepareDataSet();
     void __CBCthreadTask(int img_num);
@@ -60,7 +60,7 @@ private:
     boost::shared_ptr<boost::asio::io_service::work> _work;
     boost::thread_group _threadpool;
 
-    std::string setPath;
+    std::string set_path;
     int board_width;
     int board_height;
     int num_images;
@@ -69,7 +69,7 @@ private:
     MonoRepr left_repr;
     MonoRepr right_repr;
 
-    std::atomic<int> CBCThreads{0};
+    std::atomic<int> cbc_threads{0};
 
     std::vector<std::vector<cv::Point3f>> stereo_object_points;
     std::vector<StereoRepr> stereo_image_points;

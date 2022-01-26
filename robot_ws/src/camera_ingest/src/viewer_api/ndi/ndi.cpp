@@ -6,7 +6,7 @@
 NDI::NDI(std::shared_ptr<NSSC>& node, std::unique_ptr<NDIframeManager>* frameManager) : NSSC_ERRORS(node)
 {
     this->node = node;
-    this->frameManager = frameManager;
+    this->frame_manager = frameManager;
 }
 
 NDI::~NDI()
@@ -39,14 +39,14 @@ NSSC_STATUS NDI::init()
                                      "             serial=\"1509\"/>";
         NDIlib_send_add_connection_metadata(this->pNDI_send, &NDI_connection_type);
 
-        this->NDI_video_frame.xres = this->node->g_config.frameConfig.stream_x_res;
-        this->NDI_video_frame.yres = this->node->g_config.frameConfig.stream_y_res;
-        this->NDI_video_frame.FourCC = this->node->g_config.frameConfig.FourCC;
-        this->NDI_video_frame.p_data = (uint8_t *)malloc(this->node->g_config.frameConfig.stream_buf_size);
-        this->NDI_video_frame.line_stride_in_bytes = this->node->g_config.frameConfig.ndi_line_stride;
+        this->ndi_video_frame.xres = this->node->g_config.frameConfig.stream_x_res;
+        this->ndi_video_frame.yres = this->node->g_config.frameConfig.stream_y_res;
+        this->ndi_video_frame.FourCC = this->node->g_config.frameConfig.FourCC;
+        this->ndi_video_frame.p_data = (uint8_t *)malloc(this->node->g_config.frameConfig.stream_buf_size);
+        this->ndi_video_frame.line_stride_in_bytes = this->node->g_config.frameConfig.ndi_line_stride;
 
         status = NSSC_STATUS_SUCCESS;
-        this->node->printInfo(this->msgCaller, "initalized!");
+        this->node->printInfo(this->msg_caller, "initalized!");
     }
 
     this->is_closed = false;
@@ -58,22 +58,22 @@ NSSC_STATUS NDI::startStream()
 {
     NSSC_STATUS status = NSSC_STATUS_SUCCESS;
 
-    this->streamON = true;
+    this->stream_running = true;
     this->node->g_config.frameConfig.stream_on = true;
 
     this->sThread = this->node->g_config.frameConfig.mono_stream ? std::thread(&NDI::monoStreamThread, this) : std::thread(&NDI::stereoStreamThread, this);
 
-    this->node->printInfo(this->msgCaller, "Stream started");
+    this->node->printInfo(this->msg_caller, "Stream started");
 
     return status;
 }
 
 NSSC_STATUS NDI::endStream()
 {
-    this->streamON = false;
+    this->stream_running = false;
     this->node->g_config.frameConfig.stream_on = false;
     this->sThread.join();
-    this->node->printInfo(this->msgCaller, "Stream ended");
+    this->node->printInfo(this->msg_caller, "Stream ended");
 
     return NSSC_STATUS_SUCCESS;
 }
@@ -81,11 +81,11 @@ NSSC_STATUS NDI::endStream()
 NSSC_STATUS NDI::closeNDI()
 {
     if (this->is_closed) { return NSSC_STATUS_SUCCESS; }
-    if (this->streamON.load()) { endStream(); }
+    if (this->stream_running.load()) { endStream(); }
 
     NDIlib_send_destroy(this->pNDI_send);
     NDIlib_destroy();
-    this->node->printInfo(this->msgCaller, "NDI closed");
+    this->node->printInfo(this->msg_caller, "NDI closed");
     this->is_closed = true;
     
     return NSSC_STATUS_SUCCESS;
@@ -97,14 +97,14 @@ void NDI::stereoStreamThread()
 
     int idx = 0;
 
-    while(this->streamON.load())
+    while(this->stream_running.load())
     {
-        while(!NDIlib_send_get_no_connections(this->pNDI_send, 10000) && this->streamON.load())
+        while(!NDIlib_send_get_no_connections(this->pNDI_send, 10000) && this->stream_running.load())
 	    {
-            this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
+            this->node->printInfo(this->msg_caller, "No current connections, so no rendering needed (%d).");
 	    }
 
-        stereoFrame = (*this->frameManager)->getFrame();
+        stereoFrame = (*this->frame_manager)->getFrame();
         if(stereoFrame == nullptr) { break; }
 
         if(this->node->g_config.ingestConfig.is_running)
@@ -138,10 +138,10 @@ void NDI::stereoStreamThread()
                         2);
         }
         
-        this->NDI_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf->hImageBuf;
-		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
+        this->ndi_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf->hImageBuf;
+		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->ndi_video_frame);
 
-        (*this->frameManager)->returnBuf(stereoFrame);
+        (*this->frame_manager)->returnBuf(stereoFrame);
 
         idx = (idx == 0) ? 1 : 0;
 	}
@@ -152,18 +152,18 @@ void NDI::monoStreamThread()
 {
     stereoFrame *stereoFrame[2];
 
-    stereoFrame[0] = (*this->frameManager)->getFrame();
+    stereoFrame[0] = (*this->frame_manager)->getFrame();
 
     int idx = 1;
 
-    while (this->streamON.load())
+    while (this->stream_running.load())
     {
-        while (!NDIlib_send_get_no_connections(this->pNDI_send, 10000) && this->streamON.load())
+        while (!NDIlib_send_get_no_connections(this->pNDI_send, 10000) && this->stream_running.load())
         {
-            this->node->printInfo(this->msgCaller, "No current connections, so no rendering needed (%d).");
+            this->node->printInfo(this->msg_caller, "No current connections, so no rendering needed (%d).");
         }
 
-        stereoFrame[idx] = (*this->frameManager)->getFrame();
+        stereoFrame[idx] = (*this->frame_manager)->getFrame();
 
         if (this->node->g_config.ingestConfig.is_running)
         {
@@ -196,10 +196,10 @@ void NDI::monoStreamThread()
                         2);
         }
 
-        this->NDI_video_frame.p_data = (uint8_t *)stereoFrame[idx]->rightCamera->frameBuf.hImageBuf;
-        NDIlib_send_send_video_async_v2(this->pNDI_send, &this->NDI_video_frame);
+        this->ndi_video_frame.p_data = (uint8_t *)stereoFrame[idx]->rightCamera->frameBuf.hImageBuf;
+        NDIlib_send_send_video_async_v2(this->pNDI_send, &this->ndi_video_frame);
 
-        (*this->frameManager)->returnBuf(stereoFrame[idx ^ 1]);
+        (*this->frame_manager)->returnBuf(stereoFrame[idx ^ 1]);
 
         idx = (idx == 0) ? 1 : 0;
     }

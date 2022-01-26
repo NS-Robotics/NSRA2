@@ -57,10 +57,10 @@ void Executor::exit()
         this->object_detection->closeDetection();
         this->detection_initalized = false;
     }
-    if (this->NDI_running)
+    if (this->ndi_running)
     {
         this->ndi->endStream();
-        this->NDI_running = false;
+        this->ndi_running = false;
     }
     if (this->ndi_initialized)
     {
@@ -69,25 +69,25 @@ void Executor::exit()
     }
     if (this->cam_manager_initialized)
     {
-        this->camManager->closeCameras();
+        this->cam_manager->closeCameras();
         this->cam_manager_initialized = false;
     }
-    this->node->printInfo(this->msgCaller, "Shutdown complete");
+    this->node->printInfo(this->msg_caller, "Shutdown complete");
     this->node_executor->cancel();
     this->is_closed = true;
 }
 
 void Executor::init()
 {
-    this->camManager = std::make_shared<cameraManager>(this->node);
-    this->camManager->init();
-    this->camManager->loadCameras();
+    this->cam_manager = std::make_shared<cameraManager>(this->node);
+    this->cam_manager->init();
+    this->cam_manager->loadCameras();
     this->cam_manager_initialized = true;
 
-    this->frameManager = NDIframeManager::make_frame(NDI_SEND_RAW);
-    this->frameManager->init(this->node, this->camManager);
+    this->frame_manager = NDIframeManager::make_frame(NDI_SEND_RAW);
+    this->frame_manager->init(this->node, this->cam_manager);
 
-    this->ndi = std::make_shared<NDI>(this->node, &this->frameManager);
+    this->ndi = std::make_shared<NDI>(this->node, &this->frame_manager);
     this->ndi->init();
     this->ndi_initialized = true;
 
@@ -96,14 +96,14 @@ void Executor::init()
 
 void Executor::toggleNDI(bool mono_stream)
 {
-    if (this->NDI_running)
+    if (this->ndi_running)
     {
         this->ndi->endStream();
-        this->NDI_running = false;
+        this->ndi_running = false;
     }
     else if (mono_stream == this->node->g_config.frameConfig.mono_stream)
     {
-        _toggleNDIsource(NDI_SEND_RAW);
+        toggleNDIsource(NDI_SEND_RAW);
     }
     else
     {
@@ -118,64 +118,64 @@ void Executor::toggleNDI(bool mono_stream)
         this->ndi->init();
         this->ndi_initialized = true;
         this->ndi->startStream();
-        this->NDI_running = true;
+        this->ndi_running = true;
     }
 }
 
-void Executor::_toggleNDIsource(NSSC_NDI_SEND type)
+void Executor::toggleNDIsource(NSSC_NDI_SEND type)
 {
-    if (this->NDI_running)
+    if (this->ndi_running)
     {
         this->ndi->endStream();
-        this->NDI_running = false;
+        this->ndi_running = false;
     }
 
-    this->frameManager = NDIframeManager::make_frame(type);
-    this->frameManager->init(this->node, this->camManager);
+    this->frame_manager = NDIframeManager::make_frame(type);
+    this->frame_manager->init(this->node, this->cam_manager);
 
     this->ndi->startStream();
-    this->NDI_running = true;
+    this->ndi_running = true;
 }
 
-void Executor::run_ingest()
+void Executor::runIngest()
 {
-    _toggleNDIsource(NDI_SEND_INGEST);
-    this->ingest = new Ingest(this->node, this->camManager);
+    toggleNDIsource(NDI_SEND_INGEST);
+    this->ingest = new Ingest(this->node, this->cam_manager);
 }
 
-void Executor::run_calibration(char *setName)
+void Executor::runCalibration(char *setName)
 {
-    _toggleNDIsource(NDI_SEND_CALIBRATION);
+    toggleNDIsource(NDI_SEND_CALIBRATION);
     this->calibration = new Calibration(this->node, setName);
 }
 
-void Executor::run_triangulation(char *setName)
+void Executor::runTriangulation(char *setName)
 {
-    _toggleNDIsource(NDI_SEND_TRIANGULATION);
+    toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-    this->triangulation_interface = std::make_shared<TriangulationInterface>(this->node, &this->frameManager, setName);
+    this->triangulation_interface = std::make_shared<TriangulationInterface>(this->node, &this->frame_manager, setName);
     if (this->triangulation_interface->init() == NSSC_STATUS_SUCCESS)
         this->triangulation_initialized = true;
     else
         this->triangulation_initialized = false;
 
     this->ndi->endStream();
-    this->NDI_running = false;
+    this->ndi_running = false;
 }
 
-void Executor::run_detection()
+void Executor::runDetection()
 {
     if (this->triangulation_initialized)
     {
-        _toggleNDIsource(NDI_SEND_TRIANGULATION);
+        toggleNDIsource(NDI_SEND_TRIANGULATION);
         this->object_detection = std::make_unique<ObjectDetection>(this->node, this->triangulation_interface);
         this->detection_running = true;
     }
     else
     {
-        _toggleNDIsource(NDI_SEND_TRIANGULATION);
+        toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-        this->triangulation_interface = std::make_shared<TriangulationInterface>(this->node, &this->frameManager, this->node->g_config.triangulationConfig.standard_config_file);
+        this->triangulation_interface = std::make_shared<TriangulationInterface>(this->node, &this->frame_manager, this->node->g_config.triangulationConfig.standard_config_file);
         if (this->triangulation_interface->init() != NSSC_STATUS_SUCCESS)
         {
             this->triangulation_initialized = false;
@@ -190,9 +190,9 @@ void Executor::run_detection()
 
 }
 
-void Executor::find_triangulation_origin()
+void Executor::findTriangulationOrigin()
 {
-    _toggleNDIsource(NDI_SEND_TRIANGULATION);
+    toggleNDIsource(NDI_SEND_TRIANGULATION);
 
     if (this->triangulation_initialized)
     {
@@ -200,34 +200,34 @@ void Executor::find_triangulation_origin()
     }
     else
     {
-        this->node->printError(this->msgCaller, "Triangulation Interface not initialized!");
+        this->node->printError(this->msg_caller, "Triangulation Interface not initialized!");
     }
 
     this->ndi->endStream();
-    this->NDI_running = false;
+    this->ndi_running = false;
 }
 
-void Executor::set_exposure(float exposure_time)
+void Executor::setExposure(float exposure_time)
 {
     if (this->cam_manager_initialized)
     {
-        this->camManager->setExposure(exposure_time);
+        this->cam_manager->setExposure(exposure_time);
     }
     else
     {
-        this->node->printError(this->msgCaller, "Camera Manager is not initialized!");
+        this->node->printError(this->msg_caller, "Camera Manager is not initialized!");
     }
 }
 
-void Executor::set_gain(float gain)
+void Executor::setGain(float gain)
 {
     if (this->cam_manager_initialized)
     {
-        this->camManager->setGain(gain);
+        this->cam_manager->setGain(gain);
     }
     else
     {
-        this->node->printError(this->msgCaller, "Camera Manager is not initialized!");
+        this->node->printError(this->msg_caller, "Camera Manager is not initialized!");
     }
 }
 
@@ -243,6 +243,6 @@ void Executor::cancel()
         this->detection_running = false;
 
         this->ndi->endStream();
-        this->NDI_running = false;
+        this->ndi_running = false;
     }
 }

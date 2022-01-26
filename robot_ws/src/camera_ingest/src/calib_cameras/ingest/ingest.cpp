@@ -3,27 +3,27 @@
 Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) : NSSC_ERRORS(node)
 {
     this->node = node;
-    this->camManager = camManager;
+    this->cam_manager = camManager;
 
-    this->setPath = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
-    std::system(("mkdir -p " + this->setPath).c_str());
+    this->set_path = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
+    std::system(("mkdir -p " + this->set_path).c_str());
 
-    std::ifstream xmlFile(this->setPath + "config.xml");
+    std::ifstream xmlFile(this->set_path + "config.xml");
     if (!xmlFile.fail())
     {
-        this->node->printWarning(this->msgCaller, "This ingest configuration already exists");
+        this->node->printWarning(this->msg_caller, "This ingest configuration already exists");
     }
     else
     {
-        cv::FileStorage config_file(this->setPath + "config.xml", cv::FileStorage::WRITE);
+        cv::FileStorage config_file(this->set_path + "config.xml", cv::FileStorage::WRITE);
         config_file << "setName" << this->node->g_config.ingestConfig.set_name;
         config_file << "ingestAmount" << this->node->g_config.ingestConfig.ingest_amount;
 
-        this->runIngest = true;
-        this->iThread = std::thread(&Ingest::ingestThread, this);
+        this->run_ingest = true;
+        this->i_thread = std::thread(&Ingest::ingestThread, this);
 
         this->node->g_config.ingestConfig.is_running = true;
-        this->node->printInfo(this->msgCaller, "Ingest!");
+        this->node->printInfo(this->msg_caller, "Ingest!");
     }
 }
 
@@ -49,7 +49,7 @@ __attribute__((unused)) void Ingest::saveConfig()
     std::string xml_as_string;
     rapidxml::print(std::back_inserter(xml_as_string), new_doc);
 
-    std::ofstream file_stored(this->setPath + "config.xml");
+    std::ofstream file_stored(this->set_path + "config.xml");
     file_stored << new_doc;
     file_stored.close();
     new_doc.clear();
@@ -60,7 +60,7 @@ __attribute__((unused)) void Ingest::editConfig()
     rapidxml::xml_document<> doc;
     rapidxml::xml_node<> *root_node = nullptr;
 
-    std::ifstream xmlFile(this->setPath + "config.xml");
+    std::ifstream xmlFile(this->set_path + "config.xml");
     std::vector<char> buffer((std::istreambuf_iterator<char>(xmlFile)), std::istreambuf_iterator<char>());
     buffer.push_back('\0');
 
@@ -71,7 +71,7 @@ __attribute__((unused)) void Ingest::editConfig()
     std::string s = std::to_string(this->node->g_config.ingestConfig.current_frame_idx);
     root_node->first_node("Config")->first_attribute("ingestAmount")->value(s.c_str());
 
-    std::ofstream file_stored(this->setPath + "config.xml");
+    std::ofstream file_stored(this->set_path + "config.xml");
     file_stored << doc;
     file_stored.close();
     doc.clear();
@@ -84,20 +84,20 @@ void Ingest::ingestThread()
 
     for (int i = 0; i < this->node->g_config.ingestConfig.ingest_amount; i++)
     {
-        while (this->runIngest.load())
+        while (this->run_ingest.load())
         {
-            stereoFrame = this->camManager->getFrame();
+            stereoFrame = this->cam_manager->getFrame();
             if (stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
             {
                 break;
             }
             else
             {
-                this->camManager->returnBuf(stereoFrame);
+                this->cam_manager->returnBuf(stereoFrame);
             }
         }
 
-        if (!this->runIngest.load()) { break; }
+        if (!this->run_ingest.load()) { break; }
 
         this->node->g_config.ingestConfig.image_taken = true;
 
@@ -111,14 +111,14 @@ void Ingest::ingestThread()
         cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
 
         std::string right_name(this->node->g_config.ingestConfig.right_img_name);
-        cv::imwrite(this->setPath + right_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
+        cv::imwrite(this->set_path + right_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
         std::string left_name(this->node->g_config.ingestConfig.left_img_name);
-        cv::imwrite(this->setPath + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
+        cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
 
-        this->camManager->returnBuf(stereoFrame);
+        this->cam_manager->returnBuf(stereoFrame);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
-        this->node->printInfo(this->msgCaller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
+        this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
 
         this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
         this->node->g_config.ingestConfig.image_taken = false;
@@ -127,16 +127,16 @@ void Ingest::ingestThread()
     }
 
     this->node->g_config.ingestConfig.is_running = false;
-    this->runIngest = false;
+    this->run_ingest = false;
 }
 
 void Ingest::cancelIngest()
 {
-    cv::FileStorage config_file(this->setPath + "config.xml", cv::FileStorage::WRITE);
+    cv::FileStorage config_file(this->set_path + "config.xml", cv::FileStorage::WRITE);
     config_file << "ingestAmount" << this->node->g_config.ingestConfig.current_frame_idx;
 
-    this->runIngest = false;
+    this->run_ingest = false;
     this->node->g_config.ingestConfig.is_running = false;
-    this->iThread.join();
-    this->node->printInfo(this->msgCaller, "Ingest canceled");
+    this->i_thread.join();
+    this->node->printInfo(this->msg_caller, "Ingest canceled");
 }

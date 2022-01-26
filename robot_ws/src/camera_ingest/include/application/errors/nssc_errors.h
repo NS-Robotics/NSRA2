@@ -66,8 +66,8 @@ class NSSC_ERRORS
         #define _GX_VERIFY_EXIT(status) \
             if (status != NSSC_STATUS_SUCCESS)        \
             {                                         \
-                GXCloseDevice(this->hDevice);         \
-                this->hDevice = NULL;                 \
+                GXCloseDevice(this->h_device);         \
+                this->h_device = NULL;                 \
                 GXCloseLib();                         \
                 return status;                        \
             }

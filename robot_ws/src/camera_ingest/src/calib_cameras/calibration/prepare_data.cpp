@@ -9,10 +9,10 @@ void Calibration::_prepareDataSet()
         for (int j = 0; j < this->board_width; j++)
             this->obj.push_back(cv::Point3f((float)j * this->node->g_config.calibConfig.square_size, (float)k * this->node->g_config.calibConfig.square_size, 0));
 
-    cv::FileStorage data_config((this->setPath + "config.xml").c_str(), cv::FileStorage::READ);
+    cv::FileStorage data_config((this->set_path + "config.xml").c_str(), cv::FileStorage::READ);
     if (!data_config.isOpened())
     {
-        this->node->printWarning(this->msgCaller, "Config file not found");
+        this->node->printWarning(this->msg_caller, "Config file not found");
         return;
     }
     data_config["ingestAmount"] >> this->num_images;
@@ -22,14 +22,14 @@ void Calibration::_prepareDataSet()
         this->_io_service->post(boost::bind(&Calibration::__CBCthreadTask, this, i));
     }
 
-    while(this->CBCThreads.load() != this->num_images)
+    while(this->cbc_threads.load() != this->num_images)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
     this->_io_service->stop();
     this->_threadpool.join_all();
-    this->node->printInfo(this->msgCaller, "Image processing complete");
+    this->node->printInfo(this->msg_caller, "Image processing complete");
 
     for (int i = 0; i < this->stereo_image_points.size(); i++)
     {
@@ -52,40 +52,40 @@ void Calibration::__CBCthreadTask(int img_num)
     std::vector<cv::Point2f> right_img_points;
     char in_file1[100];
     char out_file1[100];
-    sprintf(in_file1, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.right_img_name, img_num);
-    sprintf(out_file1, "%s%s%s%d.png", (this->setPath).c_str(), "corners_", this->node->g_config.ingestConfig.right_img_name, img_num);
+    sprintf(in_file1, "%s%s%d.png", (this->set_path).c_str(), this->node->g_config.ingestConfig.right_img_name, img_num);
+    sprintf(out_file1, "%s%s%s%d.png", (this->set_path).c_str(), "corners_", this->node->g_config.ingestConfig.right_img_name, img_num);
     std::string s_img_file1(in_file1);
 
     std::tie(right_status, right_img_points) = __findCBC(in_file1, out_file1);
     if (right_status == NSSC_CALIB_FILE_NOT_FOUND)
-        this->node->printError(this->msgCaller, "File " + s_img_file1 + " not found");
+        this->node->printError(this->msg_caller, "File " + s_img_file1 + " not found");
     else if (right_status == NSSC_CALIB_CBC_NOT_FOUND)
-        this->node->printWarning(this->msgCaller, "Right image " + std::to_string(img_num) + " CBC not found");
+        this->node->printWarning(this->msg_caller, "Right image " + std::to_string(img_num) + " CBC not found");
     else
     {
         this->right_repr.image_points.push_back(right_img_points);
         this->right_repr.object_points.push_back(this->obj);
-        this->node->printInfo(this->msgCaller, "Right image " + std::to_string(img_num) + " CBC detection successfull");
+        this->node->printInfo(this->msg_caller, "Right image " + std::to_string(img_num) + " CBC detection successfull");
     }
 
     NSSC_STATUS left_status;
     std::vector<cv::Point2f> left_img_points;
     char in_file2[100];
     char out_file2[100];
-    sprintf(in_file2, "%s%s%d.png", (this->setPath).c_str(), this->node->g_config.ingestConfig.left_img_name, img_num);
-    sprintf(out_file2, "%s%s%s%d.png", (this->setPath).c_str(), "corners_", this->node->g_config.ingestConfig.left_img_name, img_num);
+    sprintf(in_file2, "%s%s%d.png", (this->set_path).c_str(), this->node->g_config.ingestConfig.left_img_name, img_num);
+    sprintf(out_file2, "%s%s%s%d.png", (this->set_path).c_str(), "corners_", this->node->g_config.ingestConfig.left_img_name, img_num);
     std::string s_img_file2(in_file2);
 
     std::tie(left_status, left_img_points) = __findCBC(in_file2, out_file2);
     if (left_status == NSSC_CALIB_FILE_NOT_FOUND)
-        this->node->printError(this->msgCaller, "File " + s_img_file2 + " not found");
+        this->node->printError(this->msg_caller, "File " + s_img_file2 + " not found");
     else if (left_status == NSSC_CALIB_CBC_NOT_FOUND)
-        this->node->printWarning(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC not found");
+        this->node->printWarning(this->msg_caller, "Left image " + std::to_string(img_num) + " CBC not found");
     else
     {
         this->left_repr.image_points.push_back(left_img_points);
         this->left_repr.object_points.push_back(this->obj);
-        this->node->printInfo(this->msgCaller, "Left image " + std::to_string(img_num) + " CBC detection successfull");
+        this->node->printInfo(this->msg_caller, "Left image " + std::to_string(img_num) + " CBC detection successfull");
     }
 
     if (right_status == NSSC_STATUS_SUCCESS && left_status == NSSC_STATUS_SUCCESS)
@@ -95,7 +95,7 @@ void Calibration::__CBCthreadTask(int img_num)
         this->stereo_object_points.push_back(this->obj);
     }
 
-    this->CBCThreads++;
+    this->cbc_threads++;
 }
 
 std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> Calibration::__findCBC(char *in_file, char *out_file)
