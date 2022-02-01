@@ -22,6 +22,8 @@
 
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 
+#include "nsra2_control/nsra2_control.h"
+
 namespace nsra2_hardware
 {
 hardware_interface::return_type NSRA2SystemPositionHardware::configure(
@@ -76,6 +78,8 @@ hardware_interface::return_type NSRA2SystemPositionHardware::configure(
       return hardware_interface::return_type::ERROR;
     }
   }
+
+  NSRA2Control control;
 
   status_ = hardware_interface::status::CONFIGURED;
   return hardware_interface::return_type::OK;

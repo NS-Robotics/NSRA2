@@ -18,6 +18,7 @@ public:
     Executor(std::shared_ptr<NSSC> &node,
              std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
     void init();
+    
     void exit() override;
     void toggleNDI(bool mono_stream) override;
     void toggleNDIsource(NSSC_NDI_SEND type) override;

@@ -107,6 +107,7 @@ public:
     }
 };
 
+//TODO: implementation
 class sendIngest : public NDIframeManager
 {
 public:
@@ -136,6 +137,7 @@ public:
     }
 };
 
+//TODO: implementation
 class sendCalibration : public NDIframeManager
 {
 public:
