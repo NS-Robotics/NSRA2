@@ -18,11 +18,10 @@
             <param name="state_following_offset">0.0</param>
           </xacro:if>
           <xacro:unless value="${use_fake_hardware}">
-            <plugin>robot_hardware/NSRA2SystemPositionHardware</plugin>
+            <plugin>nsra2_hardware/NSRA2SystemPositionHardware</plugin>
             <param name="example_param_hw_start_duration_sec">10.0</param>
             <param name="example_param_hw_stop_duration_sec">3.0</param>
             <param name="example_param_hw_slowdown">${slowdown}</param>
-            <param name="hardware_type">1</param>
           </xacro:unless>
         </hardware>
       </xacro:unless>

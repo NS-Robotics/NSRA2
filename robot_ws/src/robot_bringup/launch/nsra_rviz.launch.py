@@ -160,23 +160,6 @@ def generate_launch_description():
             "robot.rviz"
         ]
     )
-
-    control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[robot_description, robot_controllers],
-        output={
-            "stdout": "screen",
-            "stderr": "screen",
-        },
-    )
-
-    robot_state_pub_node = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        output="both",
-        parameters=[robot_description],
-    )
     
     rviz_node = Node(
         package="rviz2",
@@ -187,24 +170,8 @@ def generate_launch_description():
         condition=IfCondition(start_rviz),
     )
 
-    joint_state_broadcaster_spawner = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
-    )
-
-    robot_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=[robot_controller, "-c", "/controller_manager"],
-    )
-
     nodes = [
-        control_node,
-        robot_state_pub_node,
         rviz_node,
-        joint_state_broadcaster_spawner,
-        robot_controller_spawner,
     ]
 
     return LaunchDescription(declared_arguments + nodes)
