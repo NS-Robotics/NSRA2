@@ -36,6 +36,7 @@
 #define ROBOT_HARDWARE_NSRA2_CONTROL_H_
 
 #include "serial/serial.h"
+#include "rclcpp/rclcpp.hpp"
 
 class NSRA2Control
 {

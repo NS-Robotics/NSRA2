@@ -79,7 +79,9 @@ hardware_interface::return_type NSRA2SystemPositionHardware::configure(
     }
   }
 
-  NSRA2Control control;
+    RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Starting control!");
+    NSRA2Control control;
+    RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Control done!");
 
   status_ = hardware_interface::status::CONFIGURED;
   return hardware_interface::return_type::OK;
