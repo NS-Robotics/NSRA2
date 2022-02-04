@@ -30,46 +30,50 @@
 
 #include "rclcpp/rclcpp.hpp"
 
+#include "nsra2_control/nsra2_control.h"
+
 namespace nsra2_hardware
 {
-class NSRA2SystemPositionHardware
-: public hardware_interface::BaseInterface<hardware_interface::SystemInterface>
-{
-public:
-  RCLCPP_SHARED_PTR_DEFINITIONS(NSRA2SystemPositionHardware);
+    class NSRA2SystemPositionHardware
+            : public hardware_interface::BaseInterface<hardware_interface::SystemInterface>
+    {
+    public:
+        RCLCPP_SHARED_PTR_DEFINITIONS(NSRA2SystemPositionHardware);
 
-  NSRA2_HARDWARE_PUBLIC
-  hardware_interface::return_type configure(const hardware_interface::HardwareInfo & info) override;
+        NSRA2_HARDWARE_PUBLIC
+        hardware_interface::return_type configure(const hardware_interface::HardwareInfo &info) override;
 
-  NSRA2_HARDWARE_PUBLIC
-  std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+        NSRA2_HARDWARE_PUBLIC
+        std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-  NSRA2_HARDWARE_PUBLIC
-  std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
+        NSRA2_HARDWARE_PUBLIC
+        std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-  NSRA2_HARDWARE_PUBLIC
-  hardware_interface::return_type start() override;
+        NSRA2_HARDWARE_PUBLIC
+        hardware_interface::return_type start() override;
 
-  NSRA2_HARDWARE_PUBLIC
-  hardware_interface::return_type stop() override;
+        NSRA2_HARDWARE_PUBLIC
+        hardware_interface::return_type stop() override;
 
-  NSRA2_HARDWARE_PUBLIC
-  hardware_interface::return_type read() override;
+        NSRA2_HARDWARE_PUBLIC
+        hardware_interface::return_type read() override;
 
-  NSRA2_HARDWARE_PUBLIC
-  hardware_interface::return_type write() override;
+        NSRA2_HARDWARE_PUBLIC
+        hardware_interface::return_type write() override;
 
-private:
-  // Parameters for the RRBot simulation
-  double hw_start_sec_;
-  double hw_stop_sec_;
-  double hw_slowdown_;
+    private:
+        // Serial Hardware Interface
+        nsra2_control::NSRA2Control* hw_interface;
+        // Parameters for the RRBot simulation
+        double hw_start_sec_;
+        double hw_stop_sec_;
+        double hw_slowdown_;
 
-  // Store the command for the simulated robot
-  std::vector<double> hw_commands_;
-  std::vector<double> hw_states_;
+        // Store the command for the simulated robot
+        std::vector<double> hw_commands_;
+        std::vector<double> hw_states_;
 
-};
+    };
 
 }  // namespace nsra2_hardware
 

@@ -32,63 +32,27 @@
 
 // Author: Noa Sendlhofer
 
-#include "nsra2_control.h"
+#ifndef ROBOT_HARDWARE_ERROR_HANDLER_H_
+#define ROBOT_HARDWARE_ERROR_HANDLER_H_
 
 namespace nsra2_control
 {
 
-    NSRA2Control::NSRA2Control()
+    typedef int NSRA_STATUS;
+
+    typedef enum NSRA_STATUS_LIST
     {
 
-    }
+        NSRA_STATUS_SUCCESS = 0,                               // Success
+        NSRA_STATUS_ERROR = -1,                               // There is an unspecified internal error that is not expected to occur
 
-    NSRA_STATUS NSRA2Control::init()
-    {
-        if (!this->hw_serial->isOpen())
-            return _findHardware();
-        else
-            return NSRA_SERIAL_DEVICE_READY;
-    }
+        // Serial error codes
+        NSRA_SERIAL_DEVICE_READY = 10,                               // Device open and ready
+        NSRA_SERIAL_DEVICE_NOT_FOUND = -10,                              // Device not found
+        NSRA_SERIAL_INIT_ERROR = -11,                              // Error opening device
 
-
-    NSRA_STATUS NSRA2Control::_findHardware()
-    {
-        std::vector<serial::PortInfo> devices_found = serial::list_ports();
-        auto iter = devices_found.begin();
-
-        std::string port;
-        NSRA_STATUS status;
-
-        while (iter != devices_found.end())
-        {
-            serial::PortInfo device = *iter++;
-
-            if (device.description == this->hardware_sn)
-            {
-                port = device.port;
-                status = NSRA_STATUS_SUCCESS;
-                break;
-            }
-            else
-            {
-                status = NSRA_SERIAL_DEVICE_NOT_FOUND;
-            }
-        }
-
-        if (status != NSRA_STATUS_SUCCESS)
-        { return status; }
-
-        this->hw_serial = new serial::Serial(port, this->baud, serial::Timeout::simpleTimeout(1000));
-
-        if (this->hw_serial->isOpen())
-            return NSRA_SERIAL_DEVICE_READY;
-        else
-            return NSRA_SERIAL_INIT_ERROR;
-    }
-
-    NSRA_STATUS NSRA2Control::sendCommands(std::vector<double> hw_commands_)
-    {
-
-    }
+    } NSRA_STATUS_LIST;
 
 } // namespace nsra2_control
+
+#endif //ROBOT_HARDWARE_ERROR_HANDLER_H_

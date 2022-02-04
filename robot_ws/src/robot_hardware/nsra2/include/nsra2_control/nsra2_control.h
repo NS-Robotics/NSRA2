@@ -37,11 +37,29 @@
 
 #include "serial/serial.h"
 #include "rclcpp/rclcpp.hpp"
+#include "error_handler.h"
 
-class NSRA2Control
+namespace nsra2_control
 {
-public:
-    NSRA2Control();
-};
+
+    class NSRA2Control
+    {
+    public:
+        NSRA2Control();
+
+        NSRA_STATUS init();
+
+        NSRA_STATUS sendCommands(std::vector<double> hw_commands_);
+
+    private:
+        NSRA_STATUS _findHardware();
+
+        serial::Serial *hw_serial;
+
+        const std::string hardware_sn = "Teensyduino USB Serial 8347080";
+        const unsigned int baud = 115200;
+    };
+
+} // namespace nsra2_control
 
 #endif //ROBOT_HARDWARE_NSRA2_CONTROL_H_

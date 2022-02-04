@@ -191,46 +191,6 @@ def generate_launch_description():
         arguments=["0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "base_link"],
     )
 
-    # Publish TF
-    # robot_state_publisher = Node(
-    #     package="robot_state_publisher",
-    #     executable="robot_state_publisher",
-    #     name="robot_state_publisher",
-    #     output="both",
-    #     parameters=[robot_description],
-    # )
-
-    # # ros2_control using FakeSystem as hardware
-    # ros2_controllers_path = os.path.join(
-    #     get_package_share_directory("moveit_resources_panda_moveit_config"),
-    #     "config",
-    #     "panda_ros_controllers.yaml",
-    # )
-    # ros2_control_node = Node(
-    #     package="controller_manager",
-    #     executable="ros2_control_node",
-    #     parameters=[robot_description, ros2_controllers_path],
-    #     output={
-    #         "stdout": "screen",
-    #         "stderr": "screen",
-    #     },
-    # )
-
-    # # Load controllers
-    # load_controllers = []
-    # for controller in [
-    #     "panda_arm_controller",
-    #     "panda_hand_controller",
-    #     "joint_state_broadcaster",
-    # ]:
-    #     load_controllers += [
-    #         ExecuteProcess(
-    #             cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
-    #             shell=True,
-    #             output="screen",
-    #         )
-    #     ]
-
     # Warehouse mongodb server
     mongodb_server_node = Node(
         package="warehouse_ros_mongo",

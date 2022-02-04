@@ -88,20 +88,6 @@ def generate_launch_description():
             "slowdown", default_value="3.0", description="Slowdown factor of the RRbot."
         )
     )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "robot_controller",
-            default_value="position_trajectory_controller",
-            description="Robot controller to start.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "start_rviz",
-            default_value="false",
-            description="Start RViz2 automatically with this launch file.",
-        )
-    )
 
     # Initialize Arguments
     runtime_config_package = LaunchConfiguration("runtime_config_package")
@@ -113,8 +99,6 @@ def generate_launch_description():
     use_fake_hardware = LaunchConfiguration("use_fake_hardware")
     fake_sensor_commands = LaunchConfiguration("fake_sensor_commands")
     slowdown = LaunchConfiguration("slowdown")
-    robot_controller = LaunchConfiguration("robot_controller")
-    #start_rviz = LaunchConfiguration("start_rviz")
 
     # Get URDF via xacro
     robot_description_content = Command(
@@ -152,15 +136,6 @@ def generate_launch_description():
         ]
     )
 
-    #rviz_config_file = PathJoinSubstitution(
-    #    [
-    #        FindPackageShare(runtime_config_package), 
-    #        runtime_config_robot, 
-    #        "config", 
-    #        "robot.rviz"
-    #    ]
-    #)
-
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
@@ -177,27 +152,6 @@ def generate_launch_description():
         output="both",
         parameters=[robot_description],
     )
-    
-    #rviz_node = Node(
-    #    package="rviz2",
-    #    executable="rviz2",
-    #    name="rviz2",
-    #    output="log",
-    #    arguments=["-d", rviz_config_file],
-    #    condition=IfCondition(start_rviz),
-    #)
-
-    # joint_state_broadcaster_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner.py",
-    #     arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
-    # )
-
-    # robot_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner.py",
-    #     arguments=[robot_controller, "-c", "/controller_manager"],
-    # )
 
     # Load controllers
     load_controllers = []
@@ -217,9 +171,6 @@ def generate_launch_description():
     nodes = [
         control_node,
         robot_state_pub_node,
-        #rviz_node,
-        #joint_state_broadcaster_spawner,
-        #robot_controller_spawner,
     ] 
 
     return LaunchDescription(declared_arguments + nodes + load_controllers)
