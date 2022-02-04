@@ -37,19 +37,19 @@
 
 namespace nsra2_control
 {
-
     typedef int NSRA_STATUS;
 
     typedef enum NSRA_STATUS_LIST
     {
 
-        NSRA_STATUS_SUCCESS = 0,                               // Success
-        NSRA_STATUS_ERROR = -1,                               // There is an unspecified internal error that is not expected to occur
+        NSRA_STATUS_SUCCESS                 =  0,                               // Success
+        NSRA_STATUS_ERROR                   = -1,                               // There is an unspecified internal error that is not expected to occur
 
         // Serial error codes
-        NSRA_SERIAL_DEVICE_READY = 10,                               // Device open and ready
-        NSRA_SERIAL_DEVICE_NOT_FOUND = -10,                              // Device not found
-        NSRA_SERIAL_INIT_ERROR = -11,                              // Error opening device
+        NSRA_SERIAL_DEVICE_READY            =  10,                              // Device open and ready
+        NSRA_SERIAL_DEVICE_NOT_FOUND        = -10,                              // Device not found
+        NSRA_SERIAL_INIT_ERROR              = -11,                              // Error opening device
+        NSRA_SERIAL_SEND_ERROR              = -12,                              // Error sending message
 
     } NSRA_STATUS_LIST;
 

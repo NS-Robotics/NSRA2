@@ -49,6 +49,8 @@ ament_target_dependencies(
         rclcpp
 )
 
+set_property(TARGET nsra2_control PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 add_library(
         nsra2_hardware
         SHARED

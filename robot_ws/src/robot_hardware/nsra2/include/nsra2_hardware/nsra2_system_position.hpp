@@ -64,6 +64,7 @@ namespace nsra2_hardware
     private:
         // Serial Hardware Interface
         nsra2_control::NSRA2Control* hw_interface;
+
         // Parameters for the RRBot simulation
         double hw_start_sec_;
         double hw_stop_sec_;

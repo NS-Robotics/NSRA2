@@ -41,23 +41,27 @@
 
 namespace nsra2_control
 {
-
     class NSRA2Control
     {
     public:
         NSRA2Control();
 
         NSRA_STATUS init();
-
-        NSRA_STATUS sendCommands(std::vector<double> hw_commands_);
+        NSRA_STATUS sendCommands(std::vector<double> &hw_commands_);
+        NSRA_STATUS readStatus(std::vector<double> &hw_status_);
 
     private:
         NSRA_STATUS _findHardware();
+
+        uint16_t __calc_steps(double r_pos, double transmission) const;
+        uint16_t __calc_steps(double r_pos, int transmission) const;
 
         serial::Serial *hw_serial;
 
         const std::string hardware_sn = "Teensyduino USB Serial 8347080";
         const unsigned int baud = 115200;
+        const double pi = 2*acos(0.0);
+        bool is_connected = false;
     };
 
 } // namespace nsra2_control
