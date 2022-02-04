@@ -5,11 +5,10 @@ trajectory_execution:
 
 moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
 
-moveit_simple_controller_manager:
-  controller_names:
-    - nsra_position_trajectory_controller
-    - nsra_gripper_controller
-
+controller_names:
+  - nsra_position_trajectory_controller
+  - nsra_gripper_controller
+  
 nsra_position_trajectory_controller:
   action_ns: follow_joint_trajectory
   type: FollowJointTrajectory

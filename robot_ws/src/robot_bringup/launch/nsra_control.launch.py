@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, ExecuteProcess
 from launch.conditions import IfCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 
@@ -187,24 +187,39 @@ def generate_launch_description():
     #    condition=IfCondition(start_rviz),
     #)
 
-    joint_state_broadcaster_spawner = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
-    )
+    # joint_state_broadcaster_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner.py",
+    #     arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+    # )
 
-    robot_controller_spawner = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=[robot_controller, "-c", "/controller_manager"],
-    )
+    # robot_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner.py",
+    #     arguments=[robot_controller, "-c", "/controller_manager"],
+    # )
+
+    # Load controllers
+    load_controllers = []
+    for controller in [
+        "nsra_position_trajectory_controller",
+        "nsra_gripper_controller",
+        "joint_state_broadcaster",
+    ]:
+        load_controllers += [
+            ExecuteProcess(
+                cmd=["ros2 run controller_manager spawner.py {}".format(controller)],
+                shell=True,
+                output="screen",
+            )
+        ]
 
     nodes = [
         control_node,
         robot_state_pub_node,
         #rviz_node,
-        joint_state_broadcaster_spawner,
-        robot_controller_spawner,
-    ]
+        #joint_state_broadcaster_spawner,
+        #robot_controller_spawner,
+    ] 
 
-    return LaunchDescription(declared_arguments + nodes)
+    return LaunchDescription(declared_arguments + nodes + load_controllers)

@@ -25,7 +25,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 )
 
 install(
-  DIRECTORY nsra2/config nsra2/gazebo nsra2/launch nsra2/meshes nsra2/ros2_control nsra2/urdf
+  DIRECTORY nsra2/config nsra2/gazebo nsra2/launch nsra2/meshes nsra2/ros2_control nsra2/urdf nsra2/moveit 
   DESTINATION share/${PROJECT_NAME}/nsra2
 )
 

@@ -81,8 +81,8 @@ class NSSC_ERRORS
         #define _CM_VERIFY_EXIT(status) \
             if (status != NSSC_STATUS_SUCCESS)        \
             {                                         \
-                this->cam1->CloseCamera();            \
-                this->cam2->CloseCamera();            \
+                this->cam1->closeCamera();            \
+                this->cam2->closeCamera();            \
                 return status;                        \
             }
 

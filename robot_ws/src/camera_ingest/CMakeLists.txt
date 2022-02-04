@@ -27,7 +27,7 @@ find_package(Eigen3 REQUIRED)
 
 add_subdirectory(ros_node)
 
-set(private_LIBRARIES ${PROJECT_SOURCE_DIR}/../../../../NSSC_private_libs)
+set(private_LIBRARIES /home/ros2/NSSC_private_libs)
 
 set(gxi_LIBRARY ${private_LIBRARIES}/lib/gxilib/libgxiapi.so)
 set(gxi_GVTL ${private_LIBRARIES}/lib/gxilib/GxGVTL.cti)
