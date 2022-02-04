@@ -93,6 +93,11 @@ ArduinoQueue<pos> queue(50);
 
 pos last;
 
+float calc_vel(float last, float now, float next)
+{
+  return (abs(last - now) + abs(now - next)) / 2.0 * (float)FRQ;
+}
+
 void update() {
   if(queueFlag && controlFlag)
   {
@@ -100,49 +105,48 @@ void update() {
     pos now = queue.dequeue();
     pos next = queue.getHead();
 
-    if(((abs(last.axis1 - now.axis1) + abs(now.axis1 - next.axis1))/2.0*(float)FRQ)/100.0 < VEL_LIMIT_A1)
-    {
+    float axis1_vel = calc_vel(last.axis1, now.axis1, next.axis1);
+    if(axis1_vel < VEL_LIMIT_A1)
       odrive_serial1 << "w axis" << 0 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A1 << '\n';
-    } else {
-      odrive_serial1 << "w axis" << 0 << ".controller.config.vel_limit " << (float)((abs(last.axis1 - now.axis1) + abs(now.axis1 - next.axis1))/2.0*(float)FRQ + VEL_DIFF_A1)/100.0 << '\n';
-    }
-    if(((abs(last.axis2 - now.axis2) + abs(now.axis2 - next.axis2))/2.0*(float)FRQ)/100.0 < VEL_LIMIT_A2)
-    {
-      odrive_serial0 << "w axis" << 0 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A2 << '\n';
-    } else {
-      odrive_serial0 << "w axis" << 0 << ".controller.config.vel_limit " << (float)((abs(last.axis2 - now.axis2) + abs(now.axis2 - next.axis2))/2.0*(float)FRQ + VEL_DIFF_A2)/100.0 << '\n';
-    }
-    if(((abs(last.axis3 - now.axis3) + abs(now.axis3 - next.axis3))/2.0*(float)FRQ)/100.0 < VEL_LIMIT_A3)
-    {
-      odrive_serial0 << "w axis" << 1 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A3 << '\n';
-    } else {
-      odrive_serial0 << "w axis" << 1 << ".controller.config.vel_limit " << (float)((abs(last.axis3 - now.axis3) + abs(now.axis3 - next.axis3))/2.0*(float)FRQ + VEL_DIFF_A3)/100.0 << '\n';
-    }
-    if(((abs(last.axis4 - now.axis4) + abs(now.axis4 - next.axis4))/2.0*(float)FRQ)/100.0 < VEL_LIMIT_A4)
-    {
-      odrive_serial2 << "w axis" << 0 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A4 << '\n';
-    } else {
-      odrive_serial2 << "w axis" << 0 << ".controller.config.vel_limit " << (float)((abs(last.axis4 - now.axis4) + abs(now.axis4 - next.axis4))/2.0*(float)FRQ + VEL_DIFF_A4)/100.0 << '\n';
-    }
-    if(((abs(last.axis5 - now.axis5) + abs(now.axis5 - next.axis5))/2.0*(float)FRQ)/100.0 < VEL_LIMIT_A5)
-    {
-      odrive_serial2 << "w axis" << 1 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A5 << '\n';
-    } else {
-      odrive_serial2 << "w axis" << 1 << ".controller.config.vel_limit " << (float)((abs(last.axis5 - now.axis5) + abs(now.axis5 - next.axis5))/2.0*(float)FRQ + VEL_DIFF_A5)/100.0 << '\n';
-    }
-    if(((abs(last.axis6 - now.axis6) + abs(now.axis6 - next.axis6))/2.0*(float)FRQ)/100.0 < VEL_LIMIT_A6)
-    {
-      odrive_serial1 << "w axis" << 1 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A6 << '\n';
-    } else {
-      odrive_serial1 << "w axis" << 1 << ".controller.config.vel_limit " << (float)((abs(last.axis6 - now.axis6) + abs(now.axis6 - next.axis6))/2.0*(float)FRQ + VEL_DIFF_A6)/100.0 << '\n';
-    }
+    else
+      odrive_serial1 << "w axis" << 0 << ".controller.config.vel_limit " << axis1_vel << '\n';
 
-    odrv1.SetPosition(0, (float)now.axis1 / 100.0);
-    odrv0.SetPosition(0, (float)now.axis2 / 100.0);
-    odrv0.SetPosition(1, (float)now.axis3 / 100.0);
-    odrv2.SetPosition(0, (float)now.axis4 / 100.0);
-    odrv2.SetPosition(1, (float)now.axis5 / 100.0);
-    odrv1.SetPosition(1, (float)now.axis6 / 100.0);
+    float axis2_vel = calc_vel(last.axis2, now.axis2, next.axis2);
+    if (axis2_vel < VEL_LIMIT_A2)
+      odrive_serial0 << "w axis" << 0 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A2 << '\n';
+    else
+      odrive_serial0 << "w axis" << 0 << ".controller.config.vel_limit " << axis2_vel << '\n';
+
+    float axis3_vel = calc_vel(last.axis3, now.axis3, next.axis3);
+    if (axis3_vel < VEL_LIMIT_A3)
+      odrive_serial0 << "w axis" << 1 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A3 << '\n';
+    else
+      odrive_serial0 << "w axis" << 1 << ".controller.config.vel_limit " << axis3_vel << '\n';
+
+    float axis4_vel = calc_vel(last.axis4, now.axis4, next.axis4);
+    if (axis4_vel < VEL_LIMIT_A4)
+      odrive_serial2 << "w axis" << 0 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A4 << '\n';
+    else
+      odrive_serial2 << "w axis" << 0 << ".controller.config.vel_limit " << axis4_vel << '\n';
+
+    float axis5_vel = calc_vel(last.axis5, now.axis5, next.axis5);
+    if (axis5_vel < VEL_LIMIT_A5)
+      odrive_serial2 << "w axis" << 1 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A5 << '\n';
+    else
+      odrive_serial2 << "w axis" << 1 << ".controller.config.vel_limit " << axis5_vel << '\n';
+
+    float axis6_vel = calc_vel(last.axis6, now.axis6, next.axis6);
+    if (axis6_vel < VEL_LIMIT_A6)
+      odrive_serial1 << "w axis" << 1 << ".controller.config.vel_limit " << (float)VEL_LIMIT_A6 << '\n';
+    else
+      odrive_serial1 << "w axis" << 1 << ".controller.config.vel_limit " << axis6_vel << '\n';
+
+    odrv1.SetPosition(0, (float)now.axis1);
+    odrv0.SetPosition(0, (float)now.axis2);
+    odrv0.SetPosition(1, (float)now.axis3);
+    odrv2.SetPosition(0, (float)now.axis4);
+    odrv2.SetPosition(1, (float)now.axis5);
+    odrv1.SetPosition(1, (float)now.axis6);
 
     last = now;
     
