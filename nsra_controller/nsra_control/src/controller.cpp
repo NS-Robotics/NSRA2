@@ -42,7 +42,7 @@
 #include <Base64.h>
 
 #define QUEUE_SIZE 3
-#define FRQ 100
+#define FRQ 20
 
 #define VEL_LIMIT_A1 3.0
 #define VEL_LIMIT_A2 4.0
