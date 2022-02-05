@@ -121,6 +121,7 @@ namespace nsra2_hardware
 
     hardware_interface::return_type NSRA2SystemPositionHardware::start()
     {
+        /*
         RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Starting ...please wait...");
 
         for (int i = 0; i < hw_start_sec_; i++)
@@ -130,6 +131,8 @@ namespace nsra2_hardware
                     rclcpp::get_logger("NSRA2SystemPositionHardware"), "%.1f seconds left...",
                     hw_start_sec_ - i);
         }
+         */
+        RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Starting...");
 
         // set some default values when starting the first time
         for (uint i = 0; i < hw_states_.size(); i++)
@@ -155,6 +158,7 @@ namespace nsra2_hardware
 
     hardware_interface::return_type NSRA2SystemPositionHardware::stop()
     {
+        /*
         RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Stopping ...please wait...");
 
         for (int i = 0; i < hw_stop_sec_; i++)
@@ -164,6 +168,8 @@ namespace nsra2_hardware
                     rclcpp::get_logger("NSRA2SystemPositionHardware"), "%.1f seconds left...",
                     hw_stop_sec_ - i);
         }
+         */
+        RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), "Stopping...");
 
         status_ = hardware_interface::status::STOPPED;
 
@@ -179,7 +185,7 @@ namespace nsra2_hardware
         for (uint i = 0; i < hw_states_.size(); i++)
         {
             // Simulate RRBot's movement
-            hw_states_[i] = hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
+            hw_states_[i] = hw_commands_[i];
             // RCLCPP_INFO(
             //   rclcpp::get_logger("NSRA2SystemPositionHardware"), "Got state %.5f for joint %d!",
             //   hw_states_[i], i);

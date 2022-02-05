@@ -43,6 +43,14 @@
 
 #define QUEUE_SIZE 3
 #define FRQ 20
+#define multiplier 65000.0
+
+#define TRANSMISSION_A1 250.0 * 0.885
+#define TRANSMISSION_A2 250.0 * 0.885
+#define TRANSMISSION_A3 -50.0
+#define TRANSMISSION_A4 50.0
+#define TRANSMISSION_A5 50.0
+#define TRANSMISSION_A6 80.0
 
 #define VEL_LIMIT_A1 3.0
 #define VEL_LIMIT_A2 4.0
@@ -64,8 +72,8 @@ template<class T> inline Print& operator <<(Print &obj,     T arg) { obj.print(a
 template<>        inline Print& operator <<(Print &obj, float arg) { obj.print(arg, 4); return obj; }
 
 HardwareSerial& odrive_serial0 = Serial3;
-HardwareSerial& odrive_serial1 = Serial1;
-HardwareSerial& odrive_serial2 = Serial2;
+HardwareSerial& odrive_serial1 = Serial2;
+HardwareSerial& odrive_serial2 = Serial1;
 
 ODriveArduino odrv0(odrive_serial0);
 ODriveArduino odrv1(odrive_serial1);
@@ -200,13 +208,13 @@ void serial_interrupt() {
     }
     
     pos n;
-  
-    n.axis1 = ((uint16_t)((dec_string[1] << 8) | dec_string[0]) - 32000);
-    n.axis2 = ((uint16_t)((dec_string[3] << 8) | dec_string[2]) - 32000);
-    n.axis3 = ((uint16_t)((dec_string[5] << 8) | dec_string[4]) - 32000);
-    n.axis4 = ((uint16_t)((dec_string[7] << 8) | dec_string[6]) - 32000);
-    n.axis5 = ((uint16_t)((dec_string[9] << 8) | dec_string[8]) - 32000);
-    n.axis6 = ((uint16_t)((dec_string[11] << 8) | dec_string[10]) - 32000);
+
+    n.axis1 = (float)((uint16_t)((dec_string[1] << 8) | dec_string[0]) - 32000)   / multiplier * TRANSMISSION_A1;
+    n.axis2 = (float)((uint16_t)((dec_string[3] << 8) | dec_string[2]) - 32000)   / multiplier * TRANSMISSION_A2;
+    n.axis3 = (float)((uint16_t)((dec_string[5] << 8) | dec_string[4]) - 32000)   / multiplier * TRANSMISSION_A3;
+    n.axis4 = (float)((uint16_t)((dec_string[7] << 8) | dec_string[6]) - 32000)   / multiplier * TRANSMISSION_A4;
+    n.axis5 = (float)((uint16_t)((dec_string[9] << 8) | dec_string[8]) - 32000)   / multiplier * TRANSMISSION_A5;
+    n.axis6 = (float)((uint16_t)((dec_string[11] << 8) | dec_string[10]) - 32000) / multiplier * TRANSMISSION_A6;
     gripper_enabled = (uint8_t)dec_string[12];
   
     queue.enqueue(n);

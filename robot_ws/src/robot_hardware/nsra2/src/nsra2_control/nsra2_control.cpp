@@ -104,41 +104,35 @@ namespace nsra2_control
     {
         const int buffer_size = 13;
         unsigned char data[buffer_size];
+        std::string out;
 
+        int16_t steps;
         for (size_t i = 0; i < hw_commands_.size() - 2; i++)
         {
-            uint16_t steps;
-            switch (i)
-            {
-                case 0:
-                    steps = __calc_steps(hw_commands_[i], 250 * 0.885);
-                    break;
-                case 1:
-                    steps = __calc_steps(hw_commands_[i], 250 * 0.885);
-                    break;
-                case 2:
-                    steps = __calc_steps(hw_commands_[i], -50);
-                    break;
-                case 3:
-                    steps = __calc_steps(hw_commands_[i], 50);
-                    break;
-                case 4:
-                    steps = __calc_steps(hw_commands_[i], 50);
-                    break;
-                case 5:
-                    steps = __calc_steps(hw_commands_[i], 80);
-                    break;
-            }
+            steps = __calc_steps(hw_commands_[i], this->multiplier);
+
+            out.append(std::to_string(steps));
+            out.append(" - ");
 
             data[i*2] = ((uint16_t)(steps + 32000) >> 0) & 0xFF;
             data[i*2+1] = ((uint16_t)(steps + 32000) >> 8) & 0xFF;
+
+            out.append(std::to_string((float)((uint16_t)((data[i*2+1] << 8) | data[i*2]) - 32000) / 65000.0));
+            out.append(", ");
         }
 
         if(hw_commands_[6] > 0.01)
+        {
             data[12] = (uint8_t)1;
+            out.append("1");
+        }
         else
+        {
             data[12] = (uint8_t)0;
+            out.append("0");
+        }
 
+        RCLCPP_INFO(rclcpp::get_logger("NSRA2SystemPositionHardware"), out);
 
         uint32_t crc = CRC::Calculate(data, buffer_size, CRC::CRC_32());
 
@@ -168,12 +162,12 @@ namespace nsra2_control
             return NSRA_STATUS_SUCCESS;
     }
 
-    uint16_t NSRA2Control::__calc_steps(double r_pos, double transmission) const
+    int16_t NSRA2Control::__calc_steps(double r_pos, double transmission) const
     {
         return round(r_pos / pi * 0.5 * transmission);
     }
 
-    uint16_t NSRA2Control::__calc_steps(double r_pos, int transmission) const
+    int16_t NSRA2Control::__calc_steps(double r_pos, int transmission) const
     {
         return round(r_pos / pi * 0.5 * transmission);
     }

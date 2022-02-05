@@ -53,14 +53,15 @@ namespace nsra2_control
     private:
         NSRA_STATUS _findHardware();
 
-        uint16_t __calc_steps(double r_pos, double transmission) const;
-        uint16_t __calc_steps(double r_pos, int transmission) const;
+        int16_t __calc_steps(double r_pos, double transmission) const;
+        int16_t __calc_steps(double r_pos, int transmission) const;
 
         serial::Serial *hw_serial;
 
         const std::string hardware_sn = "Teensyduino USB Serial 8347080";
         const unsigned int baud = 115200;
         const double pi = 2*acos(0.0);
+        const int multiplier = 65000;
         bool is_connected = false;
     };
 

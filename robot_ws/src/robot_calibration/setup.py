@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'nsra_calibration = robot_calibration.nsra_calibration:main'
         ],
     },
 )
