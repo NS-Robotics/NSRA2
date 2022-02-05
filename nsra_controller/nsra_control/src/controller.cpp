@@ -41,7 +41,7 @@
 #include <CRC32.h>
 #include <Base64.h>
 
-#define QUEUE_SIZE 3
+#define QUEUE_SIZE 10
 #define FRQ 20
 #define multiplier 65000.0
 
@@ -233,15 +233,15 @@ void serial_interrupt() {
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(912600);
 
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(GRIPPER_PIN, OUTPUT);
   digitalWrite(GRIPPER_PIN, LOW);
 
-  odrive_serial0.begin(115200);
-  odrive_serial1.begin(115200);
-  odrive_serial2.begin(115200);
+  odrive_serial0.begin(921600);
+  odrive_serial1.begin(921600);
+  odrive_serial2.begin(921600);
 
   delay(2000);
 

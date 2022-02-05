@@ -59,7 +59,7 @@ namespace nsra2_control
         serial::Serial *hw_serial;
 
         const std::string hardware_sn = "Teensyduino USB Serial 8347080";
-        const unsigned int baud = 115200;
+        const unsigned int baud = 912600;
         const double pi = 2*acos(0.0);
         const int multiplier = 65000;
         bool is_connected = false;
