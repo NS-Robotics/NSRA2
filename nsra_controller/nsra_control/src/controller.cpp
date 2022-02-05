@@ -63,9 +63,9 @@
 template<class T> inline Print& operator <<(Print &obj,     T arg) { obj.print(arg);    return obj; }
 template<>        inline Print& operator <<(Print &obj, float arg) { obj.print(arg, 4); return obj; }
 
-HardwareSerial& odrive_serial0 = Serial1;
-HardwareSerial& odrive_serial1 = Serial2;
-HardwareSerial& odrive_serial2 = Serial3;
+HardwareSerial& odrive_serial0 = Serial3;
+HardwareSerial& odrive_serial1 = Serial1;
+HardwareSerial& odrive_serial2 = Serial2;
 
 ODriveArduino odrv0(odrive_serial0);
 ODriveArduino odrv1(odrive_serial1);
