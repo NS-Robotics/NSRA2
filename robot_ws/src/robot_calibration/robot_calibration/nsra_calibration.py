@@ -1,15 +1,11 @@
 from __future__ import print_function
 
-#import rclpy
 import odrive
 from odrive.enums import *
 import time
 import math
 
 def main(args=None):
-    #rclpy.init(args=args)
-
-    #node = rclpy.create_node('nsra_calibration')
 
     print("Connecting...")
     odrv0 = odrive.find_any(serial_number="205F387F304E")
@@ -30,7 +26,6 @@ def main(args=None):
 
     odrv0.axis1.requested_state = AXIS_STATE_HOMING
 
-    #input("Press enter to continue...")
     while odrv0.axis1.current_state != AXIS_STATE_IDLE:
         time.sleep(0.1)
 
@@ -48,7 +43,6 @@ def main(args=None):
     
     odrv2.axis1.requested_state = AXIS_STATE_HOMING
 
-    #input("Press enter to continue...")
     while odrv2.axis1.current_state != AXIS_STATE_IDLE:
         time.sleep(0.1)
 
@@ -59,11 +53,6 @@ def main(args=None):
     odrv1.axis1.requested_state = AXIS_STATE_CLOSED_LOOP_CONTROL
 
     print("Calibration done!")
-
-    #rclpy.spin(node)
-
-    #node.destroy_node()
-    #rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

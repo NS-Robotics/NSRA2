@@ -118,7 +118,7 @@ namespace nsra2_control
             data[i*2+1] = ((uint16_t)(steps + 32000) >> 8) & 0xFF;
 
             out.append(std::to_string((float)((uint16_t)((data[i*2+1] << 8) | data[i*2]) - 32000) / 65000.0));
-            out.append(", ");
+            out.append("| ");
         }
 
         if(hw_commands_[6] > 0.01)
