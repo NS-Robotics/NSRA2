@@ -17,3 +17,5 @@ robot_ws/src/camera_ingest/cmake-build-debug
 robot_ws/src/camera_ingest/cmake-build-nssc
 robot_ws/src/camera_ingest/cmake-build-release
 robot_ws/src/camera_ingest/.idea
+robot_ws/src/robot_interface/cmake-build-nsra
+robot_ws/src/robot_interface/.idea
