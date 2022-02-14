@@ -42,12 +42,11 @@ NSSC_STATUS Triangulation::init()
                                     mono_size, CV_32FC1, this->right_map1, this->right_map2);
 
         NSSC_STATUS status;
-        this->node->printInfo(this->msgCaller, "Calculate origin");
 
         status = findOrigin();
 
-        if (status == NSSC_STATUS_SUCCESS);
-            this->node->printInfo(this->msgCaller, "Initialized!");
+        if (status == NSSC_STATUS_SUCCESS)
+            this->node->printInfo(this->msgCaller, "Origin successfully calculated");
 
         return status;
     }
