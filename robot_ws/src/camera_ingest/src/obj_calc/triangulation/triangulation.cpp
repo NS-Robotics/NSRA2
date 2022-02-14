@@ -170,7 +170,7 @@ NSSC_STATUS Triangulation::findOrigin()
     cv::Mat left_out;
     cv::Mat right_out;
     cv::cvtColor(left_inp, left_out, cv::COLOR_RGBA2BGR);
-    cv::cvtColor(left_inp, right_out, cv::COLOR_RGBA2BGR);
+    cv::cvtColor(right_inp, right_out, cv::COLOR_RGBA2BGR);
 
     cv::aruco::drawDetectedMarkers(left_out, left_markerCorners, left_markerIds);
     cv::aruco::drawDetectedMarkers(right_out, right_markerCorners, right_markerIds);
