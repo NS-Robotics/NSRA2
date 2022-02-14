@@ -136,6 +136,8 @@ void ObjectDetection::_detectionThread()
 
         cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
 
+        cv::cvtColor(red_hue_image, left_inp, cv::COLOR_GRAY2RGBA);
+
         std::vector<cv::Vec3f> circles;
         cv::HoughCircles(red_hue_image, circles, cv::HOUGH_GRADIENT, 1, red_hue_image.rows / 8, 100, 20, 0, 0);
 
