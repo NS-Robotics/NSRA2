@@ -198,19 +198,37 @@ void Executor::runDetection()
 
 void Executor::findTriangulationOrigin()
 {
-    toggleNDIsource(NDI_SEND_TRIANGULATION);
-
-    if (this->triangulation_initialized)
+    if (this->detection_running)
     {
-        this->triangulation_interface->findOrigin();
+        this->object_detection->stopDetection();
+
+        if (this->triangulation_interface->findOrigin() == NSSC_STATUS_SUCCESS)
+            this->object_detection->runDetection();
+        else
+        {
+            this->detection_running = false;
+            this->triangulation_initialized = false;
+
+            this->ndi->endStream();
+            this->ndi_running = false;
+        }
     }
     else
     {
-        this->node->printError(this->msg_caller, "Triangulation Interface not initialized!");
-    }
+        toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-    this->ndi->endStream();
-    this->ndi_running = false;
+        if (this->triangulation_initialized)
+        {
+            this->triangulation_interface->findOrigin();
+        }
+        else
+        {
+            this->node->printError(this->msg_caller, "Triangulation Interface not initialized!");
+        }
+
+        this->ndi->endStream();
+        this->ndi_running = false;
+    }
 }
 
 void Executor::setExposure(float exposure_time)
