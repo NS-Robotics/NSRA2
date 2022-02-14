@@ -26,7 +26,7 @@ Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camM
         this->node->printInfo(this->msg_caller, "Ingest!");
     }
 }
-
+/*
 __attribute__((unused)) void Ingest::saveConfig()
 {
     rapidxml::xml_document<> new_doc;
@@ -76,7 +76,7 @@ __attribute__((unused)) void Ingest::editConfig()
     file_stored.close();
     doc.clear();
 }
-
+*/
 void Ingest::ingestThread()
 {
     stereoFrame *stereoFrame;
