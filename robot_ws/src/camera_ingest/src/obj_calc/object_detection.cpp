@@ -121,11 +121,10 @@ void ObjectDetection::_detectionThread()
         cv::cvtColor(left_rgb, left_hsv, cv::COLOR_RGB2HSV);
         cv::cvtColor(right_rgb, right_hsv, cv::COLOR_RGB2HSV);
 
-        /*
         cv::inRange(left_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), left_thresh);
         cv::inRange(right_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), right_thresh);
-        */
 
+        /*
         cv::Mat lower_red_hue_range;
         cv::Mat upper_red_hue_range;
         cv::inRange(left_hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), lower_red_hue_range);
@@ -135,11 +134,11 @@ void ObjectDetection::_detectionThread()
         cv::addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
 
         cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
-
-        cv::cvtColor(red_hue_image, left_inp, cv::COLOR_GRAY2RGBA);
+        */
+        cv::cvtColor(left_thresh, left_inp, cv::COLOR_GRAY2RGBA);
 
         std::vector<cv::Vec3f> circles;
-        cv::HoughCircles(red_hue_image, circles, cv::HOUGH_GRADIENT, 1, red_hue_image.rows / 8, 100, 20, 0, 0);
+        cv::HoughCircles(left_thresh, circles, cv::HOUGH_GRADIENT, 1, left_thresh.rows / 8, 100, 20, 0, 0);
 
         if (circles.size() > 0)
         {
