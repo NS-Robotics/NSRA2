@@ -121,7 +121,7 @@ void ObjectDetection::_detectionThread()
         cv::cvtColor(left_rgb, left_hsv, cv::COLOR_RGB2HSV);
         cv::cvtColor(right_rgb, right_hsv, cv::COLOR_RGB2HSV);
 
-        cv::inRange(left_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), left_thresh);
+        cv::inRange(left_hsv,  cv::Scalar(high_H, high_S, high_V), cv::Scalar(low_H, low_S, low_V), left_thresh);
         cv::inRange(right_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), right_thresh);
 
         /*
