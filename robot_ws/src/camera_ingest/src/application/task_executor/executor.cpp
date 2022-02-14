@@ -207,28 +207,22 @@ void Executor::findTriangulationOrigin()
         else
         {
             this->detection_running = false;
-            this->triangulation_initialized = false;
 
             this->ndi->endStream();
             this->ndi_running = false;
         }
     }
-    else
+    else if (this->triangulation_initialized)
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-        if (this->triangulation_initialized)
-        {
-            this->triangulation_interface->findOrigin();
-        }
-        else
-        {
-            this->node->printError(this->msg_caller, "Triangulation Interface not initialized!");
-        }
+        this->triangulation_interface->findOrigin();
 
         this->ndi->endStream();
         this->ndi_running = false;
     }
+    else
+        this->node->printError(this->msg_caller, "Triangulation Interface not initialized!");
 }
 
 void Executor::setExposure(float exposure_time)
