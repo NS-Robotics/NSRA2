@@ -53,6 +53,7 @@ public:
     ~ObjectDetection();
     void stopDetection();
     void closeDetection();
+    void runDetection();
 
 private:
     std::shared_ptr<TriangulationInterface> triangulation_interface;

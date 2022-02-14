@@ -41,15 +41,27 @@ ObjectDetection::ObjectDetection(std::shared_ptr<NSSC> &node,
     this->triangulation_interface = triangulation_interface;
     this->node = node;
 
-    this->detection_running = true;
-    this->d_thread = std::thread(&ObjectDetection::detectionThread, this);
-
-    this->node->printInfo(this->msg_caller, "Object Detection started");
+    runDetection();
 }
 
 ObjectDetection::~ObjectDetection()
 {
     if(!this->is_closed) { closeDetection(); }
+}
+
+void ObjectDetection::runDetection()
+{
+    if (!this->detection_running.load())
+    {
+        this->detection_running = true;
+        this->d_thread = std::thread(&ObjectDetection::detectionThread, this);
+
+        this->node->printInfo(this->msg_caller, "Object Detection started");
+    }
+    else
+    {
+        this->node->printWarning(this->msg_caller, "Object Detection already running");
+    }
 }
 
 void ObjectDetection::closeDetection()

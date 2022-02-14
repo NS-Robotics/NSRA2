@@ -165,13 +165,20 @@ void Executor::runTriangulation(char *setName)
 
 void Executor::runDetection()
 {
-    if (this->triangulation_initialized)
+    if (this->detection_initalized && !this->detection_running)
+    {
+        toggleNDIsource(NDI_SEND_TRIANGULATION);
+        this->object_detection->runDetection();
+        this->detection_running = true;
+    }
+    else if (this->triangulation_initialized && !this->detection_initalized)
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
         this->object_detection = std::make_unique<ObjectDetection>(this->node, this->triangulation_interface);
         this->detection_running = true;
+        this->detection_initalized = true;
     }
-    else
+    else if (!this->triangulation_initialized && !this->detection_initalized)
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
 
@@ -181,13 +188,12 @@ void Executor::runDetection()
             this->triangulation_initialized = false;
             return;
         }
-
         this->triangulation_initialized = true;
+
         this->object_detection = std::make_unique<ObjectDetection>(this->node, this->triangulation_interface);
         this->detection_running = true;
         this->detection_initalized = true;
     }
-
 }
 
 void Executor::findTriangulationOrigin()
