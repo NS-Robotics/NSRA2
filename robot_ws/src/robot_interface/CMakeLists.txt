@@ -39,16 +39,31 @@ find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
 add_executable(nsra2_interface nsra2/src/nsra2_interface.cpp)
-target_link_libraries(
+
+ament_target_dependencies(nsra2_interface
+        ament_cmake
+        rclcpp
+        rclcpp_action
+)
+
+ament_target_dependencies(
         nsra2_interface
+        tf2_geometry_msgs
+        tf2_ros
         moveit_core
-        moveit_ros_planning
-        moveit_ros_planning_interface
-        moveit_ros_perception
         rviz_visual_tools
         moveit_visual_tools
+        moveit_ros_planning_interface
+        interactive_markers
+        tf2_geometry_msgs
+        moveit_ros_planning
+        pluginlib
+        Eigen3
+        Boost
+        control_msgs
+        moveit_servo
+        Boost
 )
-ament_target_dependencies(nsra2_interface rclcpp)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

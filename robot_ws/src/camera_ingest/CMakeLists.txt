@@ -15,6 +15,7 @@ endif ()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 #find_package(image_transport REQUIRED)
 find_package(OpenCV 4.5.3 REQUIRED)
 #find_package(cv_bridge REQUIRED)
@@ -295,7 +296,7 @@ ament_target_dependencies(task_executor rclcpp)
 
 add_executable(main_node src/application/main.cpp)
 
-ament_target_dependencies(main_node rclcpp)
+ament_target_dependencies(main_node rclcpp rclcpp_action)
 
 target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
 
