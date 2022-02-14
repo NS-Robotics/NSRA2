@@ -61,7 +61,8 @@ private:
 
     std::string msg_caller = "Detection";
 
-    void detectionThread();
+    void _detectionThread();
+    void _testDetectionThread();
 
     std::atomic<bool> detection_running{false};
     std::thread d_thread;

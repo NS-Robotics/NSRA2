@@ -54,7 +54,7 @@ void ObjectDetection::runDetection()
     if (!this->detection_running.load())
     {
         this->detection_running = true;
-        this->d_thread = std::thread(&ObjectDetection::detectionThread, this);
+        this->d_thread = std::thread(&ObjectDetection::_detectionThread, this);
 
         this->node->printInfo(this->msg_caller, "Object Detection started");
     }
@@ -94,7 +94,101 @@ std::string vector_content(std::vector<float> v){
     return s;
 }
 
-void ObjectDetection::detectionThread()
+void ObjectDetection::_detectionThread()
+{
+    stereoFrame *stereo_frame;
+
+    cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
+
+    cv::Mat left_rgb, left_hsv, left_thresh, right_rgb, right_hsv, right_thresh;
+
+    int low_H = 105, low_S = 120, low_V = 100;
+    int high_H = 120, high_S = 220, high_V = 255;
+
+    cv::SimpleBlobDetector detector;
+    std::vector<cv::KeyPoint> keypoints;
+
+    while(this->detection_running.load())
+    {
+        stereo_frame = this->triangulation_interface->getFrame();
+
+        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->leftCamera->frameBuf.hImageBuf);
+        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->rightCamera->frameBuf.hImageBuf);
+
+        cv::cvtColor(left_inp, left_rgb, cv::COLOR_RGBA2RGB);
+        cv::cvtColor(right_inp, right_rgb, cv::COLOR_RGBA2RGB);
+
+        cv::cvtColor(left_rgb, left_hsv, cv::COLOR_RGB2HSV);
+        cv::cvtColor(right_rgb, right_hsv, cv::COLOR_RGB2HSV);
+
+        /*
+        cv::inRange(left_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), left_thresh);
+        cv::inRange(right_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), right_thresh);
+        */
+
+        cv::Mat lower_red_hue_range;
+        cv::Mat upper_red_hue_range;
+        cv::inRange(left_hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), lower_red_hue_range);
+        cv::inRange(left_hsv, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), upper_red_hue_range);
+
+        cv::Mat red_hue_image;
+        cv::addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
+
+        cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
+
+        std::vector<cv::Vec3f> circles;
+        cv::HoughCircles(red_hue_image, circles, cv::HOUGH_GRADIENT, 1, red_hue_image.rows / 8, 100, 20, 0, 0);
+
+        if (circles.size() > 0)
+        {
+            for(size_t current_circle = 0; current_circle < circles.size(); ++current_circle) {
+                cv::Point center(std::round(circles[current_circle][0]), std::round(circles[current_circle][1]));
+                int radius = std::round(circles[current_circle][2]);
+
+                cv::circle(left_inp, center, radius, cv::Scalar(0, 255, 0), 2);
+            }
+        }
+
+        /*
+        std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_originMarkers, right_originMarkers);
+
+        std::vector<float> print_v = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
+        //std::cout << vector_content(print_v) << std::endl;
+
+        cv::circle(left_inp, left_originMarkers[0], 10, (0,0,255), 2);
+        cv::circle(right_inp, right_originMarkers[0], 10, (0,0,255), 2);
+        cv::putText(left_inp,
+                    vector_content(print_v),
+                    cv::Point2f(left_originMarkers[0].x - 100, left_originMarkers[0].y - 30),
+                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+                    1.4,
+                    cv::Scalar(255, 0, 0),
+                    2,
+                    cv::LINE_AA);
+        cv::putText(right_inp,
+                    vector_content(print_v),
+                    cv::Point2f(right_originMarkers[0].x - 100, right_originMarkers[0].y - 30),
+                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+                    1.4,
+                    cv::Scalar(255, 0, 0),
+                    2,
+                    cv::LINE_AA);
+
+        std::vector<cv::Point2f> left_origin, right_origin;
+        std::tie(left_origin, right_origin) = this->triangulation_interface->getOrigin();
+
+        for(int i = 0; i < left_origin.size(); i++)
+        {
+            cv::circle(left_inp, left_origin[i], 10, cv::Scalar(150, 255, 0), 2);
+            cv::circle(right_inp, right_origin[i], 10, cv::Scalar(150, 255, 0), 2);
+        }
+         */
+
+        this->triangulation_interface->sendFrame(stereo_frame);
+    }
+}
+
+void ObjectDetection::_testDetectionThread()
 {
     stereoFrame *stereo_frame;
 
