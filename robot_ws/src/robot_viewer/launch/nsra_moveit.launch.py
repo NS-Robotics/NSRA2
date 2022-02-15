@@ -6,7 +6,7 @@ from launch.actions import ExecuteProcess, DeclareLaunchArgument
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.substitutions import FindPackageShare
-import xacro
+import xacro #sudo apt install ros-foxy-xacro
 
 
 def load_file(file_path):
