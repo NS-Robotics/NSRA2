@@ -158,29 +158,29 @@ def generate_launch_description():
     )
 
     # RViz
-    rviz_config_file = PathJoinSubstitution(
-        [
-            FindPackageShare(runtime_config_package), 
-            runtime_config_robot, 
-            "config", 
-            "robot.rviz"
-        ]
-    )
+    # rviz_config_file = PathJoinSubstitution(
+    #     [
+    #         FindPackageShare(runtime_config_package), 
+    #         runtime_config_robot, 
+    #         "config", 
+    #         "robot.rviz"
+    #     ]
+    # )
 
-    rviz_node = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        parameters=[
-            robot_description,
-            robot_description_semantic,
-            ompl_planning_pipeline_config,
-            kinematics_yaml,
-            joint_limits_yaml,
-        ],
-    )
+    # rviz_node = Node(
+    #     package="rviz2",
+    #     executable="rviz2",
+    #     name="rviz2",
+    #     output="log",
+    #     arguments=["-d", rviz_config_file],
+    #     parameters=[
+    #         robot_description,
+    #         robot_description_semantic,
+    #         ompl_planning_pipeline_config,
+    #         kinematics_yaml,
+    #         joint_limits_yaml,
+    #     ],
+    # )
 
     # Static TF
     static_tf = Node(
@@ -197,7 +197,7 @@ def generate_launch_description():
         executable="mongo_wrapper_ros.py",
         parameters=[
             {"warehouse_port": 33829},
-            {"warehouse_host": "localhost"},
+            {"warehouse_host": "192.168.1.110"},
             {"warehouse_plugin": "warehouse_ros_mongo::MongoDatabaseConnection"},
         ],
         output="screen",
@@ -205,7 +205,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
-            rviz_node,
+            #rviz_node,
             static_tf,
             #robot_state_publisher,
             run_move_group_node,

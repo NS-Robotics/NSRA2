@@ -65,6 +65,16 @@ ament_target_dependencies(
         Boost
 )
 
+install(
+        TARGETS nsra2_interface
+        RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(
+        DIRECTORY nsra2/include/
+        DESTINATION include
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()

@@ -5,9 +5,9 @@
 #[submodule "robot_ws/src/vision_opencv"]
 #	path = robot_ws/src/vision_opencv
 #	url = git@github.com:ros-perception/vision_opencv.git
-[submodule "robot_ws/src/rviz_visual_tools"]
-	path = robot_ws/src/rviz_visual_tools
-	url = https://github.com/PickNikRobotics/rviz_visual_tools
-[submodule "robot_ws/src/moveit_visual_tools"]
-	path = robot_ws/src/moveit_visual_tools
-	url = https://github.com/ros-planning/moveit_visual_tools
+# [submodule "robot_ws/src/rviz_visual_tools"]
+# 	path = robot_ws/src/rviz_visual_tools
+# 	url = https://github.com/PickNikRobotics/rviz_visual_tools
+# [submodule "robot_ws/src/moveit_visual_tools"]
+# 	path = robot_ws/src/moveit_visual_tools
+# 	url = https://github.com/ros-planning/moveit_visual_tools

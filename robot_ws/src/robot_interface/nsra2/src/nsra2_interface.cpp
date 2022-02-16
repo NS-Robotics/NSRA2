@@ -25,19 +25,25 @@ int main(int argc, char** argv)
     std::thread([&executor]()
                 { executor.spin(); }).detach();
 
+    RCLCPP_INFO(LOGGER, "Test1");
+
     static const std::string PLANNING_GROUP = "nsra";
 
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
+    RCLCPP_INFO(LOGGER, "Test2");
 
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
     const moveit::core::JointModelGroup* joint_model_group =
             move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
 
+    RCLCPP_INFO(LOGGER, "Test3");
+
     namespace rvt = rviz_visual_tools;
     moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "base_link", "nsra_planning",
                                                         move_group.getRobotModel());
 
+    RCLCPP_INFO(LOGGER, "Test4");
     visual_tools.deleteAllMarkers();
 
     visual_tools.loadRemoteControl();
