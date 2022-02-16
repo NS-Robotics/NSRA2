@@ -38,6 +38,28 @@ find_package(tf2_ros REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+        ament_cmake
+        rclcpp
+        rclcpp_action
+        tf2_geometry_msgs
+        tf2_ros
+        moveit_core
+        rviz_visual_tools
+        moveit_visual_tools
+        moveit_ros_planning_interface
+        interactive_markers
+        tf2_geometry_msgs
+        moveit_ros_planning
+        pluginlib
+        Eigen3
+        Boost
+        control_msgs
+        moveit_servo
+        )
+
+include_directories(${THIS_PACKAGE_INCLUDE_DIRS})
+
 add_executable(nsra2_interface nsra2/src/nsra2_interface.cpp)
 
 ament_target_dependencies(nsra2_interface
@@ -79,5 +101,11 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_dependencies(
+        ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
+ament_export_include_directories(include)
 
 ament_package()
