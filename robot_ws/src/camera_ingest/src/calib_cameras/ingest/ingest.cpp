@@ -118,7 +118,6 @@ __attribute__((unused)) void Ingest::editConfig()
 */
 void nssc::stereocalibration::Ingest::ingestThread()
 {
-    nssc::framestruct::StereoFrame *stereo_frame;
     this->node->g_config.ingestConfig.current_frame_idx = 0;
 
     while (this->run_ingest.load() &&
@@ -129,9 +128,11 @@ void nssc::stereocalibration::Ingest::ingestThread()
         std::chrono::milliseconds duration = std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration);
         if (difference >= duration)
         {
+            this->node->printInfo(this->msg_caller, "Take Image!");
             Ingest::_takeImage();
         }
 
+        this->node->printInfo(this->msg_caller, "Send Image!");
         Ingest::_sendImage();
     }
 
