@@ -13,6 +13,8 @@ print(package_share_directory)
 template_dir = os.path.abspath(package_share_directory + '/templates')
 app = Flask(__name__, template_folder=template_dir)
 
+color_filter_params = None
+
 class WebCommandPublisher(Node):
 
     def __init__(self):
@@ -30,14 +32,14 @@ class WebCommandPublisher(Node):
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing command')
 
-color_filter_params = WebCommandPublisher()
-
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route("/test", methods=["POST"])
 def test():
+    global color_filter_params
+
     low_h = request.form["low_h"]
     low_s = request.form["low_s"]
     low_v = request.form["low_v"]
@@ -53,7 +55,11 @@ def run_page():
     app.run(host="0.0.0.0")
 
 def main(args=None):
+    global color_filter_params
+    
     rclpy.init(args=args)
+
+    color_filter_params = WebCommandPublisher()
     
     t = threading.Thread(target=run_page)
     t.start()
