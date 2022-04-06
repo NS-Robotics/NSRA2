@@ -124,7 +124,7 @@ void nssc::stereocalibration::Ingest::ingestThread()
     while (this->run_ingest.load() &&
             this->node->g_config.ingestConfig.current_frame_idx < this->node->g_config.ingestConfig.ingest_amount)
     {
-        std::chrono::milliseconds difference = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - this->node->g_config.ingestConfig.sleep_timestamp).count();
+        std::chrono::milliseconds difference = std::chrono::high_resolution_clock::now() - this->node->g_config.ingestConfig.sleep_timestamp;
         std::chrono::milliseconds duration = std::chrono::duration_cast<std::chrono::milliseconds>(this->node->g_config.ingestConfig.wait_duration);
         if (difference >= duration)
         {
