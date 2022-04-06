@@ -126,17 +126,9 @@ void nssc::stereocalibration::Ingest::ingestThread()
         auto now = std::chrono::high_resolution_clock::now();
         std::chrono::milliseconds difference = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
         std::chrono::milliseconds duration = std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration);
-        if (difference >= duration)
-        {
-            this->node->printInfo(this->msg_caller, "Take Image!");
-            Ingest::_takeImage();
-        }
+        if (difference >= duration) { Ingest::_takeImage(); }
 
-        if (this->run_ingest.load())
-        {
-            this->node->printInfo(this->msg_caller, "Send Image!");
-            Ingest::_sendImage();
-        }
+        if (this->run_ingest.load()) { Ingest::_sendImage(); }
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
@@ -162,10 +154,8 @@ void nssc::stereocalibration::Ingest::_sendImage()
     auto now = std::chrono::high_resolution_clock::now();
     auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
     int countdown_i = this->node->g_config.ingestConfig.wait_duration - time_left.count();
-    if(countdown_i < 0)
-    {
-        countdown_i = 0;
-    }
+    if(countdown_i < 0) { countdown_i = 0; }
+
     std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
 
     if(countdown_i == 0 && this->node->g_config.ingestConfig.image_taken)
@@ -198,8 +188,6 @@ void nssc::stereocalibration::Ingest::_takeImage()
 
     if (!this->run_ingest.load()) { return; }
 
-    this->node->printInfo(this->msg_caller, "Got Frame");
-
     this->node->g_config.ingestConfig.image_taken = true;
 
     cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
@@ -218,7 +206,7 @@ void nssc::stereocalibration::Ingest::_takeImage()
     std::string left_name(this->node->g_config.ingestConfig.left_img_name);
     cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
 
-    (*this->frame_manager)->sendFrame(stereo_frame);
+    (*this->frame_manager)->returnBuf(stereo_frame);
 
     this->node->g_config.ingestConfig.current_frame_idx++;
     this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
