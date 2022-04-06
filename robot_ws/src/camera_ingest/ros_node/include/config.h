@@ -164,9 +164,9 @@ struct calib_config
 public:
     bool is_running   = false;
     char *set_name    = "N/A";
-    int board_width   = 9;
-    int board_height  = 6;
-    float square_size = 35.0; //millimeters
+    int board_width   = 10;
+    int board_height  = 7;
+    float square_size = 30.5; //millimeters
 };
 
 struct triangulation_config

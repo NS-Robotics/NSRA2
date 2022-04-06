@@ -131,8 +131,6 @@ void nssc::stereocalibration::Ingest::ingestThread()
         if (this->run_ingest.load()) { Ingest::_sendImage(); }
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
-
     this->node->g_config.ingestConfig.is_running = false;
     this->run_ingest = false;
 }

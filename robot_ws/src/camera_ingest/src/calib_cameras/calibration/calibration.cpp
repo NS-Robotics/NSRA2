@@ -50,6 +50,7 @@ nssc::stereocalibration::Calibration::Calibration(std::shared_ptr<nssc::ros::NSS
         this->_threadpool.create_thread(boost::bind(&boost::asio::io_service::run, this->_io_service));
     }
 
+    this->node->printInfo(this->msg_caller, "prepareDataSet");
     _prepareDataSet();
     _calibIntrinsics();
     _calibStereo();

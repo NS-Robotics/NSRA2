@@ -20,7 +20,7 @@ void nssc::stereocalibration::Calibration::_prepareDataSet()
 
     for (int i = 0; i < this->num_images; i++)
     {
-        this->_io_service->post(boost::bind(&Calibration::__CBCthreadTask, this, i));
+        this->_io_service->post([this, i] { __CBCthreadTask(i); });
     }
 
     while(this->cbc_threads.load() != this->num_images)
