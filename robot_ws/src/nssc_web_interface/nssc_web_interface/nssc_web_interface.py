@@ -47,7 +47,7 @@ def test():
     high_s = request.form["high_s"]
     high_v = request.form["high_v"]
 
-    color_filter_params.sendCommand(low_h, low_s, low_v, high_h, high_s, high_v)
+    color_filter_params.sendCommand(int(low_h), int(low_s), int(low_v), int(high_h), int(high_s), int(high_v))
 
     return render_template('index.html')
 
@@ -56,7 +56,7 @@ def run_page():
 
 def main(args=None):
     global color_filter_params
-    
+
     rclpy.init(args=args)
 
     color_filter_params = WebCommandPublisher()
