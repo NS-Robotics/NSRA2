@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+                'nssc_web_interface = nssc_web_interface.nssc_web_interface:main',
         ],
     },
 )
