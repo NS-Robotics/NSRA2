@@ -139,8 +139,10 @@ void nssc::stereocalibration::Ingest::ingestThread()
 
         this->node->g_config.ingestConfig.image_taken = true;
 
-        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->left_camera->frame_buf.hImageBuf);
-        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->right_camera->frame_buf.hImageBuf);
+        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
+                          CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
+        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
+                           CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
 
         cv::Mat left_conv;
         cv::Mat right_conv;
