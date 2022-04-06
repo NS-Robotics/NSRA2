@@ -19,5 +19,8 @@ def test():
     lower_v = request.form["lower_v"]
     return str(lower_y) + " - " + str(lower_u) + " - " + str(lower_v)
 
-if __name__ == "__main__":
+def main():
     app.run(debug=True)
+    
+if __name__ == "__main__":
+    main()
