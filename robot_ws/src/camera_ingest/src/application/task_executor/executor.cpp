@@ -150,7 +150,7 @@ void nssc::application::Executor::toggleNDIsource(NSSC_NDI_SEND type)
 void nssc::application::Executor::runIngest()
 {
     toggleNDIsource(NDI_SEND_INGEST);
-    this->ingest = new stereocalibration::Ingest(this->node, this->cam_manager);
+    this->ingest = new stereocalibration::Ingest(this->node, &this->frame_manager);
 }
 
 void nssc::application::Executor::runCalibration(char *setName)

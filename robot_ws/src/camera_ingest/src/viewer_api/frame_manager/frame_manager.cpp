@@ -30,6 +30,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Author: Noa Sendlhofer
+
 #include "frame_manager.h"
 #include "camera_manager.h"
 #include "node.h"
@@ -111,7 +113,6 @@ public:
     }
 };
 
-//TODO: implementation
 class sendIngest : public nssc::send::FrameManager
 {
 public:
@@ -123,20 +124,38 @@ public:
 
     nssc::framestruct::StereoFrame *getCameraFrame() override
     {
+        while(!this->go_get.load())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
+        this->go_get = false;
+        return this->camManager->getFrame();
     }
 
     nssc::framestruct::StereoFrame *getFrame() override
     {
-
+        nssc::framestruct::StereoFrame* stereo_frame;
+        while(this->node->g_config.frameConfig.stream_on)
+        {
+            if (this->buf_filled.wait_dequeue_timed(stereo_frame, std::chrono::seconds(1)))
+            {
+                this->num_filled--;
+                return stereo_frame;
+            }
+        }
+        return nullptr;
     }
 
-    void sendFrame(nssc::framestruct::StereoFrame* stereoFrame) override
+    void sendFrame(nssc::framestruct::StereoFrame* stereo_frame) override
     {
-
+        stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
+        this->buf_filled.enqueue(stereo_frame);
+        this->num_filled++;
     }
 
     nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
     {
+        this->go_get = true;
         return this->camManager->returnBuf(stereoFrame);
     }
 };

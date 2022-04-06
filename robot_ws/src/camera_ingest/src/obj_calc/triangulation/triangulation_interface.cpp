@@ -51,11 +51,11 @@ nssc::framestruct::StereoFrame *nssc::process::TriangulationInterface::getFrame(
 
     while (this->node->g_config.frameConfig.stream_on)
     {
-        stereo_frame = (*this->frameManager)->getCameraFrame();
+        stereo_frame = (*this->frame_manager)->getCameraFrame();
         if (stereo_frame->timedif < this->node->g_config.triangulationConfig.max_origin_frame_time_diff)
             break;
         else
-            (*this->frameManager)->returnBuf(stereo_frame);
+            (*this->frame_manager)->returnBuf(stereo_frame);
     }
 
     return stereo_frame;
@@ -64,11 +64,11 @@ nssc::framestruct::StereoFrame *nssc::process::TriangulationInterface::getFrame(
 std::vector<Eigen::Vector3d> nssc::process::TriangulationInterface::triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D)
 {
     std::vector<cv::Point2f> left_2D_undistort, right_2D_undistort;
-    cv::undistortPoints(left_2D, left_2D_undistort, this->left_K, this->left_D, this->RL, this->PL);
-    cv::undistortPoints(right_2D, right_2D_undistort, this->right_K, this->right_D, this->RR, this->PR);
+    cv::undistortPoints(left_2D, left_2D_undistort, this->left_K, this->left_D, this->left_R, this->left_P);
+    cv::undistortPoints(right_2D, right_2D_undistort, this->right_K, this->right_D, this->right_R, this->right_P);
 
     cv::Mat p_4d_origin(4,left_2D.size(),CV_64F);
-    cv::triangulatePoints(this->PL, this->PR, left_2D_undistort, right_2D_undistort, p_4d_origin);
+    cv::triangulatePoints(this->left_P, this->right_P, left_2D_undistort, right_2D_undistort, p_4d_origin);
 
     std::vector<Eigen::Vector3d> p_3d_origin;
     for (int i = 0; i < left_2D.size(); i++)
@@ -83,7 +83,7 @@ std::vector<Eigen::Vector3d> nssc::process::TriangulationInterface::triangulateP
 
 void nssc::process::TriangulationInterface::sendFrame(nssc::framestruct::StereoFrame *stereo_frame)
 {
-    (*this->frameManager)->sendFrame(stereo_frame);
+    (*this->frame_manager)->sendFrame(stereo_frame);
 }
 
 std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> nssc::process::TriangulationInterface::getOrigin()

@@ -1,13 +1,48 @@
+/*
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Noa Sendlhofer
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+// Author: Noa Sendlhofer
+
 #include "ingest.h"
 #include "camera_manager.h"
 #include "node.h"
 #include "stereo_frame.h"
 #include "nssc_errors.h"
 
-nssc::stereocalibration::Ingest::Ingest(std::shared_ptr<nssc::ros::NSSC> &node, std::shared_ptr<nssc::ingest::CameraManager> &camManager) : NSSC_ERRORS(node)
+nssc::stereocalibration::Ingest::Ingest(std::shared_ptr<nssc::ros::NSSC> &node,
+                                        std::unique_ptr<nssc::send::FrameManager>* frame_manager) : NSSC_ERRORS(node)
 {
     this->node = node;
-    this->cam_manager = camManager;
+    this->frame_manager = frame_manager;
 
     this->set_path = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
     std::system(("mkdir -p " + this->set_path).c_str());
@@ -83,21 +118,20 @@ __attribute__((unused)) void Ingest::editConfig()
 */
 void nssc::stereocalibration::Ingest::ingestThread()
 {
-    nssc::framestruct::StereoFrame *stereoFrame;
+    nssc::framestruct::StereoFrame *stereo_frame;
     this->node->g_config.ingestConfig.current_frame_idx = 0;
 
     for (int i = 0; i < this->node->g_config.ingestConfig.ingest_amount; i++)
     {
         while (this->run_ingest.load())
         {
-            stereoFrame = this->cam_manager->getFrame();
-            if (stereoFrame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
+            while (this->node->g_config.frameConfig.stream_on)
             {
-                break;
-            }
-            else
-            {
-                this->cam_manager->returnBuf(stereoFrame);
+                stereo_frame = (*this->frame_manager)->getCameraFrame();
+                if (stereo_frame->timedif < this->node->g_config.ingest_config.max_frame_time_diff)
+                    break;
+                else
+                    (*this->frame_manager)->returnBuf(stereo_frame);
             }
         }
 
@@ -119,7 +153,7 @@ void nssc::stereocalibration::Ingest::ingestThread()
         std::string left_name(this->node->g_config.ingestConfig.left_img_name);
         cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
 
-        this->cam_manager->returnBuf(stereoFrame);
+        (*this->frame_manager)->sendFrame(stereo_frame);
 
         this->node->g_config.ingestConfig.current_frame_idx++;
         this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));

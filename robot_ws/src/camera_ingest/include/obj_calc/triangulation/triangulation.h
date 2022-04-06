@@ -22,7 +22,7 @@ namespace nssc
         class Triangulation
         {
         public:
-            Triangulation(std::shared_ptr<ros::NSSC> &node, std::unique_ptr<send::FrameManager>* frameManager, const char *setName);
+            Triangulation(std::shared_ptr<ros::NSSC> &node, std::unique_ptr<send::FrameManager>* frame_manager, const char *setName);
             NSSC_STATUS init();
             NSSC_STATUS findOrigin();
 
@@ -30,10 +30,10 @@ namespace nssc
             std::vector<Eigen::Vector3d> _transform_coordinates(const std::vector<Eigen::Vector3d>& inp);
 
             std::shared_ptr<ros::NSSC> node;
-            std::unique_ptr<send::FrameManager>* frameManager;
+            std::unique_ptr<send::FrameManager>* frame_manager;
 
             cv::Mat left_map1, left_map2, right_map1, right_map2;
-            cv::Mat RR, RL, PR, PL;
+            cv::Mat right_R, left_R, right_P, left_P;
             cv::Mat left_K, right_K, left_D, right_D;
             cv::Size mono_size;
 
@@ -44,11 +44,11 @@ namespace nssc
             std::vector<cv::Point2f> right_origin_pts;
 
         private:
-            std::string msgCaller = "Triangulation";
+            std::string msg_caller = "Triangulation";
 
             bool __originMarkersExist(std::vector<int> ids);
 
-            std::string setPath;
+            std::string set_path;
 
             cv::Ptr<cv::aruco::Dictionary> dictionary;
             cv::Ptr<cv::aruco::DetectorParameters> parameters;

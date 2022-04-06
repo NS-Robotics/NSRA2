@@ -1,3 +1,37 @@
+/*
+ * BSD 3-Clause License
+ *
+ * Copyright (c) 2021, Noa Sendlhofer
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived from
+ *    this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+// Author: Noa Sendlhofer
+
 #include <iostream>
 #include "triangulation.h"
 #include "node.h"
@@ -5,44 +39,44 @@
 #include "frame_manager.h"
 #include "nssc_errors.h"
 
-nssc::process::Triangulation::Triangulation(std::shared_ptr<nssc::ros::NSSC> &node, std::unique_ptr<nssc::send::FrameManager>* frameManager,
+nssc::process::Triangulation::Triangulation(std::shared_ptr<nssc::ros::NSSC> &node, std::unique_ptr<nssc::send::FrameManager>* frame_manager,
                                             const char *setName)
 {
     this->node = node;
-    this->frameManager = frameManager;
-    this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
+    this->frame_manager = frame_manager;
+    this->set_path = this->node->g_config.share_dir + "/" + setName + "/";
 }
 
 nssc::NSSC_STATUS nssc::process::Triangulation::init()
 {
-    std::ifstream xmlFile(this->setPath + "config.xml");
+    std::ifstream xmlFile(this->set_path + "config.xml");
     if (xmlFile.fail())
     {
-        this->node->printWarning(this->msgCaller, "This configuration doesn't exist!");
+        this->node->printWarning(this->msg_caller, "This configuration doesn't exist!");
         return NSSC_TRIANGULATION_FILE_NOT_FOUND;
     }
     else
     {
-        cv::FileStorage config_file(this->setPath + "config.xml", cv::FileStorage::READ);
+        cv::FileStorage config_file(this->set_path + "config.xml", cv::FileStorage::READ);
 
         config_file["left_K"] >> this->left_K;
         config_file["left_D"] >> this->left_D;
         config_file["right_K"] >> this->right_K;
         config_file["right_D"] >> this->right_D;
 
-        config_file["RR"] >> this->RR;
-        config_file["RL"] >> this->RL;
-        config_file["PR"] >> this->PR;
-        config_file["PL"] >> this->PL;
+        config_file["right_R"] >> this->right_R;
+        config_file["left_R"] >> this->left_R;
+        config_file["right_P"] >> this->right_P;
+        config_file["left_P"] >> this->left_P;
 
         this->dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
         this->parameters = cv::aruco::DetectorParameters::create();
 
         this->mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
 
-        cv::initUndistortRectifyMap(this->left_K, this->left_D, this->RL, this->PL,
+        cv::initUndistortRectifyMap(this->left_K, this->left_D, this->left_R, this->left_P,
                                     mono_size, CV_32FC1, this->left_map1, this->left_map2);
-        cv::initUndistortRectifyMap(this->right_K, this->right_D, this->RR, this->PR,
+        cv::initUndistortRectifyMap(this->right_K, this->right_D, this->right_R, this->right_P,
                                     mono_size, CV_32FC1, this->right_map1, this->right_map2);
 
         NSSC_STATUS status;
@@ -50,7 +84,7 @@ nssc::NSSC_STATUS nssc::process::Triangulation::init()
         status = findOrigin();
 
         if (status == NSSC_STATUS_SUCCESS)
-            this->node->printInfo(this->msgCaller, "Origin successfully calculated");
+            this->node->printInfo(this->msg_caller, "Origin successfully calculated");
 
         return status;
     }
@@ -76,11 +110,11 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
 
     while (this->node->g_config.frameConfig.stream_on)
     {
-        stereoFrame = (*this->frameManager)->getCameraFrame();
+        stereoFrame = (*this->frame_manager)->getCameraFrame();
         if (stereoFrame->timedif < this->node->g_config.triangulationConfig.max_origin_frame_time_diff)
             break;
         else
-            (*this->frameManager)->returnBuf(stereoFrame);
+            (*this->frame_manager)->returnBuf(stereoFrame);
     }
 
     cv::Mat left_inp(mono_size,CV_8UC4, stereoFrame->left_camera->frame_buf.hImageBuf);
@@ -104,7 +138,7 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
 
     if (!__originMarkersExist(left_markerIds) || !__originMarkersExist(right_markerIds))
     {
-        this->node->printError(this->msgCaller, "Origin markers not found!");
+        this->node->printError(this->msg_caller, "Origin markers not found!");
         return NSSC_TRIANGULATION_MARKERS_NOT_FOUND;
     }
 
@@ -124,11 +158,11 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
     this->right_origin_pts = right_originMarkers;
 
     std::vector<cv::Point2f> left_2D_undistort, right_2D_undistort;
-    cv::undistortPoints(left_originMarkers, left_2D_undistort, this->left_K, this->left_D, this->RL, this->PL);
-    cv::undistortPoints(right_originMarkers, right_2D_undistort, this->right_K, this->right_D, this->RR, this->PR);
+    cv::undistortPoints(left_originMarkers, left_2D_undistort, this->left_K, this->left_D, this->left_R, this->left_P);
+    cv::undistortPoints(right_originMarkers, right_2D_undistort, this->right_K, this->right_D, this->right_R, this->right_P);
 
     cv::Mat p_4d_origin(4,3,CV_64F);
-    cv::triangulatePoints(this->PL, this->PR, left_2D_undistort, right_2D_undistort, p_4d_origin);
+    cv::triangulatePoints(this->left_P, this->right_P, left_2D_undistort, right_2D_undistort, p_4d_origin);
 
     std::vector<Eigen::Vector3d> p_3d_origin;
     for (int i = 0; i < 3; i++)
@@ -181,7 +215,7 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
     cv::cvtColor(left_out, left_inp, cv::COLOR_BGR2RGBA);
     cv::cvtColor(right_out, right_inp, cv::COLOR_BGR2RGBA);
 
-    (*this->frameManager)->sendFrame(stereoFrame);
+    (*this->frame_manager)->sendFrame(stereoFrame);
 
     return NSSC_STATUS_SUCCESS;
 }
