@@ -132,8 +132,11 @@ void nssc::stereocalibration::Ingest::ingestThread()
             Ingest::_takeImage();
         }
 
-        this->node->printInfo(this->msg_caller, "Send Image!");
-        Ingest::_sendImage();
+        if (this->run_ingest.load())
+        {
+            this->node->printInfo(this->msg_caller, "Send Image!");
+            Ingest::_sendImage();
+        }
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
@@ -184,17 +187,16 @@ void nssc::stereocalibration::Ingest::_takeImage()
 {
     nssc::framestruct::StereoFrame *stereo_frame;
 
-    while (this->run_ingest.load())
+    while (this->node->g_config.frameConfig.stream_on && this->run_ingest.load())
     {
-        while (this->node->g_config.frameConfig.stream_on)
-        {
-            stereo_frame = (*this->frame_manager)->getCameraFrame();
-            if (stereo_frame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
-                break;
-            else
-                (*this->frame_manager)->returnBuf(stereo_frame);
-        }
+        stereo_frame = (*this->frame_manager)->getCameraFrame();
+        if (stereo_frame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
+            break;
+        else
+            (*this->frame_manager)->returnBuf(stereo_frame);
     }
+
+    if (!this->run_ingest.load()) { return; }
 
     this->node->printInfo(this->msg_caller, "Got Frame");
 
