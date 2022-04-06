@@ -155,7 +155,7 @@ void nssc::application::Executor::runIngest()
 
 void nssc::application::Executor::runCalibration(char *setName)
 {
-    toggleNDIsource(NDI_SEND_CALIBRATION);
+    //toggleNDIsource(NDI_SEND_CALIBRATION);
     this->calibration = new stereocalibration::Calibration(this->node, setName);
 }
 
