@@ -30,6 +30,7 @@ class WebCommandPublisher(Node):
         self.publisher_.publish(msg)
         self.get_logger().info('Publishing command')
 
+color_filter_params = WebCommandPublisher()
 
 @app.route('/')
 def index():
@@ -44,7 +45,7 @@ def test():
     high_s = request.form["high_s"]
     high_v = request.form["high_v"]
 
-    WebCommandPublisher.sendCommand(low_h, low_s, low_v, high_h, high_s, high_v)
+    color_filter_params.sendCommand(low_h, low_s, low_v, high_h, high_s, high_v)
 
     return render_template('index.html')
 
@@ -57,7 +58,6 @@ def main(args=None):
     t = threading.Thread(target=run_page)
     t.start()
 
-    color_filter_params = WebCommandPublisher()
     rclpy.spin(color_filter_params)
 
     color_filter_params.destroy_node()
