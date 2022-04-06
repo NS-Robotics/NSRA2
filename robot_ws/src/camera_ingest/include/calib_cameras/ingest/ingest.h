@@ -72,6 +72,9 @@ namespace nssc
                 std::thread i_thread;
                 std::atomic<bool> run_ingest{false};
 
+                void _takeImage();
+                void _sendImage();
+
             __attribute__((unused)) void saveConfig();
 
             __attribute__((unused)) void editConfig();

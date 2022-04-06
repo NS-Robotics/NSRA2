@@ -121,53 +121,106 @@ void nssc::stereocalibration::Ingest::ingestThread()
     nssc::framestruct::StereoFrame *stereo_frame;
     this->node->g_config.ingestConfig.current_frame_idx = 0;
 
-    for (int i = 0; i < this->node->g_config.ingestConfig.ingest_amount; i++)
+    while (this->run_ingest.load() &&
+            this->node->g_config.ingestConfig.current_frame_idx < this->node->g_config.ingestConfig.ingest_amount)
     {
-        while (this->run_ingest.load())
+        std::chrono::milliseconds difference = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - this->node->g_config.ingestConfig.sleep_timestamp).count();
+        std::chrono::milliseconds duration = std::chrono::duration_cast<std::chrono::milliseconds>(this->node->g_config.ingestConfig.wait_duration);
+        if (difference >= duration)
         {
-            while (this->node->g_config.frameConfig.stream_on)
-            {
-                stereo_frame = (*this->frame_manager)->getCameraFrame();
-                if (stereo_frame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
-                    break;
-                else
-                    (*this->frame_manager)->returnBuf(stereo_frame);
-            }
+            Ingest::_takeImage();
         }
 
-        if (!this->run_ingest.load()) { break; }
-
-        this->node->g_config.ingestConfig.image_taken = true;
-
-        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
-                          CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
-        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
-                           CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
-
-        cv::Mat left_conv;
-        cv::Mat right_conv;
-
-        cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
-        cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
-
-        std::string right_name(this->node->g_config.ingestConfig.right_img_name);
-        cv::imwrite(this->set_path + right_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
-        std::string left_name(this->node->g_config.ingestConfig.left_img_name);
-        cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
-
-        (*this->frame_manager)->sendFrame(stereo_frame);
-
-        this->node->g_config.ingestConfig.current_frame_idx++;
-        this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
-
-        this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
-        this->node->g_config.ingestConfig.image_taken = false;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
+        Ingest::_sendImage();
     }
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration));
 
     this->node->g_config.ingestConfig.is_running = false;
     this->run_ingest = false;
+}
+
+void nssc::stereocalibration::Ingest::_sendImage()
+{
+    nssc::framestruct::StereoFrame *stereo_frame;
+    stereo_frame = (*this->frame_manager)->getCameraFrame();
+
+    cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereo_frame->stereo_buf->hImageBuf);
+
+    cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount),
+                cv::Point(25, 60), //top-left position
+                cv::FONT_HERSHEY_DUPLEX,
+                2.0,
+                cv::Scalar(254, 0, 0),
+                2);
+
+    auto now = std::chrono::high_resolution_clock::now();
+    auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
+    int countdown_i = this->node->g_config.ingestConfig.wait_duration - time_left.count();
+    if(countdown_i < 0)
+    {
+        countdown_i = 0;
+    }
+    std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
+
+    if(countdown_i == 0 && this->node->g_config.ingestConfig.image_taken)
+    {
+        countdown = "Image taken!";
+    }
+
+    cv::putText(sendFrame, countdown,
+                cv::Point(1000, 60),
+                cv::FONT_HERSHEY_DUPLEX,
+                2.0,
+                cv::Scalar(254, 0, 0),
+                2);
+
+    (*this->frame_manager)->sendFrame(stereo_frame);
+}
+
+void nssc::stereocalibration::Ingest::_takeImage()
+{
+    nssc::framestruct::StereoFrame *stereo_frame;
+
+    while (this->run_ingest.load())
+    {
+        while (this->node->g_config.frameConfig.stream_on)
+        {
+            stereo_frame = (*this->frame_manager)->getCameraFrame();
+            if (stereo_frame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
+                break;
+            else
+                (*this->frame_manager)->returnBuf(stereo_frame);
+        }
+    }
+
+    this->node->printInfo(this->msg_caller, "Got Frame");
+
+    this->node->g_config.ingestConfig.image_taken = true;
+
+    cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
+                      CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
+    cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
+                       CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
+
+    cv::Mat left_conv;
+    cv::Mat right_conv;
+
+    cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
+    cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
+
+    std::string right_name(this->node->g_config.ingestConfig.right_img_name);
+    cv::imwrite(this->set_path + right_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
+    std::string left_name(this->node->g_config.ingestConfig.left_img_name);
+    cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
+
+    (*this->frame_manager)->sendFrame(stereo_frame);
+
+    this->node->g_config.ingestConfig.current_frame_idx++;
+    this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
+
+    this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
+    this->node->g_config.ingestConfig.image_taken = false;
 }
 
 void nssc::stereocalibration::Ingest::cancelIngest()

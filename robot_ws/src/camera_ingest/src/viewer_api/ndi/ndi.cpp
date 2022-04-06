@@ -110,37 +110,6 @@ void nssc::send::NDI::stereoStreamThread()
 
         stereoFrame = (*this->frame_manager)->getFrame();
         if(stereoFrame == nullptr) { break; }
-
-        if(this->node->g_config.ingestConfig.is_running)
-        {
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereo_buf->hImageBuf);
-
-            cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
-                        cv::FONT_HERSHEY_DUPLEX,
-                        2.0,
-                        cv::Scalar(254, 0, 0),
-                        2);
-
-            auto now = std::chrono::high_resolution_clock::now();
-            auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
-            int countdown_i = 5000 - time_left.count();
-            if(countdown_i < 0)
-            {
-                countdown_i = 0;
-            }
-            std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
-
-            if(countdown_i == 0 && this->node->g_config.ingestConfig.image_taken)
-            {
-                countdown = "Image taken!";
-            }
-
-            cv::putText(sendFrame, countdown, cv::Point(1000, 60),
-                        cv::FONT_HERSHEY_DUPLEX,
-                        2.0,
-                        cv::Scalar(254, 0, 0),
-                        2);
-        }
         
         this->ndi_video_frame.p_data = (uint8_t*) stereoFrame->stereo_buf->hImageBuf;
 		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->ndi_video_frame);
