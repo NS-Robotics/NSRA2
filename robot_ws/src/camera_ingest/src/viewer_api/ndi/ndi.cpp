@@ -1,20 +1,24 @@
 #include "ndi.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "frame_manager.h"
+#include "nssc_errors.h"
 #include <iostream>
 #include <chrono>
 #include <ctime>    
 
-NDI::NDI(std::shared_ptr<NSSC>& node, std::unique_ptr<NDIframeManager>* frameManager) : NSSC_ERRORS(node)
+nssc::send::NDI::NDI(std::shared_ptr<ros::NSSC>& node, std::unique_ptr<FrameManager>* frameManager) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->frame_manager = frameManager;
 }
 
-NDI::~NDI()
+nssc::send::NDI::~NDI()
 {
     closeNDI();
 }
 
-NSSC_STATUS NDI::init()
+nssc::NSSC_STATUS nssc::send::NDI::init()
 {
     NSSC_STATUS status;
 
@@ -54,7 +58,7 @@ NSSC_STATUS NDI::init()
     return status;
 }
 
-NSSC_STATUS NDI::startStream()
+nssc::NSSC_STATUS nssc::send::NDI::startStream()
 {
     NSSC_STATUS status = NSSC_STATUS_SUCCESS;
 
@@ -68,7 +72,7 @@ NSSC_STATUS NDI::startStream()
     return status;
 }
 
-NSSC_STATUS NDI::endStream()
+nssc::NSSC_STATUS nssc::send::NDI::endStream()
 {
     this->stream_running = false;
     this->node->g_config.frameConfig.stream_on = false;
@@ -78,7 +82,7 @@ NSSC_STATUS NDI::endStream()
     return NSSC_STATUS_SUCCESS;
 }
 
-NSSC_STATUS NDI::closeNDI()
+nssc::NSSC_STATUS nssc::send::NDI::closeNDI()
 {
     if (this->is_closed) { return NSSC_STATUS_SUCCESS; }
     if (this->stream_running.load()) { endStream(); }
@@ -91,9 +95,9 @@ NSSC_STATUS NDI::closeNDI()
     return NSSC_STATUS_SUCCESS;
 }
 
-void NDI::stereoStreamThread()
+void nssc::send::NDI::stereoStreamThread()
 {
-    stereoFrame* stereoFrame;
+    framestruct::StereoFrame* stereoFrame;
 
     int idx = 0;
 
@@ -109,7 +113,7 @@ void NDI::stereoStreamThread()
 
         if(this->node->g_config.ingestConfig.is_running)
         {
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereoBuf->hImageBuf);
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame->stereo_buf->hImageBuf);
 
             cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
@@ -138,7 +142,7 @@ void NDI::stereoStreamThread()
                         2);
         }
         
-        this->ndi_video_frame.p_data = (uint8_t*) stereoFrame->stereoBuf->hImageBuf;
+        this->ndi_video_frame.p_data = (uint8_t*) stereoFrame->stereo_buf->hImageBuf;
 		NDIlib_send_send_video_async_v2(this->pNDI_send, &this->ndi_video_frame);
 
         (*this->frame_manager)->returnBuf(stereoFrame);
@@ -148,9 +152,9 @@ void NDI::stereoStreamThread()
 	NDIlib_send_send_video_async_v2(this->pNDI_send, NULL);
 }
 
-void NDI::monoStreamThread()
+void nssc::send::NDI::monoStreamThread()
 {
-    stereoFrame *stereoFrame[2];
+    framestruct::StereoFrame *stereoFrame[2];
 
     stereoFrame[0] = (*this->frame_manager)->getFrame();
 
@@ -167,7 +171,7 @@ void NDI::monoStreamThread()
 
         if (this->node->g_config.ingestConfig.is_running)
         {
-            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame[idx]->leftCamera->frameBuf.hImageBuf);
+            cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereoFrame[idx]->left_camera->frame_buf.hImageBuf);
 
             cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount), cv::Point(25, 60), //top-left position
                         cv::FONT_HERSHEY_DUPLEX,
@@ -196,7 +200,7 @@ void NDI::monoStreamThread()
                         2);
         }
 
-        this->ndi_video_frame.p_data = (uint8_t *)stereoFrame[idx]->rightCamera->frameBuf.hImageBuf;
+        this->ndi_video_frame.p_data = (uint8_t *)stereoFrame[idx]->right_camera->frame_buf.hImageBuf;
         NDIlib_send_send_video_async_v2(this->pNDI_send, &this->ndi_video_frame);
 
         (*this->frame_manager)->returnBuf(stereoFrame[idx ^ 1]);

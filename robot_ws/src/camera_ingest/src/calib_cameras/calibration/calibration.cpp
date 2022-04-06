@@ -1,6 +1,8 @@
 #include "calibration.h"
+#include "node.h"
+#include "nssc_errors.h"
 
-Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRORS(node)
+nssc::stereocalibration::Calibration::Calibration(std::shared_ptr<nssc::ros::NSSC> &node, char *setName) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->set_path = this->node->g_config.share_dir + "/" + setName + "/";
@@ -20,12 +22,12 @@ Calibration::Calibration(std::shared_ptr<NSSC> &node, char *setName) : NSSC_ERRO
     _saveConfig();
 }
 
-Calibration::~Calibration()
+nssc::stereocalibration::Calibration::~Calibration()
 {
 
 }
 
-void Calibration::_calibIntrinsics()
+void nssc::stereocalibration::Calibration::_calibIntrinsics()
 {
     std::vector<cv::Mat> rvecs, tvecs;
     int flag = 0;
@@ -41,7 +43,7 @@ void Calibration::_calibIntrinsics()
     this->node->printInfo(this->msg_caller, "Right camera intrinsics reprojection error: " + std::to_string(rms_right));
 }
 
-void Calibration::_calibStereo()
+void nssc::stereocalibration::Calibration::_calibStereo()
 {
     int flag = 0;
     flag |= cv::CALIB_FIX_INTRINSIC;
@@ -57,7 +59,7 @@ void Calibration::_calibStereo()
     this->node->printInfo(this->msg_caller, "Stereo rectification complete");
 }
 
-void Calibration::_saveConfig()
+void nssc::stereocalibration::Calibration::_saveConfig()
 {
     cv::FileStorage config_file((this->set_path + "config.xml").c_str(), cv::FileStorage::WRITE);
     //rms

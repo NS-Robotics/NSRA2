@@ -1,15 +1,19 @@
 #include <iostream>
 #include "triangulation.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "frame_manager.h"
+#include "nssc_errors.h"
 
-Triangulation::Triangulation(std::shared_ptr<NSSC> &node, std::unique_ptr<NDIframeManager>* frameManager,
-                             const char *setName)
+nssc::process::Triangulation::Triangulation(std::shared_ptr<nssc::ros::NSSC> &node, std::unique_ptr<nssc::send::FrameManager>* frameManager,
+                                            const char *setName)
 {
     this->node = node;
     this->frameManager = frameManager;
     this->setPath = this->node->g_config.share_dir + "/" + setName + "/";
 }
 
-NSSC_STATUS Triangulation::init()
+nssc::NSSC_STATUS nssc::process::Triangulation::init()
 {
     std::ifstream xmlFile(this->setPath + "config.xml");
     if (xmlFile.fail())
@@ -66,9 +70,9 @@ std::string vector_content(std::vector<int> v){
     return s;
 }
 
-NSSC_STATUS Triangulation::findOrigin()
+nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
 {
-    stereoFrame* stereoFrame;
+    nssc::framestruct::StereoFrame* stereoFrame;
 
     while (this->node->g_config.frameConfig.stream_on)
     {
@@ -79,8 +83,8 @@ NSSC_STATUS Triangulation::findOrigin()
             (*this->frameManager)->returnBuf(stereoFrame);
     }
 
-    cv::Mat left_inp(mono_size,CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
-    cv::Mat right_inp(mono_size, CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
+    cv::Mat left_inp(mono_size,CV_8UC4, stereoFrame->left_camera->frame_buf.hImageBuf);
+    cv::Mat right_inp(mono_size, CV_8UC4, stereoFrame->right_camera->frame_buf.hImageBuf);
 
     cv::Mat left_conv;
     cv::Mat right_conv;
@@ -182,7 +186,7 @@ NSSC_STATUS Triangulation::findOrigin()
     return NSSC_STATUS_SUCCESS;
 }
 
-std::vector<Eigen::Vector3d> Triangulation::_transform_coordinates(const std::vector<Eigen::Vector3d>& inp)
+std::vector<Eigen::Vector3d> nssc::process::Triangulation::_transform_coordinates(const std::vector<Eigen::Vector3d>& inp)
 {
     Eigen::Vector3d obj_vec, mtrx_ret, obj;
     std::vector<Eigen::Vector3d> objects;
@@ -200,7 +204,7 @@ std::vector<Eigen::Vector3d> Triangulation::_transform_coordinates(const std::ve
     return objects;
 }
 
-bool Triangulation::__originMarkersExist(std::vector<int> ids)
+bool nssc::process::Triangulation::__originMarkersExist(std::vector<int> ids)
 {
     std::vector<int>& req_ids = this->node->g_config.triangulationConfig.origin_ids;
 

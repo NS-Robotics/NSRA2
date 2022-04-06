@@ -1,6 +1,7 @@
 #include "calibration.h"
+#include "nssc_errors.h"
 
-void Calibration::_prepareDataSet()
+void nssc::stereocalibration::Calibration::_prepareDataSet()
 {
     this->board_size = cv::Size(board_width, board_height);
     int board_n = board_width * board_height;
@@ -44,9 +45,9 @@ void Calibration::_prepareDataSet()
     }
 }
 
-void Calibration::__CBCthreadTask(int img_num)
+void nssc::stereocalibration::Calibration::__CBCthreadTask(int img_num)
 {
-    StereoRepr ret;
+    nssc::stereocalibration::StereoRepr ret;
 
     NSSC_STATUS right_status;
     std::vector<cv::Point2f> right_img_points;
@@ -90,7 +91,7 @@ void Calibration::__CBCthreadTask(int img_num)
 
     if (right_status == NSSC_STATUS_SUCCESS && left_status == NSSC_STATUS_SUCCESS)
     {
-        StereoRepr ret(left_img_points, right_img_points);
+        nssc::stereocalibration::StereoRepr ret(left_img_points, right_img_points);
         this->stereo_image_points.push_back(ret);
         this->stereo_object_points.push_back(this->obj);
     }
@@ -98,7 +99,7 @@ void Calibration::__CBCthreadTask(int img_num)
     this->cbc_threads++;
 }
 
-std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> Calibration::__findCBC(char *in_file, char *out_file)
+std::tuple<nssc::NSSC_STATUS, std::vector<cv::Point2f>> nssc::stereocalibration::Calibration::__findCBC(char *in_file, char *out_file)
 {
     cv::Mat img, gray;
     std::vector<cv::Point2f> corners;
@@ -126,7 +127,7 @@ std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> Calibration::__findCBC(char *i
     return std::make_tuple(NSSC_STATUS_SUCCESS, corners);
 }
 
-bool Calibration::__fileExists(const std::string &name)
+bool nssc::stereocalibration::Calibration::__fileExists(const std::string &name)
 {
     struct stat buffer;
     return (stat(name.c_str(), &buffer) == 0);

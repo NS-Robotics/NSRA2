@@ -9,34 +9,40 @@
 #include "cam_sync.h"
 #include "blockingconcurrentqueue.h"
 
-class cameraManager : public NSSC_ERRORS
+namespace nssc
 {
-    public:
-        cameraManager(std::shared_ptr<NSSC> &node);
-        ~cameraManager();
-        NSSC_STATUS init();
+    namespace ingest
+    {
+        class CameraManager : public NSSC_ERRORS
+        {
+            public:
+                CameraManager(std::shared_ptr<ros::NSSC> &node);
+                ~CameraManager();
+                NSSC_STATUS init();
 
-        NSSC_STATUS loadCameras();
-        NSSC_STATUS closeCameras();
+                NSSC_STATUS loadCameras();
+                NSSC_STATUS closeCameras();
 
-        NSSC_STATUS setExposure(float exposure_time);
-        NSSC_STATUS setGain(float gain);
+                NSSC_STATUS setExposure(float exposure_time);
+                NSSC_STATUS setGain(float gain);
 
-        stereoFrame *getFrame();
-        NSSC_STATUS returnBuf(stereoFrame* stereoBuf);
+                framestruct::StereoFrame *getFrame();
+                NSSC_STATUS returnBuf(framestruct::StereoFrame* stereoBuf);
 
-    private:
-        std::shared_ptr<NSSC>   node;
-        std::unique_ptr<Camera> cam1;
-        std::unique_ptr<Camera> cam2;
-        std::shared_ptr<CyclicBarrier> cb;
+            private:
+                std::shared_ptr<ros::NSSC>   node;
+                std::unique_ptr<Camera> cam1;
+                std::unique_ptr<Camera> cam2;
+                std::shared_ptr<CyclicBarrier> cb;
 
-        std::string msgCaller = "CameraManager";
+                std::string msg_caller = "CameraManager";
 
-        moodycamel::BlockingConcurrentQueue<stereoFrame*> emptyFrameBuf;
-        std::atomic<int>  numOfEmpty{0};
+                moodycamel::BlockingConcurrentQueue<framestruct::StereoFrame*> buf_empty;
+                std::atomic<int>  num_empty{0};
 
-        bool is_closed = false;
-};
+                bool is_closed = false;
+        };
+    }
+}
 
 #endif //NSSC_CAMERA_MANAGER_

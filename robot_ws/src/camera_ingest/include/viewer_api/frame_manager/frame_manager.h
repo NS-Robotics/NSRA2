@@ -37,25 +37,32 @@
 #include "nssc_errors.h"
 #include "node.h"
 #include "blockingconcurrentqueue.h"
+#include "stereo_frame.h"
 
-class NDIframeManager
+namespace nssc
 {
-public:
-    static std::unique_ptr<NDIframeManager> make_frame(NSSC_NDI_SEND type);
-    virtual void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) = 0;
+    namespace send
+    {
+        class FrameManager
+        {
+        public:
+            static std::unique_ptr<FrameManager> make_frame(NSSC_NDI_SEND type);
+            virtual void init(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<ingest::CameraManager> &camManager) = 0;
 
-    virtual stereoFrame *getFrame() = 0;
-    virtual stereoFrame *getCameraFrame() = 0;
-    virtual void sendFrame(stereoFrame* stereoFrame) = 0;
-    virtual NSSC_STATUS returnBuf(stereoFrame* stereoFrame) = 0;
+            virtual framestruct::StereoFrame *getFrame() = 0;
+            virtual framestruct::StereoFrame *getCameraFrame() = 0;
+            virtual void sendFrame(framestruct::StereoFrame* stereoFrame) = 0;
+            virtual NSSC_STATUS returnBuf(framestruct::StereoFrame* stereoFrame) = 0;
 
-protected:
-    std::shared_ptr<NSSC>           node;
-    std::shared_ptr<cameraManager>  camManager;
+        protected:
+            std::shared_ptr<ros::NSSC>           node;
+            std::shared_ptr<ingest::CameraManager>  camManager;
 
-    moodycamel::BlockingConcurrentQueue<stereoFrame*> filledFrameBuf;
-    std::atomic<int>  numOfFilled{0};
-    std::atomic<bool>  goGet{true};
-};
+            moodycamel::BlockingConcurrentQueue<framestruct::StereoFrame*> buf_filled;
+            std::atomic<int>  num_filled{0};
+            std::atomic<bool>  go_get{true};
+        };
+    }
+}
 
 #endif //NSSC_FRAME_MANAGER_H_

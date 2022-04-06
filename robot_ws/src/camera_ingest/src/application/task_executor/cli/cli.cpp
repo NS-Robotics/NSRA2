@@ -33,8 +33,9 @@
 // Author: Noa Sendlhofer
 
 #include "cli.h"
+#include "node.h"
 
-void CLI::CLIFunc()
+void nssc::application::CLI::CLIFunc()
 {
     char *buf;
 
@@ -206,19 +207,19 @@ void CLI::CLIFunc()
     }
 }
 
-void CLI::printError(const char *message)
+void nssc::application::CLI::printError(const char *message)
 {
     printf("\033[1;34m[Executor] \033[1;31mError: %s\033[0m\n", message);
 }
 
-void CLI::openCLI(std::shared_ptr<NSSC> &node)
+void nssc::application::CLI::openCLI(std::shared_ptr<ros::NSSC> &node)
 {
     this->node = node;
     this->cli_running = true;
     this->cli_thread = std::thread(&CLI::CLIFunc, this);
 }
 
-void CLI::closeCLI()
+void nssc::application::CLI::closeCLI()
 {
     this->cli_running = false;
     this->cli_thread.join();

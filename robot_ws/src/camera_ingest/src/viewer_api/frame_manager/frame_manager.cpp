@@ -31,142 +31,146 @@
  */
 
 #include "frame_manager.h"
+#include "camera_manager.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "nssc_errors.h"
 
-class sendRaw: public NDIframeManager
+class sendRaw: public nssc::send::FrameManager
 {
 public:
-    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    void init(std::shared_ptr<nssc::ros::NSSC> &node, std::shared_ptr<nssc::ingest::CameraManager> &camManager) override
     {
         this->node = node;
         this->camManager = camManager;
     }
 
-    stereoFrame *getCameraFrame() override
+    nssc::framestruct::StereoFrame *getCameraFrame() override
     {
     }
 
-    stereoFrame *getFrame() override
+    nssc::framestruct::StereoFrame *getFrame() override
     {
         return this->camManager->getFrame();;
     }
 
-    void sendFrame(stereoFrame* stereoFrame) override
+    void sendFrame(nssc::framestruct::StereoFrame* stereoFrame) override
     {
     }
 
-    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
     {
         return this->camManager->returnBuf(stereoFrame);
     }
 };
 
-class sendTriangulation : public NDIframeManager
+class sendTriangulation : public nssc::send::FrameManager
 {
 public:
-    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    void init(std::shared_ptr<nssc::ros::NSSC> &node, std::shared_ptr<nssc::ingest::CameraManager> &camManager) override
     {
         this->node = node;
         this->camManager = camManager;
     }
 
-    stereoFrame *getCameraFrame() override
+    nssc::framestruct::StereoFrame *getCameraFrame() override
     {
-        while(!this->goGet.load())
+        while(!this->go_get.load())
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
-        this->goGet = false;
+        this->go_get = false;
         return this->camManager->getFrame();
     }
 
-    stereoFrame *getFrame() override
+    nssc::framestruct::StereoFrame *getFrame() override
     {
-        stereoFrame* stereo_frame;
+        nssc::framestruct::StereoFrame* stereo_frame;
         while(this->node->g_config.frameConfig.stream_on)
         {
-            if (this->filledFrameBuf.wait_dequeue_timed(stereo_frame, std::chrono::seconds(1)))
+            if (this->buf_filled.wait_dequeue_timed(stereo_frame, std::chrono::seconds(1)))
             {
-                this->numOfFilled--;
+                this->num_filled--;
                 return stereo_frame;
             }
         }
         return nullptr;
     }
 
-    void sendFrame(stereoFrame* stereo_frame) override
+    void sendFrame(nssc::framestruct::StereoFrame* stereo_frame) override
     {
         stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
-        this->filledFrameBuf.enqueue(stereo_frame);
-        this->numOfFilled++;
+        this->buf_filled.enqueue(stereo_frame);
+        this->num_filled++;
     }
 
-    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
     {
-        this->goGet = true;
+        this->go_get = true;
         return this->camManager->returnBuf(stereoFrame);
     }
 };
 
 //TODO: implementation
-class sendIngest : public NDIframeManager
+class sendIngest : public nssc::send::FrameManager
 {
 public:
-    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    void init(std::shared_ptr<nssc::ros::NSSC> &node, std::shared_ptr<nssc::ingest::CameraManager> &camManager) override
     {
         this->node = node;
         this->camManager = camManager;
     }
 
-    stereoFrame *getCameraFrame() override
+    nssc::framestruct::StereoFrame *getCameraFrame() override
     {
     }
 
-    stereoFrame *getFrame() override
-    {
-
-    }
-
-    void sendFrame(stereoFrame* stereoFrame) override
+    nssc::framestruct::StereoFrame *getFrame() override
     {
 
     }
 
-    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    void sendFrame(nssc::framestruct::StereoFrame* stereoFrame) override
+    {
+
+    }
+
+    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
     {
         return this->camManager->returnBuf(stereoFrame);
     }
 };
 
 //TODO: implementation
-class sendCalibration : public NDIframeManager
+class sendCalibration : public nssc::send::FrameManager
 {
 public:
-    void init(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) override
+    void init(std::shared_ptr<nssc::ros::NSSC> &node, std::shared_ptr<nssc::ingest::CameraManager> &camManager) override
     {
         this->node = node;
         this->camManager = camManager;
     }
 
-    stereoFrame *getCameraFrame() override
+    nssc::framestruct::StereoFrame *getCameraFrame() override
     {
     }
 
-    stereoFrame *getFrame() override
+    nssc::framestruct::StereoFrame *getFrame() override
     {
     }
 
-    void sendFrame(stereoFrame* stereoFrame) override
+    void sendFrame(nssc::framestruct::StereoFrame* stereoFrame) override
     {
 
     }
 
-    NSSC_STATUS returnBuf(stereoFrame* stereoFrame) override
+    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
     {
         return this->camManager->returnBuf(stereoFrame);
     }
 };
 
-std::unique_ptr<NDIframeManager> NDIframeManager::make_frame(NSSC_NDI_SEND type)
+std::unique_ptr<nssc::send::FrameManager> nssc::send::FrameManager::make_frame(NSSC_NDI_SEND type)
 {
     switch(type)
     {

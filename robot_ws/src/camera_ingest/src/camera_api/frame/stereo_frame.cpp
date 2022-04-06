@@ -1,22 +1,24 @@
 #include "stereo_frame.h"
+#include "node.h"
+#include "mono_frame.h"
 
-class RGBAStereoFrame : public stereoFrame
+class RGBAStereoFrame : public nssc::framestruct::StereoFrame
 {
 public:
-    void convert(monoFrame *leftCamera, monoFrame *rightCamera, bool resize) override
+    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera, bool resize) override
     {
-        this->leftCamera = leftCamera;
-        this->rightCamera = rightCamera;
+        this->left_camera = leftCamera;
+        this->right_camera = rightCamera;
 
         process(resize);
 
         auto c_timedif = std::chrono::duration_cast<std::chrono::microseconds>(
-                leftCamera->frameBuf.timestamp - rightCamera->frameBuf.timestamp);
+                leftCamera->frame_buf.timestamp - rightCamera->frame_buf.timestamp);
         this->timedif = std::abs(c_timedif.count());
 
         if (this->timedif > this->node->g_config.frameConfig.max_frame_time_diff)
         {
-            this->node->printWarning(this->msgCaller,
+            this->node->printWarning(this->msg_caller,
                                      "Frame timestamp difference out of bounds: " + std::to_string(this->timedif) +
                                      " us");
         }
@@ -26,88 +28,88 @@ public:
     {
         cv::cuda::GpuMat dMergedFrame(cv::Size(this->node->g_config.frameConfig.stereo_x_res,
                                                this->node->g_config.frameConfig.stereo_y_res), CV_8UC4,
-                                      this->concatenateBuf.dImageBuf);
+                                      this->concatenate_buf.dImageBuf);
 
         cv::cuda::GpuMat dRGBAImageBufRight(cv::Size(this->node->g_config.frameConfig.mono_x_res,
                                                      this->node->g_config.frameConfig.mono_y_res), CV_8UC4,
-                                            rightCamera->frameBuf.dImageBuf);
+                                            right_camera->frame_buf.dImageBuf);
         cv::cuda::GpuMat dRGBAImageBufLeft(cv::Size(this->node->g_config.frameConfig.mono_x_res,
                                                     this->node->g_config.frameConfig.mono_y_res), CV_8UC4,
-                                           leftCamera->frameBuf.dImageBuf);
+                                           left_camera->frame_buf.dImageBuf);
 
         dRGBAImageBufRight.copyTo(dMergedFrame.operator()(cv::Rect(0, 0, dRGBAImageBufRight.cols,
                                                                    dRGBAImageBufRight.rows)));
         dRGBAImageBufLeft.copyTo(dMergedFrame.operator()(cv::Rect(dRGBAImageBufRight.cols, 0,
                                                                   dRGBAImageBufLeft.cols, dRGBAImageBufLeft.rows)));
 
-        this->stereoBuf = &this->concatenateBuf;
+        this->stereo_buf = &this->concatenate_buf;
 
         if (resize)
         {
             cv::cuda::GpuMat inputFrame(cv::Size(this->node->g_config.frameConfig.stereo_x_res,
                                                  this->node->g_config.frameConfig.stereo_y_res), CV_8UC4,
-                                        this->concatenateBuf.dImageBuf);
+                                        this->concatenate_buf.dImageBuf);
             cv::cuda::GpuMat resizedFrame(cv::Size(this->node->g_config.frameConfig.resize_x_res,
                                                    this->node->g_config.frameConfig.resize_y_res), CV_8UC4,
-                                          this->resizeBuf.dImageBuf);
+                                          this->resize_buf.dImageBuf);
 
             cv::cuda::resize(inputFrame, resizedFrame, cv::Size(this->node->g_config.frameConfig.resize_x_res,
                                                                 this->node->g_config.frameConfig.resize_y_res));
 
-            this->stereoBuf = &this->resizeBuf;
+            this->stereo_buf = &this->resize_buf;
         }
     }
 
-    void alloc(std::shared_ptr<NSSC> &node) override
+    void alloc(std::shared_ptr<nssc::ros::NSSC> &node) override
     {
         this->node = node;
 
         cudaSetDeviceFlags(cudaDeviceMapHost);
-        cudaHostAlloc((void **) &this->concatenateBuf.hImageBuf, this->node->g_config.frameConfig.stereo_buf_size,
+        cudaHostAlloc((void **) &this->concatenate_buf.hImageBuf, this->node->g_config.frameConfig.stereo_buf_size,
                       cudaHostAllocMapped);
-        cudaHostGetDevicePointer((void **) &this->concatenateBuf.dImageBuf, (void *) this->concatenateBuf.hImageBuf, 0);
+        cudaHostGetDevicePointer((void **) &this->concatenate_buf.dImageBuf, (void *) this->concatenate_buf.hImageBuf, 0);
 
         cudaSetDeviceFlags(cudaDeviceMapHost);
-        cudaHostAlloc((void **) &this->resizeBuf.hImageBuf, this->node->g_config.frameConfig.resize_buf_size,
+        cudaHostAlloc((void **) &this->resize_buf.hImageBuf, this->node->g_config.frameConfig.resize_buf_size,
                       cudaHostAllocMapped);
-        cudaHostGetDevicePointer((void **) &this->resizeBuf.dImageBuf, (void *) this->resizeBuf.hImageBuf, 0);
+        cudaHostGetDevicePointer((void **) &this->resize_buf.dImageBuf, (void *) this->resize_buf.hImageBuf, 0);
     }
 
     ~RGBAStereoFrame()
     {
-        cudaFreeHost(this->concatenateBuf.hImageBuf);
-        cudaFreeHost(this->resizeBuf.hImageBuf);
+        cudaFreeHost(this->concatenate_buf.hImageBuf);
+        cudaFreeHost(this->resize_buf.hImageBuf);
     }
 };
 
-class I420StereoFrame : public stereoFrame
+class I420StereoFrame : public nssc::framestruct::StereoFrame
 {
 public:
-    void convert(monoFrame *leftCamera, monoFrame *rightCamera, bool resize) override
+    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera, bool resize) override
     {
-        this->leftCamera = leftCamera;
-        this->rightCamera = rightCamera;
+        this->left_camera = leftCamera;
+        this->right_camera = rightCamera;
 
         cv::cuda::GpuMat dMergedFrame(cv::Size(this->node->g_config.frameConfig.stereo_x_res,
                                                this->node->g_config.frameConfig.stereo_y_res), CV_8UC1,
-                                      this->concatenateBuf.dImageBuf);
+                                      this->concatenate_buf.dImageBuf);
 
         cv::cuda::GpuMat dRGBAImageBufRight(cv::Size(this->node->g_config.frameConfig.mono_x_res,
                                                      this->node->g_config.frameConfig.mono_y_res), CV_8UC1,
-                                            rightCamera->frameBuf.dImageBuf);
+                                            rightCamera->frame_buf.dImageBuf);
         cv::cuda::GpuMat dRGBAImageBufLeft(cv::Size(this->node->g_config.frameConfig.mono_x_res,
                                                     this->node->g_config.frameConfig.mono_y_res), CV_8UC1,
-                                           leftCamera->frameBuf.dImageBuf);
+                                           leftCamera->frame_buf.dImageBuf);
 
         dRGBAImageBufRight.copyTo(
                 dMergedFrame.operator()(cv::Rect(0, 0, dRGBAImageBufRight.cols, dRGBAImageBufRight.rows)));
         dRGBAImageBufLeft.copyTo(dMergedFrame.operator()(
                 cv::Rect(dRGBAImageBufRight.cols, 0, dRGBAImageBufLeft.cols, dRGBAImageBufLeft.rows)));
 
-        this->stereoBuf = &this->concatenateBuf;
+        this->stereo_buf = &this->concatenate_buf;
 
         auto c_timedif = std::chrono::duration_cast<std::chrono::microseconds>(
-                leftCamera->frameBuf.timestamp - rightCamera->frameBuf.timestamp);
+                leftCamera->frame_buf.timestamp - rightCamera->frame_buf.timestamp);
         this->timedif = std::abs(c_timedif.count());
     }
 
@@ -116,50 +118,50 @@ public:
 
     }
 
-    void alloc(std::shared_ptr<NSSC> &node) override
+    void alloc(std::shared_ptr<nssc::ros::NSSC> &node) override
     {
         this->node = node;
 
         cudaSetDeviceFlags(cudaDeviceMapHost);
-        cudaHostAlloc((void **) &this->concatenateBuf.hImageBuf, this->node->g_config.frameConfig.stereo_buf_size,
+        cudaHostAlloc((void **) &this->concatenate_buf.hImageBuf, this->node->g_config.frameConfig.stereo_buf_size,
                       cudaHostAllocMapped);
-        cudaHostGetDevicePointer((void **) &this->concatenateBuf.dImageBuf, (void *) this->concatenateBuf.hImageBuf, 0);
+        cudaHostGetDevicePointer((void **) &this->concatenate_buf.dImageBuf, (void *) this->concatenate_buf.hImageBuf, 0);
     }
 
     ~I420StereoFrame()
     {
-        cudaFreeHost(this->concatenateBuf.hImageBuf);
+        cudaFreeHost(this->concatenate_buf.hImageBuf);
     }
 };
 
-class UYVYStereoFrame : public stereoFrame
+class UYVYStereoFrame : public nssc::framestruct::StereoFrame
 {
 public:
-    void convert(monoFrame *leftCamera, monoFrame *rightCamera, bool resize) override
+    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera, bool resize) override
     {
-        this->leftCamera = leftCamera;
-        this->rightCamera = rightCamera;
+        this->left_camera = leftCamera;
+        this->right_camera = rightCamera;
 
         cv::cuda::GpuMat dMergedFrame(cv::Size(this->node->g_config.frameConfig.stereo_x_res,
                                                this->node->g_config.frameConfig.stereo_y_res), CV_8UC1,
-                                      this->concatenateBuf.dImageBuf);
+                                      this->concatenate_buf.dImageBuf);
 
         cv::cuda::GpuMat dRGBAImageBufRight(cv::Size(this->node->g_config.frameConfig.mono_x_res,
                                                      this->node->g_config.frameConfig.mono_y_res), CV_8UC1,
-                                            rightCamera->frameBuf.dImageBuf);
+                                            rightCamera->frame_buf.dImageBuf);
         cv::cuda::GpuMat dRGBAImageBufLeft(cv::Size(this->node->g_config.frameConfig.mono_x_res,
                                                     this->node->g_config.frameConfig.mono_y_res), CV_8UC1,
-                                           leftCamera->frameBuf.dImageBuf);
+                                           leftCamera->frame_buf.dImageBuf);
 
         dRGBAImageBufRight.copyTo(
                 dMergedFrame.operator()(cv::Rect(0, 0, dRGBAImageBufRight.cols, dRGBAImageBufRight.rows)));
         dRGBAImageBufLeft.copyTo(dMergedFrame.operator()(
                 cv::Rect(dRGBAImageBufRight.cols, 0, dRGBAImageBufLeft.cols, dRGBAImageBufLeft.rows)));
 
-        this->stereoBuf = &this->concatenateBuf;
+        this->stereo_buf = &this->concatenate_buf;
 
         auto c_timedif = std::chrono::duration_cast<std::chrono::microseconds>(
-                leftCamera->frameBuf.timestamp - rightCamera->frameBuf.timestamp);
+                leftCamera->frame_buf.timestamp - rightCamera->frame_buf.timestamp);
         this->timedif = std::abs(c_timedif.count());
     }
 
@@ -168,23 +170,23 @@ public:
 
     }
 
-    void alloc(std::shared_ptr<NSSC> &node) override
+    void alloc(std::shared_ptr<nssc::ros::NSSC> &node) override
     {
         this->node = node;
 
         cudaSetDeviceFlags(cudaDeviceMapHost);
-        cudaHostAlloc((void **) &this->concatenateBuf.hImageBuf, this->node->g_config.frameConfig.stereo_buf_size,
+        cudaHostAlloc((void **) &this->concatenate_buf.hImageBuf, this->node->g_config.frameConfig.stereo_buf_size,
                       cudaHostAllocMapped);
-        cudaHostGetDevicePointer((void **) &this->concatenateBuf.dImageBuf, (void *) this->concatenateBuf.hImageBuf, 0);
+        cudaHostGetDevicePointer((void **) &this->concatenate_buf.dImageBuf, (void *) this->concatenate_buf.hImageBuf, 0);
     }
 
     ~UYVYStereoFrame()
     {
-        cudaFreeHost(this->concatenateBuf.hImageBuf);
+        cudaFreeHost(this->concatenate_buf.hImageBuf);
     }
 };
 
-stereoFrame *stereoFrame::make_frame(NSSC_FRAME_TYPE type)
+nssc::framestruct::StereoFrame *nssc::framestruct::StereoFrame::makeFrame(NSSC_FRAME_TYPE type)
 {
     switch (type)
     {

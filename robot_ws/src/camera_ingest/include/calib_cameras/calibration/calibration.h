@@ -15,77 +15,83 @@
 #include <boost/thread/thread.hpp>
 #include <boost/make_shared.hpp>
 
-struct StereoRepr
+namespace nssc
 {
-public:
-    StereoRepr()
-    {  
-    }
-    StereoRepr(std::vector<cv::Point2f> left_image_points, std::vector<cv::Point2f> right_image_points)
+    namespace stereocalibration
     {
-        this->left_image_points = left_image_points;
-        this->right_image_points = right_image_points;
+        struct StereoRepr
+        {
+        public:
+            StereoRepr()
+            {
+            }
+            StereoRepr(std::vector<cv::Point2f> left_image_points, std::vector<cv::Point2f> right_image_points)
+            {
+                this->left_image_points = left_image_points;
+                this->right_image_points = right_image_points;
+            }
+            std::vector<cv::Point2f> left_image_points;
+            std::vector<cv::Point2f> right_image_points;
+        };
+
+        struct MonoRepr
+        {
+        public:
+            std::vector<std::vector<cv::Point2f>> image_points;
+            std::vector<std::vector<cv::Point3f>> object_points;
+        };
+
+        class Calibration : public NSSC_ERRORS
+        {
+        public:
+            Calibration(std::shared_ptr<ros::NSSC> &node, char *setName);
+            ~Calibration();
+
+        private:
+            std::shared_ptr<ros::NSSC> node;
+            std::string msg_caller = "Calibration";
+
+            void _prepareDataSet();
+            void __CBCthreadTask(int img_num);
+            std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> __findCBC(char *in_file, char *out_file);
+            void _calibIntrinsics();
+            void _calibStereo();
+            void _undistort_rectify();
+            bool __fileExists(const std::string &name);
+            void _saveConfig();
+
+            boost::shared_ptr<boost::asio::io_service> _io_service;
+            boost::shared_ptr<boost::asio::io_service::work> _work;
+            boost::thread_group _threadpool;
+
+            std::string set_path;
+            int board_width;
+            int board_height;
+            int num_images;
+            cv::Size board_size;
+
+            MonoRepr left_repr;
+            MonoRepr right_repr;
+
+            std::atomic<int> cbc_threads{0};
+
+            std::vector<std::vector<cv::Point3f>> stereo_object_points;
+            std::vector<StereoRepr> stereo_image_points;
+            std::vector<std::vector<cv::Point2f>> stereo_left_image_points;
+            std::vector<std::vector<cv::Point2f>> stereo_right_image_points;
+
+            std::vector<cv::Point3f> obj;
+
+            cv::Mat left_K, right_K, left_D, right_D;
+            cv::Mat R, F, E;
+            cv::Vec3d T;
+            cv::Mat RL, RR, PL, PR, Q;
+
+            double rms_left;
+            double rms_right;
+            double rms_stereo;
+        };
     }
-    std::vector<cv::Point2f> left_image_points;
-    std::vector<cv::Point2f> right_image_points;
-};
-
-struct MonoRepr
-{
-public:
-    std::vector<std::vector<cv::Point2f>> image_points;
-    std::vector<std::vector<cv::Point3f>> object_points;
-};
-
-class Calibration : public NSSC_ERRORS
-{
-public:
-    Calibration(std::shared_ptr<NSSC> &node, char *setName);
-    ~Calibration();
-
-private:
-    std::shared_ptr<NSSC> node;
-    std::string msg_caller = "Calibration";
-
-    void _prepareDataSet();
-    void __CBCthreadTask(int img_num);
-    std::tuple<NSSC_STATUS, std::vector<cv::Point2f>> __findCBC(char *in_file, char *out_file);
-    void _calibIntrinsics();
-    void _calibStereo();
-    void _undistort_rectify();
-    bool __fileExists(const std::string &name);
-    void _saveConfig();
-
-    boost::shared_ptr<boost::asio::io_service> _io_service;
-    boost::shared_ptr<boost::asio::io_service::work> _work;
-    boost::thread_group _threadpool;
-
-    std::string set_path;
-    int board_width;
-    int board_height;
-    int num_images;
-    cv::Size board_size;
-
-    MonoRepr left_repr;
-    MonoRepr right_repr;
-
-    std::atomic<int> cbc_threads{0};
-
-    std::vector<std::vector<cv::Point3f>> stereo_object_points;
-    std::vector<StereoRepr> stereo_image_points;
-    std::vector<std::vector<cv::Point2f>> stereo_left_image_points;
-    std::vector<std::vector<cv::Point2f>> stereo_right_image_points;
-
-    std::vector<cv::Point3f> obj;
-
-    cv::Mat left_K, right_K, left_D, right_D;
-    cv::Mat R, F, E;
-    cv::Vec3d T;
-    cv::Mat RL, RR, PL, PR, Q;
-
-    double rms_left;
-    double rms_right;
-    double rms_stereo;
-};
+}
 
 #endif //NSSC_CALIBRATION_

@@ -34,9 +34,12 @@
 
 #include <iostream>
 #include "object_detection.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "triangulation_interface.h"
 
-ObjectDetection::ObjectDetection(std::shared_ptr<NSSC> &node,
-                                 std::shared_ptr<TriangulationInterface> &triangulation_interface)
+nssc::process::ObjectDetection::ObjectDetection(std::shared_ptr<ros::NSSC> &node,
+                                                std::shared_ptr<TriangulationInterface> &triangulation_interface)
 {
     this->triangulation_interface = triangulation_interface;
     this->node = node;
@@ -44,12 +47,12 @@ ObjectDetection::ObjectDetection(std::shared_ptr<NSSC> &node,
     runDetection();
 }
 
-ObjectDetection::~ObjectDetection()
+nssc::process::ObjectDetection::~ObjectDetection()
 {
     if(!this->is_closed) { closeDetection(); }
 }
 
-void ObjectDetection::runDetection()
+void nssc::process::ObjectDetection::runDetection()
 {
     if (!this->detection_running.load())
     {
@@ -64,7 +67,7 @@ void ObjectDetection::runDetection()
     }
 }
 
-void ObjectDetection::closeDetection()
+void nssc::process::ObjectDetection::closeDetection()
 {
     if(this->is_closed) { return; }
     this->is_closed = true;
@@ -75,14 +78,14 @@ void ObjectDetection::closeDetection()
     this->node->printInfo(this->msg_caller, "Object Detection closed");
 }
 
-void ObjectDetection::stopDetection()
+void nssc::process::ObjectDetection::stopDetection()
 {
     this->detection_running = false;
     this->d_thread.join();
     this->node->printInfo(this->msg_caller, "Object Detection stopped");
 }
 
-std::string vector_content(std::vector<float> v){
+std::string vectorContent(std::vector<float> v){
     std::string s;
     s += '[';
     for (int i = 0; i < v.size(); i++){
@@ -94,9 +97,9 @@ std::string vector_content(std::vector<float> v){
     return s;
 }
 
-void ObjectDetection::_detectionThread()
+void nssc::process::ObjectDetection::_detectionThread()
 {
-    stereoFrame *stereo_frame;
+    framestruct::StereoFrame *stereo_frame;
 
     cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
 
@@ -112,8 +115,8 @@ void ObjectDetection::_detectionThread()
     {
         stereo_frame = this->triangulation_interface->getFrame();
 
-        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->leftCamera->frameBuf.hImageBuf);
-        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->rightCamera->frameBuf.hImageBuf);
+        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
+        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
 
         cv::cvtColor(left_inp, left_rgb, cv::COLOR_RGBA2RGB);
         cv::cvtColor(right_inp, right_rgb, cv::COLOR_RGBA2RGB);
@@ -167,7 +170,7 @@ void ObjectDetection::_detectionThread()
                     2,
                     cv::LINE_AA);
         cv::putText(right_inp,
-                    vector_content(print_v),
+                    vectorContent(print_v),
                     cv::Point2f(right_originMarkers[0].x - 100, right_originMarkers[0].y - 30),
                     cv::FONT_HERSHEY_COMPLEX_SMALL,
                     1.4,
@@ -189,9 +192,9 @@ void ObjectDetection::_detectionThread()
     }
 }
 
-void ObjectDetection::_testDetectionThread()
+void nssc::process::ObjectDetection::_testDetectionThread()
 {
-    stereoFrame *stereo_frame;
+    framestruct::StereoFrame *stereo_frame;
 
     cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
     cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
@@ -205,8 +208,8 @@ void ObjectDetection::_testDetectionThread()
     {
         stereo_frame = this->triangulation_interface->getFrame();
 
-        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->leftCamera->frameBuf.hImageBuf);
-        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->rightCamera->frameBuf.hImageBuf);
+        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
+        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
 
         cv::cvtColor(left_inp, left_conv, cv::COLOR_RGBA2GRAY);
         cv::cvtColor(right_inp, right_conv, cv::COLOR_RGBA2GRAY);
@@ -245,12 +248,12 @@ void ObjectDetection::_testDetectionThread()
         std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_originMarkers, right_originMarkers);
 
         std::vector<float> print_v = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
-        //std::cout << vector_content(print_v) << std::endl;
+        //std::cout << vectorContent(print_v) << std::endl;
 
         cv::circle(left_inp, left_originMarkers[0], 10, (0,0,255), 2);
         cv::circle(right_inp, right_originMarkers[0], 10, (0,0,255), 2);
         cv::putText(left_inp,
-                    vector_content(print_v),
+                    vectorContent(print_v),
                     cv::Point2f(left_originMarkers[0].x - 100, left_originMarkers[0].y - 30),
                     cv::FONT_HERSHEY_COMPLEX_SMALL,
                     1.4,
@@ -258,7 +261,7 @@ void ObjectDetection::_testDetectionThread()
                     2,
                     cv::LINE_AA);
         cv::putText(right_inp,
-                    vector_content(print_v),
+                    vectorContent(print_v),
                     cv::Point2f(right_originMarkers[0].x - 100, right_originMarkers[0].y - 30),
                     cv::FONT_HERSHEY_COMPLEX_SMALL,
                     1.4,

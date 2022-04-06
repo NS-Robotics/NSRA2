@@ -1,18 +1,19 @@
 #include "camera.h"
+#include "nssc_errors.h"
 
-NSSC_STATUS Camera::setExposure(float exposure_time)
+nssc::NSSC_STATUS nssc::ingest::Camera::setExposure(float exposure_time)
 {
     this->node->g_config.frameConfig.cam_exposure_time = exposure_time;
     return GXSetFloat(this->h_device, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.frameConfig.cam_exposure_time);
 }
 
-NSSC_STATUS Camera::setGain(float gain)
+nssc::NSSC_STATUS nssc::ingest::Camera::setGain(float gain)
 {
     this->node->g_config.frameConfig.cam_gain = gain;
     return GXSetFloat(this->h_device, GX_FLOAT_GAIN, this->node->g_config.frameConfig.cam_gain);
 }
 
-NSSC_STATUS Camera::loadCamera(char device_serial_number[])
+nssc::NSSC_STATUS nssc::ingest::Camera::loadCamera(char device_serial_number[])
 {
     this->cam_serial = std::string(device_serial_number);
     this->msg_caller = "Camera " + this->cam_serial;

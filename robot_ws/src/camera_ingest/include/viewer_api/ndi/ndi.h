@@ -9,35 +9,41 @@
 #include "stereo_frame.h"
 #include "frame_manager.h"
 
-class NDI : public NSSC_ERRORS
+namespace nssc
 {
-public:
-    NDI(std::shared_ptr<NSSC>& node, std::unique_ptr<NDIframeManager>* frameManager);
-    ~NDI();
+    namespace send
+    {
+        class NDI : public NSSC_ERRORS
+        {
+        public:
+            NDI(std::shared_ptr<ros::NSSC>& node, std::unique_ptr<FrameManager>* frameManager);
+            ~NDI();
 
-    NSSC_STATUS init();
+            NSSC_STATUS init();
 
-    NSSC_STATUS startStream();
-    NSSC_STATUS endStream();
+            NSSC_STATUS startStream();
+            NSSC_STATUS endStream();
 
-    NSSC_STATUS closeNDI();
+            NSSC_STATUS closeNDI();
 
-private:
-    std::shared_ptr<NSSC>               node;
-    std::unique_ptr<NDIframeManager>*   frame_manager;
-    NDIlib_send_instance_t              pNDI_send;
-    NDIlib_video_frame_v2_t             ndi_video_frame;
-    
-    std::string msg_caller = "NDI";
+        private:
+            std::shared_ptr<ros::NSSC>               node;
+            std::unique_ptr<FrameManager>*   frame_manager;
+            NDIlib_send_instance_t              pNDI_send;
+            NDIlib_video_frame_v2_t             ndi_video_frame;
 
-    void stereoStreamThread();
-    void monoStreamThread();
+            std::string msg_caller = "NDI";
 
-    std::atomic<bool> stream_running{false};
+            void stereoStreamThread();
+            void monoStreamThread();
 
-    std::thread sThread;
+            std::atomic<bool> stream_running{false};
 
-    bool is_closed = false;
-};
+            std::thread sThread;
+
+            bool is_closed = false;
+        };
+    }
+}
 
 #endif  //NSSC_NDI_

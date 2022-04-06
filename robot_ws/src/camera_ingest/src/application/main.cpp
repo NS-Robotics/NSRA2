@@ -44,12 +44,12 @@ int main(int argc, char **argv)
 
     auto node_executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
 
-    auto node = std::make_shared<NSSC>();
+    auto node = std::make_shared<nssc::ros::NSSC>();
     node_executor->add_node(node);
 
-    NSSC_ERRORS eHandler(node);
+    nssc::NSSC_ERRORS eHandler(node);
 
-    Executor executor(node, node_executor);
+    nssc::application::Executor executor(node, node_executor);
 
     executor.init();
 

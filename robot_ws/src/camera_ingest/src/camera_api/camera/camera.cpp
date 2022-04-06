@@ -1,23 +1,28 @@
 #include "camera.h"
+#include "node.h"
+#include "cam_sync.h"
+#include "mono_frame.h"
+#include "frame_struct.h"
+#include "nssc_errors.h"
 #include <chrono>
 
-Camera::Camera(std::shared_ptr<NSSC>& node, std::shared_ptr<CyclicBarrier>& cb) : NSSC_ERRORS(node)
+nssc::ingest::Camera::Camera(std::shared_ptr<nssc::ros::NSSC>& node, std::shared_ptr<CyclicBarrier>& cb) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->cb = cb;
 }
 
-Camera::~Camera()
+nssc::ingest::Camera::~Camera()
 {
     closeCamera();
 }
 
-NSSC_STATUS Camera::init()
+nssc::NSSC_STATUS nssc::ingest::Camera::init()
 {
     return GXInitLib();
 }
 
-NSSC_STATUS Camera::_printDeviceInfo()
+nssc::NSSC_STATUS nssc::ingest::Camera::_printDeviceInfo()
 {
     //RCLCPP_INFO(this->node->get_logger(), "***********************************************");
     //printf("<Libary Version : %s>\n", GXGetLibVersion());
@@ -106,7 +111,7 @@ NSSC_STATUS Camera::_printDeviceInfo()
     return emStatus;
 }
 
-NSSC_STATUS Camera::closeCamera()
+nssc::NSSC_STATUS nssc::ingest::Camera::closeCamera()
 {
     if(this->is_closed) { return NSSC_STATUS_SUCCESS; }
 
@@ -125,27 +130,27 @@ NSSC_STATUS Camera::closeCamera()
     return status;
 }
 
-NSSC_STATUS Camera::startAcquisition()
+nssc::NSSC_STATUS nssc::ingest::Camera::startAcquisition()
 {
     this->stream_running = true;
 
     for (int i = 0; i < 5; i++)
     {
-        monoFrame* frame = monoFrame::make_frame(this->node->g_config.frameConfig.g_type);
+        framestruct::MonoFrame* frame = framestruct::MonoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node, i);
 
         this->buf_empty.enqueue(frame);
         this->n_empty++;
     }
 
-    this->GXDQ_thread = std::thread(&Camera::GXDQBufThreadNDI, this);
+    this->GXDQ_thread = std::thread(&nssc::ingest::Camera::GXDQBufThreadNDI, this);
 
     return NSSC_STATUS_SUCCESS;
 }
 
-void Camera::GXDQBufThreadNDI()
+void nssc::ingest::Camera::GXDQBufThreadNDI()
 {
-    frameBuffer rgbBuf;
+    framestruct::FrameBuffer rgbBuf;
     cudaSetDeviceFlags(cudaDeviceMapHost);
     cudaHostAlloc((void **)&rgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
     cudaHostGetDevicePointer((void **)&rgbBuf.dImageBuf, (void *) rgbBuf.hImageBuf , 0);
@@ -161,7 +166,7 @@ void Camera::GXDQBufThreadNDI()
         {
             NSSC_STATUS status;
 
-            monoFrame* frame;
+            framestruct::MonoFrame* frame;
             this->buf_empty.wait_dequeue(frame);
             this->n_empty--;
 
@@ -184,7 +189,7 @@ void Camera::GXDQBufThreadNDI()
         }
         else if (__checkFrameAge() && this->stop_age_check.load())
         {
-            monoFrame* frame;
+            framestruct::MonoFrame* frame;
 
             this->buf_filled.wait_dequeue(frame);
             this->n_filled--;
@@ -200,7 +205,7 @@ void Camera::GXDQBufThreadNDI()
     cudaFreeHost(rgbBuf.hImageBuf);
 }
 
-bool Camera::__checkFrameAge()
+bool nssc::ingest::Camera::__checkFrameAge()
 {
     auto timestamp = std::chrono::high_resolution_clock::now();
     auto timedif = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -212,10 +217,10 @@ bool Camera::__checkFrameAge()
     return false;
 }
 
-monoFrame* Camera::getFrame()
+nssc::framestruct::MonoFrame* nssc::ingest::Camera::getFrame()
 {
     
-    monoFrame* frame;
+    framestruct::MonoFrame* frame;
 
     this->buf_filled.wait_dequeue(frame);
     this->n_filled--;
@@ -223,7 +228,7 @@ monoFrame* Camera::getFrame()
     return frame;    
 }
 
-NSSC_STATUS Camera::returnBuf(monoFrame* frame)
+nssc::NSSC_STATUS nssc::ingest::Camera::returnBuf(framestruct::MonoFrame* frame)
 {
     this->buf_empty.enqueue(frame);
     this->n_empty++;

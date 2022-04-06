@@ -33,17 +33,21 @@
 // Author: Noa Sendlhofer
 
 #include "triangulation_interface.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "frame_manager.h"
+#include "triangulation.h"
 
-TriangulationInterface::TriangulationInterface(std::shared_ptr<NSSC> &node, std::unique_ptr<NDIframeManager> *frameManager,
-                                               const char *setName) : Triangulation(node, frameManager, setName)
+nssc::process::TriangulationInterface::TriangulationInterface(std::shared_ptr<nssc::ros::NSSC> &node, std::unique_ptr<nssc::send::FrameManager> *frameManager,
+                                                              const char *setName) : Triangulation(node, frameManager, setName)
 {
-    this->rectified_frame = stereoFrame::make_frame(this->node->g_config.frameConfig.g_type);
+    this->rectified_frame = nssc::framestruct::StereoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
     this->rectified_frame->alloc(this->node);
 }
 
-stereoFrame *TriangulationInterface::getFrame()
+nssc::framestruct::StereoFrame *nssc::process::TriangulationInterface::getFrame()
 {
-    stereoFrame *stereo_frame;
+    nssc::framestruct::StereoFrame *stereo_frame;
 
     while (this->node->g_config.frameConfig.stream_on)
     {
@@ -57,7 +61,7 @@ stereoFrame *TriangulationInterface::getFrame()
     return stereo_frame;
 }
 
-std::vector<Eigen::Vector3d> TriangulationInterface::triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D)
+std::vector<Eigen::Vector3d> nssc::process::TriangulationInterface::triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D)
 {
     std::vector<cv::Point2f> left_2D_undistort, right_2D_undistort;
     cv::undistortPoints(left_2D, left_2D_undistort, this->left_K, this->left_D, this->RL, this->PL);
@@ -77,12 +81,12 @@ std::vector<Eigen::Vector3d> TriangulationInterface::triangulatePoints(std::vect
     return _transform_coordinates(p_3d_origin);
 }
 
-void TriangulationInterface::sendFrame(stereoFrame *stereo_frame)
+void nssc::process::TriangulationInterface::sendFrame(nssc::framestruct::StereoFrame *stereo_frame)
 {
     (*this->frameManager)->sendFrame(stereo_frame);
 }
 
-std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> TriangulationInterface::getOrigin()
+std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> nssc::process::TriangulationInterface::getOrigin()
 {
     return std::make_tuple(this->left_origin_pts, this->right_origin_pts);
 }

@@ -45,29 +45,35 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/cudaimgproc.hpp>
 
-class ObjectDetection
+namespace nssc
 {
-public:
-    ObjectDetection(std::shared_ptr<NSSC> &node,
-                    std::shared_ptr<TriangulationInterface> &triangulation_interface);
-    ~ObjectDetection();
-    void stopDetection();
-    void closeDetection();
-    void runDetection();
+    namespace process
+    {
+        class ObjectDetection
+        {
+        public:
+            ObjectDetection(std::shared_ptr<ros::NSSC> &node,
+                            std::shared_ptr<TriangulationInterface> &triangulation_interface);
+            ~ObjectDetection();
+            void stopDetection();
+            void closeDetection();
+            void runDetection();
 
-private:
-    std::shared_ptr<TriangulationInterface> triangulation_interface;
-    std::shared_ptr<NSSC> node;
+        private:
+            std::shared_ptr<TriangulationInterface> triangulation_interface;
+            std::shared_ptr<ros::NSSC> node;
 
-    std::string msg_caller = "Detection";
+            std::string msg_caller = "Detection";
 
-    void _detectionThread();
-    void _testDetectionThread();
+            void _detectionThread();
+            void _testDetectionThread();
 
-    std::atomic<bool> detection_running{false};
-    std::thread d_thread;
+            std::atomic<bool> detection_running{false};
+            std::thread d_thread;
 
-    bool is_closed = false;
-};
+            bool is_closed = false;
+        };
+    }
+}
 
 #endif //NSSC_OBJECT_DETECTION_H_

@@ -15,28 +15,34 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-class Ingest : public NSSC_ERRORS
+namespace nssc
 {
-    public:
-        Ingest(std::shared_ptr<NSSC> &node,
-               std::shared_ptr<cameraManager>& camManager);
-        void cancelIngest();
+    namespace stereocalibration
+    {
+        class Ingest : public NSSC_ERRORS
+        {
+            public:
+                Ingest(std::shared_ptr<ros::NSSC> &node,
+                       std::shared_ptr<ingest::CameraManager>& camManager);
+                void cancelIngest();
 
-    private:
-        std::shared_ptr<NSSC> node;
-        std::shared_ptr<cameraManager>  cam_manager;
+            private:
+                std::shared_ptr<ros::NSSC> node;
+                std::shared_ptr<ingest::CameraManager>  cam_manager;
 
-        std::string msg_caller = "Ingest";
+                std::string msg_caller = "Ingest";
 
-        std::string set_path;
+                std::string set_path;
 
-        void ingestThread();
-        std::thread i_thread;
-        std::atomic<bool> run_ingest{false};
+                void ingestThread();
+                std::thread i_thread;
+                std::atomic<bool> run_ingest{false};
 
-    __attribute__((unused)) void saveConfig();
+            __attribute__((unused)) void saveConfig();
 
-    __attribute__((unused)) void editConfig();
-};
+            __attribute__((unused)) void editConfig();
+        };
+    }
+}
 
 #endif  //NSSC_INGEST_

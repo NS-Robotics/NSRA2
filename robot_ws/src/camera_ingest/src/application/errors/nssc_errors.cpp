@@ -33,13 +33,14 @@
 // Author: Noa Sendlhofer
 
 #include "nssc_errors.h"
+#include "node.h"
 
-NSSC_ERRORS::NSSC_ERRORS(std::shared_ptr<NSSC>& node)
+nssc::NSSC_ERRORS::NSSC_ERRORS(std::shared_ptr<nssc::ros::NSSC>& node)
 {
     this->node = node;
 }
 
-void NSSC_ERRORS::LogErrorInfo(NSSC_STATUS errorStatus)
+void nssc::NSSC_ERRORS::LogErrorInfo(NSSC_STATUS errorStatus)
 {
     if(errorStatus == NSSC_STATUS_SUCCESS)
     {
@@ -65,7 +66,7 @@ void NSSC_ERRORS::LogErrorInfo(NSSC_STATUS errorStatus)
     }
 }
 
-void NSSC_ERRORS::_GetGXErrorString(GX_STATUS emErrorStatus)
+void nssc::NSSC_ERRORS::_GetGXErrorString(GX_STATUS emErrorStatus)
 {
     char *error_info = NULL;
     size_t size = 0;
@@ -102,7 +103,7 @@ void NSSC_ERRORS::_GetGXErrorString(GX_STATUS emErrorStatus)
     }
 }
 
-NSSC_STATUS NSSC_ERRORS::getStatus()
+nssc::NSSC_STATUS nssc::NSSC_ERRORS::getStatus()
 {
     return this->globalStatus;
 }

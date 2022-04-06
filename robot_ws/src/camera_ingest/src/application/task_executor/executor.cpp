@@ -33,14 +33,24 @@
 // Author: Noa Sendlhofer
 
 #include "executor.h"
+#include "ndi.h"
+#include "cli.h"
+#include "object_detection.h"
+#include "camera_manager.h"
+#include "node.h"
+#include "frame_manager.h"
+#include "ingest.h"
+#include "calibration.h"
+#include "triangulation_interface.h"
+#include "nssc_errors.h"
 
-Executor::Executor(std::shared_ptr<NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor) : NSSC_ERRORS(node)
+nssc::application::Executor::Executor(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->node_executor = node_executor;
 }
 
-void Executor::exit()
+void nssc::application::Executor::exit()
 {
     if (this->is_closed) { return; }
     if (this->node->g_config.ingestConfig.is_running)
@@ -77,24 +87,24 @@ void Executor::exit()
     this->is_closed = true;
 }
 
-void Executor::init()
+void nssc::application::Executor::init()
 {
-    this->cam_manager = std::make_shared<cameraManager>(this->node);
+    this->cam_manager = std::make_shared<ingest::CameraManager>(this->node);
     this->cam_manager->init();
     this->cam_manager->loadCameras();
     this->cam_manager_initialized = true;
 
-    this->frame_manager = NDIframeManager::make_frame(NDI_SEND_RAW);
+    this->frame_manager = send::FrameManager::make_frame(NDI_SEND_RAW);
     this->frame_manager->init(this->node, this->cam_manager);
 
-    this->ndi = std::make_shared<NDI>(this->node, &this->frame_manager);
+    this->ndi = std::make_shared<nssc::send::NDI>(this->node, &this->frame_manager);
     this->ndi->init();
     this->ndi_initialized = true;
 
     CLI::openCLI(this->node);
 }
 
-void Executor::toggleNDI(bool mono_stream)
+void nssc::application::Executor::toggleNDI(bool mono_stream)
 {
     if (this->ndi_running)
     {
@@ -122,7 +132,7 @@ void Executor::toggleNDI(bool mono_stream)
     }
 }
 
-void Executor::toggleNDIsource(NSSC_NDI_SEND type)
+void nssc::application::Executor::toggleNDIsource(NSSC_NDI_SEND type)
 {
     if (this->ndi_running)
     {
@@ -130,30 +140,30 @@ void Executor::toggleNDIsource(NSSC_NDI_SEND type)
         this->ndi_running = false;
     }
 
-    this->frame_manager = NDIframeManager::make_frame(type);
+    this->frame_manager = send::FrameManager::make_frame(type);
     this->frame_manager->init(this->node, this->cam_manager);
 
     this->ndi->startStream();
     this->ndi_running = true;
 }
 
-void Executor::runIngest()
+void nssc::application::Executor::runIngest()
 {
     toggleNDIsource(NDI_SEND_INGEST);
-    this->ingest = new Ingest(this->node, this->cam_manager);
+    this->ingest = new stereocalibration::Ingest(this->node, this->cam_manager);
 }
 
-void Executor::runCalibration(char *setName)
+void nssc::application::Executor::runCalibration(char *setName)
 {
     toggleNDIsource(NDI_SEND_CALIBRATION);
-    this->calibration = new Calibration(this->node, setName);
+    this->calibration = new stereocalibration::Calibration(this->node, setName);
 }
 
-void Executor::runTriangulation(char *setName)
+void nssc::application::Executor::runTriangulation(char *setName)
 {
     toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-    this->triangulation_interface = std::make_shared<TriangulationInterface>(this->node, &this->frame_manager, setName);
+    this->triangulation_interface = std::make_shared<process::TriangulationInterface>(this->node, &this->frame_manager, setName);
     if (this->triangulation_interface->init() == NSSC_STATUS_SUCCESS)
         this->triangulation_initialized = true;
     else
@@ -163,7 +173,7 @@ void Executor::runTriangulation(char *setName)
     this->ndi_running = false;
 }
 
-void Executor::runDetection()
+void nssc::application::Executor::runDetection()
 {
     if (this->detection_initalized && !this->detection_running)
     {
@@ -174,7 +184,7 @@ void Executor::runDetection()
     else if (this->triangulation_initialized && !this->detection_initalized)
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
-        this->object_detection = std::make_unique<ObjectDetection>(this->node, this->triangulation_interface);
+        this->object_detection = std::make_unique<process::ObjectDetection>(this->node, this->triangulation_interface);
         this->detection_running = true;
         this->detection_initalized = true;
     }
@@ -182,7 +192,7 @@ void Executor::runDetection()
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-        this->triangulation_interface = std::make_shared<TriangulationInterface>(this->node, &this->frame_manager, this->node->g_config.triangulationConfig.standard_config_file);
+        this->triangulation_interface = std::make_shared<process::TriangulationInterface>(this->node, &this->frame_manager, this->node->g_config.triangulationConfig.standard_config_file);
         if (this->triangulation_interface->init() != NSSC_STATUS_SUCCESS)
         {
             this->triangulation_initialized = false;
@@ -190,13 +200,13 @@ void Executor::runDetection()
         }
         this->triangulation_initialized = true;
 
-        this->object_detection = std::make_unique<ObjectDetection>(this->node, this->triangulation_interface);
+        this->object_detection = std::make_unique<process::ObjectDetection>(this->node, this->triangulation_interface);
         this->detection_running = true;
         this->detection_initalized = true;
     }
 }
 
-void Executor::findTriangulationOrigin()
+void nssc::application::Executor::findTriangulationOrigin()
 {
     if (this->detection_running)
     {
@@ -225,7 +235,7 @@ void Executor::findTriangulationOrigin()
         this->node->printError(this->msg_caller, "Triangulation Interface not initialized!");
 }
 
-void Executor::setExposure(float exposure_time)
+void nssc::application::Executor::setExposure(float exposure_time)
 {
     if (this->cam_manager_initialized)
     {
@@ -237,7 +247,7 @@ void Executor::setExposure(float exposure_time)
     }
 }
 
-void Executor::setGain(float gain)
+void nssc::application::Executor::setGain(float gain)
 {
     if (this->cam_manager_initialized)
     {
@@ -249,7 +259,7 @@ void Executor::setGain(float gain)
     }
 }
 
-void Executor::cancel()
+void nssc::application::Executor::cancel()
 {
     if (this->node->g_config.ingestConfig.is_running)
     {

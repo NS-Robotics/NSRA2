@@ -1,6 +1,10 @@
 #include "ingest.h"
+#include "camera_manager.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "nssc_errors.h"
 
-Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camManager) : NSSC_ERRORS(node)
+nssc::stereocalibration::Ingest::Ingest(std::shared_ptr<nssc::ros::NSSC> &node, std::shared_ptr<nssc::ingest::CameraManager> &camManager) : NSSC_ERRORS(node)
 {
     this->node = node;
     this->cam_manager = camManager;
@@ -20,7 +24,7 @@ Ingest::Ingest(std::shared_ptr<NSSC> &node, std::shared_ptr<cameraManager> &camM
         config_file << "ingestAmount" << this->node->g_config.ingestConfig.ingest_amount;
 
         this->run_ingest = true;
-        this->i_thread = std::thread(&Ingest::ingestThread, this);
+        this->i_thread = std::thread(&nssc::stereocalibration::Ingest::ingestThread, this);
 
         this->node->g_config.ingestConfig.is_running = true;
         this->node->printInfo(this->msg_caller, "Ingest!");
@@ -77,9 +81,9 @@ __attribute__((unused)) void Ingest::editConfig()
     doc.clear();
 }
 */
-void Ingest::ingestThread()
+void nssc::stereocalibration::Ingest::ingestThread()
 {
-    stereoFrame *stereoFrame;
+    nssc::framestruct::StereoFrame *stereoFrame;
     this->node->g_config.ingestConfig.current_frame_idx = 0;
 
     for (int i = 0; i < this->node->g_config.ingestConfig.ingest_amount; i++)
@@ -101,8 +105,8 @@ void Ingest::ingestThread()
 
         this->node->g_config.ingestConfig.image_taken = true;
 
-        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->leftCamera->frameBuf.hImageBuf);
-        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->rightCamera->frameBuf.hImageBuf);
+        cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->left_camera->frame_buf.hImageBuf);
+        cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res), CV_8UC4, stereoFrame->right_camera->frame_buf.hImageBuf);
 
         cv::Mat left_conv;
         cv::Mat right_conv;
@@ -130,7 +134,7 @@ void Ingest::ingestThread()
     this->run_ingest = false;
 }
 
-void Ingest::cancelIngest()
+void nssc::stereocalibration::Ingest::cancelIngest()
 {
     cv::FileStorage config_file(this->set_path + "config.xml", cv::FileStorage::WRITE);
     config_file << "ingestAmount" << this->node->g_config.ingestConfig.current_frame_idx;

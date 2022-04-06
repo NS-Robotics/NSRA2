@@ -36,6 +36,9 @@
 #define NSSC_TRIANGULATION_INTERFACE_H_
 
 #include "triangulation.h"
+#include "node.h"
+#include "stereo_frame.h"
+#include "frame_manager.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -45,17 +48,23 @@
 
 #include <Eigen/Dense>
 
-class TriangulationInterface : public Triangulation
+namespace nssc
 {
-public:
-    TriangulationInterface(std::shared_ptr<NSSC> &node, std::unique_ptr<NDIframeManager>* frameManager, const char *setName);
-    stereoFrame *getFrame();
-    void sendFrame(stereoFrame *stereo_frame);
-    std::vector<Eigen::Vector3d> triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D);
-    std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> getOrigin();
+    namespace process
+    {
+        class TriangulationInterface : public Triangulation
+        {
+        public:
+            TriangulationInterface(std::shared_ptr<ros::NSSC> &node, std::unique_ptr<send::FrameManager>* frameManager, const char *setName);
+            framestruct::StereoFrame *getFrame();
+            void sendFrame(framestruct::StereoFrame *stereo_frame);
+            std::vector<Eigen::Vector3d> triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D);
+            std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> getOrigin();
 
-private:
-    stereoFrame *rectified_frame;
-};
+        private:
+            framestruct::StereoFrame *rectified_frame;
+        };
+    }
+}
 
 #endif //NSSC_TRIANGULATION_INTERFACE_H_

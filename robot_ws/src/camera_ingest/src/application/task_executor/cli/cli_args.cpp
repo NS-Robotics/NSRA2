@@ -33,6 +33,7 @@
 // Author: Noa Sendlhofer
 
 #include "cli.h"
+#include "nssc_errors.h"
 
 /*  TEST CASES:
     --r
@@ -41,7 +42,7 @@
     -r-
 */
 
-NSSC_STATUS CLI::__procArg(char *buf, std::vector<char *> &cmd)
+nssc::NSSC_STATUS nssc::application::CLI::__procArg(char *buf, std::vector<char *> &cmd)
 {
     char *token;
     token = strtok(buf, del);
@@ -91,7 +92,7 @@ NSSC_STATUS CLI::__procArg(char *buf, std::vector<char *> &cmd)
     return arg_status;
 }
 
-NSSC_STATUS CLI::getStrArg(std::vector<char *> cmd, char par, char **ret)
+nssc::NSSC_STATUS nssc::application::CLI::getStrArg(std::vector<char *> cmd, char par, char **ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
@@ -125,7 +126,7 @@ NSSC_STATUS CLI::getStrArg(std::vector<char *> cmd, char par, char **ret)
     return NSSC_CLI_ARGUMENT_TYPE_ERROR;
 }
 
-NSSC_STATUS CLI::getIntArg(std::vector<char *> cmd, char par, int &ret)
+nssc::NSSC_STATUS nssc::application::CLI::getIntArg(std::vector<char *> cmd, char par, int &ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {
@@ -154,7 +155,7 @@ NSSC_STATUS CLI::getIntArg(std::vector<char *> cmd, char par, int &ret)
     return NSSC_CLI_ARGUMENT_TYPE_ERROR;
 }
 
-NSSC_STATUS CLI::getBoolArg(std::vector<char *> cmd, char par, bool &ret)
+nssc::NSSC_STATUS nssc::application::CLI::getBoolArg(std::vector<char *> cmd, char par, bool &ret)
 {
     for (int i = 1; i < cmd.size(); i++)
     {

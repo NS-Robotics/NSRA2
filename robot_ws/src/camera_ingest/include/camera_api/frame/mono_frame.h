@@ -18,19 +18,25 @@
 #include <nppi.h>
 #include <npp.h>
 
-class monoFrame
+namespace nssc
 {
-public:
-  static monoFrame *make_frame(NSSC_FRAME_TYPE type);
-  void setTimestamp();
+    namespace framestruct
+    {
+        class MonoFrame
+        {
+        public:
+          static MonoFrame *makeFrame(NSSC_FRAME_TYPE type);
+          void setTimestamp();
 
-  virtual void convert(frameBuffer *rgbBuf) = 0;
-  virtual void alloc(std::shared_ptr<NSSC> &node, int id) = 0;
+          virtual void convert(FrameBuffer *rgbBuf) = 0;
+          virtual void alloc(std::shared_ptr<ros::NSSC> &node, int id) = 0;
 
-  std::shared_ptr<NSSC> node;
-  std::string msgCaller = "Mono Frame";
-  frameBuffer frameBuf;
-  bool inputFlag = false;
-};
+          std::shared_ptr<ros::NSSC> node;
+          std::string msg_caller = "Mono Frame";
+          FrameBuffer frame_buf;
+          bool inputFlag = false;
+        };
+    }
+}
 
 #endif //NSSC_FRAME_MONO_FRAME_
