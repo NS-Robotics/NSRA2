@@ -128,7 +128,7 @@ void nssc::stereocalibration::Ingest::ingestThread()
             while (this->node->g_config.frameConfig.stream_on)
             {
                 stereo_frame = (*this->frame_manager)->getCameraFrame();
-                if (stereo_frame->timedif < this->node->g_config.ingest_config.max_frame_time_diff)
+                if (stereo_frame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
                     break;
                 else
                     (*this->frame_manager)->returnBuf(stereo_frame);
