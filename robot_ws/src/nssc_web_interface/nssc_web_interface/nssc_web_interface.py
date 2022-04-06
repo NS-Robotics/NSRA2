@@ -20,7 +20,7 @@ def test():
     return str(lower_y) + " - " + str(lower_u) + " - " + str(lower_v)
 
 def main():
-    app.run(debug=True)
-    
+    app.run(host="0.0.0.0")
+
 if __name__ == "__main__":
     main()
