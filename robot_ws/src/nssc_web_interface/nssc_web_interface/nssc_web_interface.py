@@ -1,6 +1,12 @@
+import os
 from flask import Flask, render_template, request
+from ament_index_python.packages import get_package_share_directory
 
-app = Flask(__name__)
+package_share_directory = get_package_share_directory('nssc_web_interface')
+print(package_share_directory)
+
+template_dir = os.path.abspath(package_share_directory + '/templates')
+app = Flask(__name__, template_folder=template_dir)
 
 @app.route('/')
 def index():
