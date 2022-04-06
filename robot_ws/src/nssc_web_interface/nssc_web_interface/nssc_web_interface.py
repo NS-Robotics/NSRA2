@@ -5,6 +5,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from camera_ingest.msg import ColorFilterParams
+import threading
 
 package_share_directory = get_package_share_directory('nssc_web_interface')
 print(package_share_directory)
@@ -12,32 +13,56 @@ print(package_share_directory)
 template_dir = os.path.abspath(package_share_directory + '/templates')
 app = Flask(__name__, template_folder=template_dir)
 
+class WebCommandPublisher(Node):
+
+    def __init__(self):
+        super().__init__('nssc_web_interface')
+        self.publisher_ = self.create_publisher(ColorFilterParams, 'color_filter_params', 10)
+
+    def sendCommand(self, low_h, low_s, low_v, high_h, high_s, high_v):
+        msg = ColorFilterParams()
+        msg.low_h = low_h
+        msg.low_s = low_s
+        msg.low_v = low_v
+        msg.high_h = high_h
+        msg.high_s = high_s
+        msg.high_v = high_v
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing command')
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route("/test", methods=["POST"])
 def test():
-    lower_y = request.form["lower_y"]
-    lower_u = request.form["lower_u"]
-    lower_v = request.form["lower_v"]
-    return str(lower_y) + " - " + str(lower_u) + " - " + str(lower_v)
+    low_h = request.form["low_h"]
+    low_s = request.form["low_s"]
+    low_v = request.form["low_v"]
+    high_h = request.form["high_h"]
+    high_s = request.form["high_s"]
+    high_v = request.form["high_v"]
 
-class MinimalPublisher(Node):
+    WebCommandPublisher.sendCommand(low_h, low_s, low_v, high_h, high_s, high_v)
 
-    def __init__(self):
-        super().__init__('minimal_publisher')
-        self.publisher_ = self.create_publisher(ColorFilterParams, 'topic', 10)
+    return render_template('index.html')
 
-    def timer_callback(self):
-        msg = ColorFilterParams()
-        msg.low_h = 10
-        #self.publisher_.publish(msg)
-        #self.get_logger().info('Publishing: "%s"' % msg.data)
-        #self.i += 1
-
-def main():
+def run_page():
     app.run(host="0.0.0.0")
+
+def main(args=None):
+    rclpy.init(args=args)
+    
+    t = threading.Thread(target=run_page)
+    t.start()
+
+    color_filter_params = WebCommandPublisher()
+    rclpy.spin(color_filter_params)
+
+    color_filter_params.destroy_node()
+    rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
