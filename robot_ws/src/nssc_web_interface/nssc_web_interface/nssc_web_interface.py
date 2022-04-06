@@ -31,7 +31,7 @@ class MinimalPublisher(Node):
 
     def timer_callback(self):
         msg = ColorFilterParams()
-        msg.low_H = 10
+        msg.low_h = 10
         #self.publisher_.publish(msg)
         #self.get_logger().info('Publishing: "%s"' % msg.data)
         #self.i += 1

@@ -1,6 +1,6 @@
-int16 low_H
-int16 low_S
-int16 low_V
-int16 high_H
-int16 high_S
-int16 high_V
+int16 low_h
+int16 low_s
+int16 low_v
+int16 high_h
+int16 high_s
+int16 high_v
