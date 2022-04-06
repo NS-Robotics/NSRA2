@@ -148,7 +148,7 @@ public:
 
     void sendFrame(nssc::framestruct::StereoFrame* stereo_frame) override
     {
-        stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
+        //stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
         this->buf_filled.enqueue(stereo_frame);
         this->num_filled++;
     }
