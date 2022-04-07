@@ -113,6 +113,10 @@ void nssc::process::ObjectDetection::_detectionThread()
     cv::SimpleBlobDetector detector;
     std::vector<cv::KeyPoint> keypoints;
 
+    cv::Mat kernel = cv::getStructuringElement(0,
+                                               cv::Size(3, 3),
+                                               cv::Point(1, 1));
+
     while(this->detection_running.load())
     {
         stereo_frame = this->triangulation_interface->getFrame();
@@ -135,18 +139,13 @@ void nssc::process::ObjectDetection::_detectionThread()
                     cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
                     right_thresh);
 
-        /*
-        cv::Mat lower_red_hue_range;
-        cv::Mat upper_red_hue_range;
-        cv::inRange(left_hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), lower_red_hue_range);
-        cv::inRange(left_hsv, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), upper_red_hue_range);
+        cv::bitwise_not(left_hsv, left_hsv);
+        cv::bitwise_not(right_hsv, right_hsv);
 
-        cv::Mat red_hue_image;
-        cv::addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
+        cv::dilate(left_hsv, left_hsv, kernel);
 
-        cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
-        */
         cv::cvtColor(left_thresh, left_inp, cv::COLOR_GRAY2RGBA);
+        cv::cvtColor(right_thresh, right_inp, cv::COLOR_GRAY2RGBA);
 
         /*
         std::vector<cv::Vec3f> circles;
