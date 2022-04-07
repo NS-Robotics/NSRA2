@@ -31,6 +31,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ColorFilterParams.msg"
 )
 
+ament_export_dependencies(rosidl_default_runtime)
+
 add_subdirectory(ros_node)
 
 set(private_LIBRARIES /home/ros2/NSSC_private_libs)
@@ -331,6 +333,9 @@ target_include_directories(
 target_link_libraries(message_handler ros_node task_executor nssc_errors)
 
 ament_target_dependencies(message_handler rclcpp)
+
+rosidl_target_interfaces(message_handler
+        ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 
 add_library(
