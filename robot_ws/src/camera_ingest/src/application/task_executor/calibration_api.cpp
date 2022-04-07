@@ -32,51 +32,15 @@
 
 // Author: Noa Sendlhofer
 
-#ifndef NSSC_OBJECT_DETECTION_H_
-#define NSSC_OBJECT_DETECTION_H_
+#include "executor.h"
 
-#include "node.h"
-#include "triangulation_interface.h"
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/cudaimgproc.hpp>
-
-namespace nssc
+void nssc::application::Executor::runIngest()
 {
-    namespace process
-    {
-        class ObjectDetection
-        {
-        public:
-            ObjectDetection(std::shared_ptr<ros::NSSC> &node,
-                            std::shared_ptr<TriangulationInterface> &triangulation_interface);
-            ~ObjectDetection();
-            void stopDetection();
-            void closeDetection();
-            void runDetection();
-            void setColorFilterParams();
-
-        private:
-            std::shared_ptr<TriangulationInterface> triangulation_interface;
-            std::shared_ptr<ros::NSSC> node;
-
-            std::string msg_caller = "Detection";
-
-            ColorFilterParams color_filter_params;
-
-            void _detectionThread();
-            void _testDetectionThread();
-
-            std::atomic<bool> detection_running{false};
-            std::thread d_thread;
-
-            bool is_closed = false;
-        };
-    }
+    toggleNDIsource(NDI_SEND_INGEST);
+    this->ingest = new stereocalibration::Ingest(this->node, &this->frame_manager);
 }
 
-#endif //NSSC_OBJECT_DETECTION_H_
+void nssc::application::Executor::runCalibration(char *setName)
+{
+    this->calibration = new stereocalibration::Calibration(this->node, setName);
+}

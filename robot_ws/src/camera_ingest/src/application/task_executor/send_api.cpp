@@ -32,51 +32,47 @@
 
 // Author: Noa Sendlhofer
 
-#ifndef NSSC_OBJECT_DETECTION_H_
-#define NSSC_OBJECT_DETECTION_H_
+#include "executor.h"
 
-#include "node.h"
-#include "triangulation_interface.h"
-
-#include <opencv2/core/core.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/cudaimgproc.hpp>
-
-namespace nssc
+void nssc::application::Executor::toggleNDI(bool mono_stream)
 {
-    namespace process
+    if (this->ndi_running)
     {
-        class ObjectDetection
+        this->ndi->endStream();
+        this->ndi_running = false;
+    }
+    else if (mono_stream == this->node->g_config.frameConfig.mono_stream)
+    {
+        toggleNDIsource(NDI_SEND_RAW);
+    }
+    else
+    {
+        if (this->ndi_initialized)
         {
-        public:
-            ObjectDetection(std::shared_ptr<ros::NSSC> &node,
-                            std::shared_ptr<TriangulationInterface> &triangulation_interface);
-            ~ObjectDetection();
-            void stopDetection();
-            void closeDetection();
-            void runDetection();
-            void setColorFilterParams();
+            this->ndi->closeNDI();
+            this->ndi_initialized = false;
+        }
+        this->node->g_config.frameConfig.mono_stream = mono_stream;
+        this->node->g_config.frameConfig.calculate_params();
 
-        private:
-            std::shared_ptr<TriangulationInterface> triangulation_interface;
-            std::shared_ptr<ros::NSSC> node;
-
-            std::string msg_caller = "Detection";
-
-            ColorFilterParams color_filter_params;
-
-            void _detectionThread();
-            void _testDetectionThread();
-
-            std::atomic<bool> detection_running{false};
-            std::thread d_thread;
-
-            bool is_closed = false;
-        };
+        this->ndi->init();
+        this->ndi_initialized = true;
+        this->ndi->startStream();
+        this->ndi_running = true;
     }
 }
 
-#endif //NSSC_OBJECT_DETECTION_H_
+void nssc::application::Executor::toggleNDIsource(NSSC_NDI_SEND type)
+{
+    if (this->ndi_running)
+    {
+        this->ndi->endStream();
+        this->ndi_running = false;
+    }
+
+    this->frame_manager = send::FrameManager::make_frame(type);
+    this->frame_manager->init(this->node, this->cam_manager);
+
+    this->ndi->startStream();
+    this->ndi_running = true;
+}

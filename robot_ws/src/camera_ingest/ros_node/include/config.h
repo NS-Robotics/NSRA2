@@ -24,6 +24,17 @@ typedef enum NSSC_NDI_SEND_TYPES
     NDI_SEND_CALIBRATION    = 3,
 } NSSC_NDI_SEND;
 
+struct ColorFilterParams
+{
+public:
+    int low_H = 50;
+    int low_S = 50;
+    int low_V = 50;
+    int high_H = 50;
+    int high_S = 50;
+    int high_V = 50;
+};
+
 struct frame_config
 {
 public:
@@ -175,6 +186,7 @@ public:
     short max_origin_frame_time_diff = 1000; //microseconds
     std::vector<int> origin_ids = { 1, 2, 3 };
     char const *standard_config_file = "config1";
+    ColorFilterParams color_filter_params;
 };
 
 struct globalConfig : public frame_config, public ingest_config, public calib_config, public triangulation_config

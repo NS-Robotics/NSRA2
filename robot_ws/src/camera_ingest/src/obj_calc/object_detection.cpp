@@ -97,6 +97,11 @@ std::string vectorContent(std::vector<float> v){
     return s;
 }
 
+void nssc::process::ObjectDetection::setColorFilterParams()
+{
+    this->color_filter_params = this->node->g_config.triangulationConfig.color_filter_params;
+}
+
 void nssc::process::ObjectDetection::_detectionThread()
 {
     framestruct::StereoFrame *stereo_frame;
@@ -104,9 +109,6 @@ void nssc::process::ObjectDetection::_detectionThread()
     cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
 
     cv::Mat left_rgb, left_hsv, left_thresh, right_rgb, right_hsv, right_thresh;
-
-    int low_H = 105, low_S = 120, low_V = 100;
-    int high_H = 120, high_S = 220, high_V = 255;
 
     cv::SimpleBlobDetector detector;
     std::vector<cv::KeyPoint> keypoints;
@@ -124,8 +126,14 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::cvtColor(left_rgb, left_hsv, cv::COLOR_RGB2HSV);
         cv::cvtColor(right_rgb, right_hsv, cv::COLOR_RGB2HSV);
 
-        cv::inRange(left_hsv,  cv::Scalar(high_H, high_S, high_V), cv::Scalar(low_H, low_S, low_V), left_thresh);
-        cv::inRange(right_hsv, cv::Scalar(low_H, low_S, low_V), cv::Scalar(high_H, high_S, high_V), right_thresh);
+        cv::inRange(left_hsv,
+                    cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
+                    cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
+                    left_thresh);
+        cv::inRange(right_hsv,
+                    cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
+                    cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
+                    right_thresh);
 
         /*
         cv::Mat lower_red_hue_range;

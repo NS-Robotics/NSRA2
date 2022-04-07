@@ -39,7 +39,7 @@
 #include "node.h"
 #include "camera_manager.h"
 #include "ndi.h"
-#include "ingest.h"
+#include "ingest_api.h"
 #include "calibration.h"
 #include "triangulation_interface.h"
 #include "frame_manager.h"
@@ -54,19 +54,29 @@ namespace nssc
         public:
             Executor(std::shared_ptr<ros::NSSC> &node,
                      std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
+            //executor
             void init();
-
             void exit();
+            void cancel();
+
+            //send_api
             void toggleNDI(bool mono_stream);
             void toggleNDIsource(NSSC_NDI_SEND type);
+
+            //callibration_api
             void runIngest();
             void runCalibration(char *setName);
+
+            //process_api
             void runTriangulation(char *setName);
             void findTriangulationOrigin();
             void runDetection();
+            void setColorFilterParams(ColorFilterParams color_filter_params);
+
+            //ingest_api
             void setExposure(float exposure_time);
             void setGain(float gain);
-            void cancel();
+
 
         private:
             std::shared_ptr<ros::NSSC> node;

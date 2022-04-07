@@ -45,5 +45,14 @@ nssc::application::MessageHandler::MessageHandler(std::shared_ptr<ros::NSSC> &no
 
 void nssc::application::MessageHandler::topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const
 {
-    this->node->printInfo(this->msg_caller, "Message Received!");
+    ColorFilterParams color_filter_params;
+    color_filter_params.low_H = msg->low_h;
+    color_filter_params.low_S = msg->low_s;
+    color_filter_params.low_V = msg->low_v;
+    color_filter_params.high_H = msg->high_h;
+    color_filter_params.high_S = msg->high_s;
+    color_filter_params.high_V = msg->high_v;
+
+    this->executor->setColorFilterParams(color_filter_params);
+    this->node->printInfo(this->msg_caller, "Parameters set!");
 }

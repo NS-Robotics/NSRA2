@@ -277,6 +277,10 @@ ament_target_dependencies(triangulation rclcpp OpenCV Eigen3)
 add_library(
         task_executor
         src/application/task_executor/executor.cpp
+        src/application/task_executor/calibration_api.cpp
+        src/application/task_executor/ingest_api.cpp
+        src/application/task_executor/process_api.cpp
+        src/application/task_executor/send_api.cpp
 )
 
 target_include_directories(

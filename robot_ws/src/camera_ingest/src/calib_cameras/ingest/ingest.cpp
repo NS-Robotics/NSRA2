@@ -32,7 +32,7 @@
 
 // Author: Noa Sendlhofer
 
-#include "ingest.h"
+#include "ingest_api.h"
 #include "camera_manager.h"
 #include "node.h"
 #include "stereo_frame.h"
