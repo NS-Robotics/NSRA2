@@ -115,8 +115,6 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     while(this->detection_running.load())
     {
-        this->node->printInfo(this->msg_caller, "Img!");
-
         stereo_frame = this->triangulation_interface->getFrame();
 
         cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
