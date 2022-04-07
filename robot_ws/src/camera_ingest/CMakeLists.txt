@@ -334,9 +334,6 @@ target_link_libraries(message_handler ros_node task_executor nssc_errors)
 
 ament_target_dependencies(message_handler rclcpp)
 
-rosidl_target_interfaces(message_handler
-        ${PROJECT_NAME} "rosidl_typesupport_cpp")
-
 
 add_library(
         nssc_api
@@ -363,6 +360,9 @@ add_executable(main_node src/application/main.cpp)
 ament_target_dependencies(main_node rclcpp rclcpp_action)
 
 target_link_libraries(main_node nssc_api)
+
+rosidl_target_interfaces(main_node
+        ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 install(
         TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration nssc_api cli message_handler triangulation frame_manager frame #nssc_image_transport
