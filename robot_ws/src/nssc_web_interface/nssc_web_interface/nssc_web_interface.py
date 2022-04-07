@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from ament_index_python.packages import get_package_share_directory
 import rclpy
 from rclpy.node import Node
@@ -49,7 +49,7 @@ def test():
 
     color_filter_params.sendCommand(int(low_h), int(low_s), int(low_v), int(high_h), int(high_s), int(high_v))
 
-    return render_template('index.html')
+    return redirect('/')
 
 def run_page():
     app.run(host="0.0.0.0")
