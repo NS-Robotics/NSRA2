@@ -36,8 +36,7 @@
 #define CAMERA_INGEST_MESSAGE_HANDLER_H_
 
 #include "executor.h"
-
-#include "rclcpp/rclcpp.hpp"
+#include "node.h"
 
 #include "camera_ingest/msg/color_filter_params.hpp"
 
@@ -45,14 +44,15 @@ namespace nssc
 {
     namespace application
     {
-        class MessageHandler : public rclcpp::Node
+        class MessageHandler
         {
         public:
-            MessageHandler(std::shared_ptr<Executor> &executor);
+            MessageHandler(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor);
 
         private:
             void topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const;
 
+            std::shared_ptr<ros::NSSC> node;
             std::shared_ptr<Executor> executor;
 
             rclcpp::Subscription<camera_ingest::msg::ColorFilterParams>::SharedPtr color_filter_subscriber;
