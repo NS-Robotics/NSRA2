@@ -357,7 +357,7 @@ add_executable(main_node src/application/main.cpp)
 
 ament_target_dependencies(main_node rclcpp rclcpp_action)
 
-target_link_libraries(main_node cli message_handler nssc_api ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
+target_link_libraries(main_node nssc_api)
 
 install(
         TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration nssc_api cli message_handler triangulation #nssc_image_transport
