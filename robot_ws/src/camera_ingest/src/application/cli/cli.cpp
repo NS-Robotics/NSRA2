@@ -204,7 +204,6 @@ void nssc::application::CLI::CLIFunc()
         {
             this->executor->exit();
             this->cli_running = false;
-            this->printError("CLI SD complete");
             break;
         }
         else if (strcmp(cmd[0], "help") == 0)
@@ -228,6 +227,7 @@ void nssc::application::CLI::CLIFunc()
 
         free(buf);
     }
+    this->printError("CLI SD complete");
 }
 
 void nssc::application::CLI::printError(const char *message)
