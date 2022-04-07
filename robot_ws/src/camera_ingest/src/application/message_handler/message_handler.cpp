@@ -32,3 +32,18 @@
 
 // Author: Noa Sendlhofer
 
+#include "message_handler.h"
+
+nssc::application::MessageHandler::MessageHandler(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor)
+{
+    this->node = node;
+    this->executor = executor;
+
+    this->color_filter_subscriber = this->node->create_subscription<camera_ingest::msg::ColorFilterParams>(
+            "color_filter_params", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+}
+
+void nssc::application::MessageHandler::topic_callback(const tutorial_interfaces::msg::Num::SharedPtr msg)
+{
+    this->node->printInfo(this->msg_caller, "Message Received!");
+}

@@ -48,7 +48,8 @@ nssc::NSSC::NSSC(int argc, char **argv)
     this->executor = std::make_shared<nssc::application::Executor>(node, this->node_executor);
     this->executor->init();
 
-    this->cli = std::make_shared<nssc::application::CLI>(node, this->executor);
+    this->cli = std::make_unique<nssc::application::CLI>(node, this->executor);
+    this->message_handler = std::make_unique<nssc::application::MessageHandler>(node, this->executor);
 }
 
 nssc::NSSC::~NSSC()
@@ -59,21 +60,16 @@ nssc::NSSC::~NSSC()
 void nssc::NSSC::spin()
 {
     this->node_executor->spin();
-    std::cout << "NE spin exit" << std::endl;
 }
 
 void nssc::NSSC::exit()
 {
-    std::cout << "NSSC exit" << std::endl;
     if (this->is_running)
     {
         this->is_running = false;
 
         this->cli->closeCLI();
-        std::cout << "CLI exit" << std::endl;
         this->executor->exit();
-        std::cout << "Executor exit" << std::endl;
         rclcpp::shutdown();
-        std::cout << "Shutdown" << std::endl;
     }
 }

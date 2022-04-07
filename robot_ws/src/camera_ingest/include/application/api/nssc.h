@@ -39,6 +39,7 @@
 #include "nssc_errors.h"
 #include "executor.h"
 #include "cli.h"
+#include "message_handler.h"
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -54,7 +55,8 @@ namespace nssc
 
     private:
         std::shared_ptr<nssc::application::Executor> executor;
-        std::shared_ptr<nssc::application::CLI> cli;
+        std::unique_ptr<nssc::application::CLI> cli;
+        std::unique_ptr<nssc::application::MessageHandler> message_handler;
         std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
 
         bool is_running = true;

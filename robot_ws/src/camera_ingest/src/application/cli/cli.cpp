@@ -227,7 +227,6 @@ void nssc::application::CLI::CLIFunc()
 
         free(buf);
     }
-    this->printError("CLI SD complete");
 }
 
 void nssc::application::CLI::printError(const char *message)

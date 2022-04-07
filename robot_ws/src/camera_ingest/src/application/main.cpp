@@ -39,6 +39,5 @@ int main(int argc, char **argv)
     nssc::NSSC stereocamera(argc, argv);
     stereocamera.spin();
     stereocamera.exit();
-    std::cout << "Main Shutdown" << std::endl;
     return 0;
 }

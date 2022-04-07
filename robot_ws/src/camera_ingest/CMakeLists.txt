@@ -330,7 +330,7 @@ target_include_directories(
 
 target_link_libraries(message_handler ros_node task_executor nssc_errors)
 
-ament_target_dependencies(message_handler rclcpp)
+ament_target_dependencies(message_handler rclcpp camera_ingest)
 
 
 add_library(
