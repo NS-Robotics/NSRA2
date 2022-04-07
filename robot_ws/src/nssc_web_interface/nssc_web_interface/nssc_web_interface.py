@@ -55,7 +55,7 @@ class WebCommandPublisher(Node):
     def sendCameraSettings(self, current_cam):
         msg = CameraSettings()
         msg.gain = current_cam.gain
-        msg.exposure = current_cam.exposure
+        msg.exposure = current_cam.exposure * 5
         self.CSpublisher.publish(msg)
         self.get_logger().info('Publishing camera settings')
 
@@ -99,7 +99,7 @@ def camera():
     if request.method == 'POST':
 
         current_cam.gain = int(request.form["gain"])
-        current_cam.exposure = int(request.form["exposure"]) * 5
+        current_cam.exposure = int(request.form["exposure"])
 
         web_command_publisher.sendCameraSettings(current_cam)
 
