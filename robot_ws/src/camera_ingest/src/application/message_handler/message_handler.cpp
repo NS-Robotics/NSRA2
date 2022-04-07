@@ -34,14 +34,12 @@
 
 #include "message_handler.h"
 
-using std::placeholders::_1;
-
 nssc::application::MessageHandler::MessageHandler(std::shared_ptr<Executor> &executor) : Node("NSSCInterface")
 {
     this->executor = executor;
 
     this->color_filter_subscriber = this->create_subscription<camera_ingest::msg::ColorFilterParams>(
-            "color_filter_params", 10, std::bind(&MessageHandler::topic_callback, this, _1));
+            "color_filter_params", 10, std::bind(&MessageHandler::topic_callback, this, std::placeholders::_1));
 }
 
 void nssc::application::MessageHandler::topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const
