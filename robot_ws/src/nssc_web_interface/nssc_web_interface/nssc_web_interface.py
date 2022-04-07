@@ -49,7 +49,7 @@ def test():
 
     color_filter_params.sendCommand(int(low_h), int(low_s), int(low_v), int(high_h), int(high_s), int(high_v))
 
-    #return render_template('index.html')
+    return render_template('index.html')
 
 def run_page():
     app.run(host="0.0.0.0")

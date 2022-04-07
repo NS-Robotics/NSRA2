@@ -1,14 +1,31 @@
-<html>
-    <head></head>
-    <body>
-        <form method="POST" action="test">
-            <input type="range" min="0" max="255" name="low_h" />
-            <input type="range" min="0" max="255" name="low_s" />
-            <input type="range" min="0" max="255" name="low_v" />
-            <input type="range" min="0" max="255" name="high_h" />
-            <input type="range" min="0" max="255" name="high_s" />
-            <input type="range" min="0" max="255" name="high_v" />
-            <input type="submit" value="submit" />
-        </form>
-    </body>
-</html>
+<p>NSSC Color Filter Settings:</p>
+
+<div>
+    <input type="range" id="low_h" name="low_h" min="0" max="255">
+    <label for="low_h">Lower H</label>
+</div>
+
+<div>
+    <input type="range" id="low_s" name="low_s" min="0" max="255">
+    <label for="low_s">Lower S</label>
+</div>
+
+<div>
+    <input type="range" id="low_v" name="low_v" min="0" max="255">
+    <label for="low_v">Lower V</label>
+</div>
+
+<div>
+    <input type="range" id="high_h" name="high_h" min="0" max="255">
+    <label for="high_h">Higher H</label>
+</div>
+
+<div>
+    <input type="range" id="high_s" name="high_s" min="0" max="255">
+    <label for="high_s">Higher S</label>
+</div>
+
+<div>
+    <input type="range" id="high_v" name="high_v" min="0" max="255">
+    <label for="high_v">Higher V</label>
+</div>
