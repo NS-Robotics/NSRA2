@@ -48,7 +48,7 @@ nssc::NSSC::NSSC(int argc, char **argv)
     this->executor = std::make_shared<nssc::application::Executor>(node, this->node_executor);
     this->executor->init();
 
-    this->cli = std::make_shared<nssc::application::CLI>(node, this->node_executor);
+    this->cli = std::make_shared<nssc::application::CLI>(node, this->executor);
 }
 
 nssc::NSSC::~NSSC()
