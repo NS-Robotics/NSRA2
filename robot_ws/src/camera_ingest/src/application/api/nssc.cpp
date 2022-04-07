@@ -70,7 +70,10 @@ void nssc::NSSC::exit()
         this->is_running = false;
 
         this->cli->closeCLI();
+        std::cout << "CLI exit" << std::endl;
         this->executor->exit();
+        std::cout << "Executor exit" << std::endl;
         rclcpp::shutdown();
+        std::cout << "Shutdown" << std::endl;
     }
 }
