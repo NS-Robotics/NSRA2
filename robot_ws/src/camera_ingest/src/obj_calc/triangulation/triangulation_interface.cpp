@@ -49,14 +49,7 @@ nssc::framestruct::StereoFrame *nssc::process::TriangulationInterface::getFrame(
 {
     nssc::framestruct::StereoFrame *stereo_frame;
 
-    while (this->node->g_config.frameConfig.stream_on)
-    {
-        stereo_frame = (*this->frame_manager)->getCameraFrame();
-        if (stereo_frame->timedif < this->node->g_config.triangulationConfig.max_origin_frame_time_diff)
-            break;
-        else
-            (*this->frame_manager)->returnBuf(stereo_frame);
-    }
+    stereo_frame = (*this->frame_manager)->getCameraFrame();
 
     return stereo_frame;
 }
