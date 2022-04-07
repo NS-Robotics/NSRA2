@@ -42,7 +42,7 @@ nssc::application::MessageHandler::MessageHandler(std::shared_ptr<ros::NSSC> &no
     this->color_filter_subscriber = this->node->create_subscription<camera_ingest::msg::ColorFilterParams>(
             "color_filter_params", 10, std::bind(&MessageHandler::color_filter_callback, this, std::placeholders::_1));
 
-    this->camera_settings_callback = this->node->create_subscription<camera_ingest::msg::CameraSettings>(
+    this->camera_settings_subscriber = this->node->create_subscription<camera_ingest::msg::CameraSettings>(
             "camera_settings", 10, std::bind(&MessageHandler::camera_settings_callback, this, std::placeholders::_1));
 }
 
