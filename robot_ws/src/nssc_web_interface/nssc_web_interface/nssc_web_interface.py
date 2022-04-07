@@ -25,7 +25,7 @@ class FilterStruct:
     high_s: int
     high_v: int
 
-current_pos = FilterStruct(50, 128, 128, 128, 128, 128)
+current_pos = FilterStruct(128, 128, 128, 128, 128, 128)
 
 class WebCommandPublisher(Node):
 
