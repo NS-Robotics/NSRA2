@@ -49,7 +49,9 @@ nssc::NSSC::NSSC(int argc, char **argv)
     this->executor->init();
 
     this->cli = std::make_unique<nssc::application::CLI>(node, this->executor);
-    this->message_handler = std::make_unique<nssc::application::MessageHandler>(node, this->executor);
+    
+    auto message_handler = std::make_shared<nssc::application::MessageHandler>(this->executor);
+    this->node_executor->add_node(message_handler);
 }
 
 nssc::NSSC::~NSSC()

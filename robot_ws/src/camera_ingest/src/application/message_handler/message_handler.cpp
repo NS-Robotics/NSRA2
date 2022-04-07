@@ -34,16 +34,16 @@
 
 #include "message_handler.h"
 
-nssc::application::MessageHandler::MessageHandler(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor)
+nssc::application::MessageHandler::MessageHandler(std::shared_ptr<Executor> &executor) : Node("NSSCInterface")
 {
-    this->node = node;
     this->executor = executor;
 
-    this->color_filter_subscriber = this->node->create_subscription<camera_ingest::msg::ColorFilterParams>(
+    this->color_filter_subscriber = this->create_subscription<camera_ingest::msg::ColorFilterParams>(
             "color_filter_params", 10, std::bind(&MessageHandler::topic_callback, this, _1));
 }
 
 void nssc::application::MessageHandler::topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const
 {
-    this->node->printInfo(this->msg_caller, "Message Received!");
+    RCLCPP_INFO(this->get_logger(), "I heard a message");
+    //this->node->printInfo(this->msg_caller, "Message Received!");
 }
