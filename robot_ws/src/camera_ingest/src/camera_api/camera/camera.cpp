@@ -134,7 +134,7 @@ nssc::NSSC_STATUS nssc::ingest::Camera::startAcquisition()
 {
     this->stream_running = true;
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 7; i++)
     {
         framestruct::MonoFrame* frame = framestruct::MonoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node, i);

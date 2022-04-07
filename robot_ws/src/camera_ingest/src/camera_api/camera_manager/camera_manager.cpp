@@ -24,7 +24,7 @@ nssc::NSSC_STATUS nssc::ingest::CameraManager::init()
     _CM_VERIFY_EXIT(this->cam1->init());
     _CM_VERIFY_EXIT(this->cam2->init());
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 7; i++)
     {
         framestruct::StereoFrame* frame = framestruct::StereoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
         frame->alloc(this->node);
