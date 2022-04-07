@@ -99,7 +99,7 @@ def camera():
     if request.method == 'POST':
 
         current_cam.gain = int(request.form["gain"])
-        current_cam.exposure = int(request.form["exposure"])
+        current_cam.exposure = int(request.form["exposure"]) * 5
 
         web_command_publisher.sendCameraSettings(current_cam)
 
