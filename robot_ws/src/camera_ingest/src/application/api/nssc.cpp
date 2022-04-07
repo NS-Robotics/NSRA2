@@ -59,10 +59,12 @@ nssc::NSSC::~NSSC()
 void nssc::NSSC::spin()
 {
     this->node_executor->spin();
+    std::cout << "NE spin exit" << std::endl;
 }
 
 void nssc::NSSC::exit()
 {
+    std::cout << "NSSC exit" << std::endl;
     if (this->is_running)
     {
         this->is_running = false;

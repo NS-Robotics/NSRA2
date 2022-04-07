@@ -50,7 +50,7 @@ nssc::application::CLI::~CLI()
 
 void nssc::application::CLI::closeCLI()
 {
-    if (cli_running.load())
+    if (this->cli_running.load())
     {
         this->cli_running = false;
         this->cli_thread.join();
@@ -204,6 +204,7 @@ void nssc::application::CLI::CLIFunc()
         {
             this->executor->exit();
             this->cli_running = false;
+            this->node->printInfo(this->msg_caller, "CLI SD complete");
             break;
         }
         else if (strcmp(cmd[0], "help") == 0)

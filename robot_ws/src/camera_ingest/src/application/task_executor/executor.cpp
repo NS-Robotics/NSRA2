@@ -85,6 +85,7 @@ void nssc::application::Executor::exit()
     }
     this->node->printInfo(this->msg_caller, "Shutdown complete");
     this->node_executor->cancel();
+    this->node->printInfo(this->msg_caller, "NE Cancelled");
 }
 
 void nssc::application::Executor::init()
