@@ -2,7 +2,7 @@
 
 <p>NSSC Color Filter Settings:</p>
 
-<form method="POST" action="test">
+<form method="POST" action="send">
     <div>
         <input type="range" style="width: 400px;" id="low_h" name="low_h" min="0" max="180" value={{current_pos.low_h}}>
         <label for="low_h">Lower H - {{current_pos.low_h}}</label>
@@ -34,4 +34,8 @@
     </div>
 
     <input type="submit" value="submit" />
+</form>
+
+<form method="POST" action="update">
+    <input type="submit" value="update" />
 </form>

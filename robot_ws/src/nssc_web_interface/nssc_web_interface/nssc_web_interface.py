@@ -48,8 +48,8 @@ class WebCommandPublisher(Node):
 def index():
     return render_template('index.html', current_pos=current_pos)
 
-@app.route("/test", methods=["POST", "GET"])
-def test():
+@app.route("/send", methods=["POST", "GET"])
+def send():
     global color_filter_params
     global current_pos
 
@@ -69,6 +69,10 @@ def test():
     else:
         return render_template('index.html', current_pos=current_pos)
 
+@app.route('/update', methods=['GET', 'POST'])
+def update():
+    global current_pos
+    return render_template('index.html', current_pos=current_pos)
 
 def run_page():
     app.run(host="0.0.0.0")
