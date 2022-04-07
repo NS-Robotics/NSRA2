@@ -204,7 +204,7 @@ void nssc::application::CLI::CLIFunc()
         {
             this->executor->exit();
             this->cli_running = false;
-            this->node->printInfo(this->msg_caller, "CLI SD complete");
+            this->node->printInfo("CLI", "CLI SD complete");
             break;
         }
         else if (strcmp(cmd[0], "help") == 0)
