@@ -34,6 +34,8 @@
 
 #include "message_handler.h"
 
+using std::placeholders::_1;
+
 nssc::application::MessageHandler::MessageHandler(std::shared_ptr<Executor> &executor) : Node("NSSCInterface")
 {
     this->executor = executor;

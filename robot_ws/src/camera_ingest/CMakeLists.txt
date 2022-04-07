@@ -330,7 +330,7 @@ target_include_directories(
         include/application/errors
 )
 
-target_link_libraries(message_handler ros_node task_executor nssc_errors)
+target_link_libraries(message_handler task_executor nssc_errors)
 
 ament_target_dependencies(message_handler rclcpp)
 
