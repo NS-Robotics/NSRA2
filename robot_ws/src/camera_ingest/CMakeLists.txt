@@ -363,7 +363,7 @@ install(
         TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration nssc_api cli message_handler triangulation #nssc_image_transport
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
-        RUNTIME DESTINATION bin
+        RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 install(
