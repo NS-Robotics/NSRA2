@@ -275,35 +275,89 @@ ament_target_dependencies(triangulation rclcpp OpenCV Eigen3)
 add_library(
         task_executor
         src/application/task_executor/executor.cpp
-        src/application/task_executor/cli/cli.cpp
-        src/application/task_executor/cli/cli_args.cpp
 )
 
 target_include_directories(
         task_executor
         PUBLIC
         include/application/task_executor
-        include/application/task_executor/cli
         include/application/errors
         include/camera_api/camera_manager
         include/viewer_api/ndi
         include/calib_cameras/ingest
         include/calib_cameras/calibration
         include/obj_calc/triangulation
-        ${readline_INCLUDES}
         ${gxi_INCLUDES}
 )
 
-target_link_libraries(task_executor readline ros_node ndi_send camera_manager ingest calibration triangulation)
+target_link_libraries(task_executor ndi_send camera_manager ingest calibration triangulation)
 
 ament_target_dependencies(task_executor rclcpp)
+
+
+add_library(
+        cli
+        src/application/cli/cli.cpp
+        src/application/cli/cli_args.cpp
+)
+
+target_include_directories(
+        cli
+        PUBLIC
+        include/application/cli
+        include/application/task_executor
+        include/application/errors
+        ${readline_INCLUDES}
+)
+
+target_link_libraries(cli readline ros_node task_executor)
+
+ament_target_dependencies(cli rclcpp)
+
+
+add_library(
+        message_handler
+        src/application/message_handler/message_handler.cpp
+)
+
+target_include_directories(
+        message_handler
+        PUBLIC
+        include/application/message_handler
+        include/application/task_executor
+        include/application/errors
+)
+
+target_link_libraries(message_handler ros_node task_executor)
+
+ament_target_dependencies(message_handler rclcpp)
+
+
+add_library(
+        nssc_api
+        src/application/api/nssc.cpp
+)
+
+target_include_directories(
+        nssc_api
+        PUBLIC
+        include/application/api
+        include/application/task_executor
+        include/application/message_handler
+        include/application/errors
+        include/application/cli
+)
+
+target_link_libraries(nssc_api task_executor ros_node cli message_handler)
+
+ament_target_dependencies(nssc_api rclcpp)
 
 
 add_executable(main_node src/application/main.cpp)
 
 ament_target_dependencies(main_node rclcpp rclcpp_action)
 
-target_link_libraries(main_node ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
+target_link_libraries(main_node nssc_api ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
 
 install(
         TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration #nssc_image_transport

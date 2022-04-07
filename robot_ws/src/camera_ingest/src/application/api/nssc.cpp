@@ -34,9 +34,41 @@
 
 #include "nssc.h"
 
-int main(int argc, char **argv)
+nssc::NSSC::NSSC(int argc, char **argv)
 {
-    nssc::NSSC stereocamera(argc, argv);
-    stereocamera.spin();
-    stereocamera.exit();
+    rclcpp::init(argc, argv);
+
+    this->node_executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+
+    auto node = std::make_shared<nssc::ros::NSSC>();
+    this->node_executor->add_node(node);
+
+    nssc::NSSC_ERRORS eHandler(node);
+
+    this->executor = std::make_shared<nssc::application::Executor>(node, this->node_executor);
+    this->executor->init();
+
+    this->cli = std::make_shared<nssc::application::CLI>(node, this->node_executor);
+}
+
+nssc::NSSC::~NSSC()
+{
+    exit();
+}
+
+void nssc::NSSC::spin()
+{
+    this->node_executor->spin();
+}
+
+void nssc::NSSC::exit()
+{
+    if (this->is_running)
+    {
+        this->is_running = false;
+
+        this->cli->closeCLI();
+        this->executor->exit();
+        rclcpp::shutdown();
+    }
 }

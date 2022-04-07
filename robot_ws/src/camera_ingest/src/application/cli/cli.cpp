@@ -35,6 +35,28 @@
 #include "cli.h"
 #include "node.h"
 
+nssc::application::CLI::CLI(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor)
+{
+    this->node = node;
+    this->executor = executor;
+    this->cli_running = true;
+    this->cli_thread = std::thread(&CLI::CLIFunc, this);
+}
+
+nssc::application::CLI::~CLI()
+{
+    CLI::closeCLI();
+}
+
+void nssc::application::CLI::closeCLI()
+{
+    if (cli_running.load())
+    {
+        this->cli_running = false;
+        this->cli_thread.join();
+    }
+}
+
 void nssc::application::CLI::CLIFunc()
 {
     char *buf;
@@ -62,7 +84,7 @@ void nssc::application::CLI::CLIFunc()
         {
             if(cmd.size() == 1)
             {
-                toggleNDI(this->node->g_config.frameConfig.mono_stream);
+                this->executor->toggleNDI(this->node->g_config.frameConfig.mono_stream);
                 continue;
             }
             if(cmd.size() == 2)
@@ -73,7 +95,7 @@ void nssc::application::CLI::CLIFunc()
                     this->printError("Bad argument!");
                     continue;
                 }
-                toggleNDIsource(NDI_SEND_RAW);
+                this->executor->toggleNDIsource(NDI_SEND_RAW);
             } else
             {
                 bool mono_stream;
@@ -82,14 +104,14 @@ void nssc::application::CLI::CLIFunc()
                     this->printError("Bad argument!");
                     continue;
                 }
-                toggleNDI(false);
+                this->executor->toggleNDI(false);
                 bool raw_stream;
                 if (getBoolArg(cmd, 'r', raw_stream) != NSSC_STATUS_SUCCESS)
                 {
                     this->printError("Bad argument!");
                     continue;
                 }
-                toggleNDIsource(NDI_SEND_RAW);
+                this->executor->toggleNDIsource(NDI_SEND_RAW);
             }
         }
         else if (strcmp(cmd[0], "ingest") == 0)
@@ -108,7 +130,7 @@ void nssc::application::CLI::CLIFunc()
             }
             this->node->g_config.ingestConfig.set_name = setName;
             this->node->g_config.ingestConfig.ingest_amount = ingestAmount;
-            runIngest();
+            this->executor->runIngest();
             delete[] setName;
         }
         else if (strcmp(cmd[0], "calibrate") == 0)
@@ -120,7 +142,7 @@ void nssc::application::CLI::CLIFunc()
             }
             else
             {
-                runCalibration(setName);
+                this->executor->runCalibration(setName);
                 delete[] setName;
             }
         }
@@ -128,7 +150,7 @@ void nssc::application::CLI::CLIFunc()
         {
             if (cmd.size() == 1)
             {
-                runTriangulation(const_cast<char *>(this->node->g_config.triangulationConfig.standard_config_file));
+                this->executor->runTriangulation(const_cast<char *>(this->node->g_config.triangulationConfig.standard_config_file));
                 continue;
             }
             char *setName;
@@ -138,17 +160,17 @@ void nssc::application::CLI::CLIFunc()
             }
             else
             {
-                runTriangulation(setName);
+                this->executor->runTriangulation(setName);
                 delete[] setName;
             }
         }
         else if (strcmp(cmd[0], "detect") == 0)
         {
-            runDetection();
+            this->executor->runDetection();
         }
         else if (strcmp(cmd[0], "calib_origin") == 0)
         {
-            findTriangulationOrigin();
+            this->executor->findTriangulationOrigin();
         }
         else if (strcmp(cmd[0], "setExposure") == 0)
         {
@@ -159,7 +181,7 @@ void nssc::application::CLI::CLIFunc()
             }
             else
             {
-                setExposure((float) exposure_time);
+                this->executor->setExposure((float) exposure_time);
             }
         }
         else if (strcmp(cmd[0], "setGain") == 0)
@@ -171,17 +193,17 @@ void nssc::application::CLI::CLIFunc()
             }
             else
             {
-                setGain((float) gain);
+                this->executor->setGain((float) gain);
             }
         }
         else if (strcmp(cmd[0], "cancel") == 0)
         {
-            cancel();
+            this->executor->cancel();
         }
         else if (strcmp(cmd[0], "exit") == 0)
         {
             this->cli_running = false;
-            exit();
+            this->executor->exit();
             break;
         }
         else if (strcmp(cmd[0], "help") == 0)
@@ -210,17 +232,4 @@ void nssc::application::CLI::CLIFunc()
 void nssc::application::CLI::printError(const char *message)
 {
     printf("\033[1;34m[Executor] \033[1;31mError: %s\033[0m\n", message);
-}
-
-void nssc::application::CLI::openCLI(std::shared_ptr<ros::NSSC> &node)
-{
-    this->node = node;
-    this->cli_running = true;
-    this->cli_thread = std::thread(&CLI::CLIFunc, this);
-}
-
-void nssc::application::CLI::closeCLI()
-{
-    this->cli_running = false;
-    this->cli_thread.join();
 }

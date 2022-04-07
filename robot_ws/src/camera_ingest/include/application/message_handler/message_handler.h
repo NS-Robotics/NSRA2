@@ -32,11 +32,7 @@
 
 // Author: Noa Sendlhofer
 
-#include "nssc.h"
+#ifndef CAMERA_INGEST_MESSAGE_HANDLER_H_
+#define CAMERA_INGEST_MESSAGE_HANDLER_H_
 
-int main(int argc, char **argv)
-{
-    nssc::NSSC stereocamera(argc, argv);
-    stereocamera.spin();
-    stereocamera.exit();
-}
+#endif //CAMERA_INGEST_MESSAGE_HANDLER_H_

@@ -32,11 +32,3 @@
 
 // Author: Noa Sendlhofer
 
-#include "nssc.h"
-
-int main(int argc, char **argv)
-{
-    nssc::NSSC stereocamera(argc, argv);
-    stereocamera.spin();
-    stereocamera.exit();
-}

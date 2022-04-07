@@ -34,7 +34,6 @@
 
 #include "executor.h"
 #include "ndi.h"
-#include "cli.h"
 #include "object_detection.h"
 #include "camera_manager.h"
 #include "node.h"
@@ -100,8 +99,6 @@ void nssc::application::Executor::init()
     this->ndi = std::make_shared<nssc::send::NDI>(this->node, &this->frame_manager);
     this->ndi->init();
     this->ndi_initialized = true;
-
-    CLI::openCLI(this->node);
 }
 
 void nssc::application::Executor::toggleNDI(bool mono_stream)
@@ -155,7 +152,6 @@ void nssc::application::Executor::runIngest()
 
 void nssc::application::Executor::runCalibration(char *setName)
 {
-    //toggleNDIsource(NDI_SEND_CALIBRATION);
     this->calibration = new stereocalibration::Calibration(this->node, setName);
 }
 

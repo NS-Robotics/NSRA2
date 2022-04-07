@@ -45,6 +45,7 @@
 
 #include "node.h"
 #include "nssc_errors.h"
+#include "executor.h"
 
 namespace nssc
 {
@@ -54,20 +55,9 @@ namespace nssc
         {
         public:
             void CLIFunc();
-            void openCLI(std::shared_ptr<ros::NSSC> &node);
+            CLI(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor);
+            ~CLI();
             void closeCLI();
-
-            virtual void exit() = 0;
-            virtual void toggleNDI(bool mono_stream) = 0;
-            virtual void toggleNDIsource(NSSC_NDI_SEND type) = 0;
-            virtual void runIngest() = 0;
-            virtual void runCalibration(char *setName) = 0;
-            virtual void runTriangulation(char *setName) = 0;
-            virtual void findTriangulationOrigin() = 0;
-            virtual void runDetection() = 0;
-            virtual void setExposure(float exposure_time) = 0;
-            virtual void setGain(float gain) = 0;
-            virtual void cancel() = 0;
 
             std::atomic<bool> cli_running{false};
 
@@ -75,6 +65,7 @@ namespace nssc
             std::thread cli_thread;
 
             std::shared_ptr<ros::NSSC> node;
+            std::shared_ptr<Executor> executor;
 
             void printError(const char *message);
 

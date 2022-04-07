@@ -32,11 +32,33 @@
 
 // Author: Noa Sendlhofer
 
-#include "nssc.h"
+#ifndef CAMERA_INGEST_NSSC_H_
+#define CAMERA_INGEST_NSSC_H_
 
-int main(int argc, char **argv)
+#include "node.h"
+#include "nssc_errors.h"
+#include "executor.h"
+#include "cli.h"
+
+#include "rclcpp/rclcpp.hpp"
+
+namespace nssc
 {
-    nssc::NSSC stereocamera(argc, argv);
-    stereocamera.spin();
-    stereocamera.exit();
+    class NSSC
+    {
+    public:
+        NSSC(int argc, char **argv);
+        ~NSSC();
+        void exit();
+        void spin();
+
+    private:
+        std::shared_ptr<nssc::application::Executor> executor;
+        std::shared_ptr<nssc::application::CLI> cli;
+        std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> node_executor;
+
+        bool is_running = true;
+    };
 }
+
+#endif //CAMERA_INGEST_NSSC_H_

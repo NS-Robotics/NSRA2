@@ -35,7 +35,6 @@
 #ifndef NSSC_TASK_EXECUTOR_
 #define NSSC_TASK_EXECUTOR_
 
-#include "cli.h"
 #include "nssc_errors.h"
 #include "node.h"
 #include "camera_manager.h"
@@ -50,24 +49,24 @@ namespace nssc
 {
     namespace application
     {
-        class Executor : public NSSC_ERRORS, public CLI
+        class Executor : public NSSC_ERRORS
         {
         public:
             Executor(std::shared_ptr<ros::NSSC> &node,
                      std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> &node_executor);
             void init();
 
-            void exit() override;
-            void toggleNDI(bool mono_stream) override;
-            void toggleNDIsource(NSSC_NDI_SEND type) override;
-            void runIngest() override;
-            void runCalibration(char *setName) override;
-            void runTriangulation(char *setName) override;
-            void findTriangulationOrigin() override;
-            void runDetection() override;
-            void setExposure(float exposure_time) override;
-            void setGain(float gain) override;
-            void cancel() override;
+            void exit();
+            void toggleNDI(bool mono_stream);
+            void toggleNDIsource(NSSC_NDI_SEND type);
+            void runIngest();
+            void runCalibration(char *setName);
+            void runTriangulation(char *setName);
+            void findTriangulationOrigin();
+            void runDetection();
+            void setExposure(float exposure_time);
+            void setGain(float gain);
+            void cancel();
 
         private:
             std::shared_ptr<ros::NSSC> node;
