@@ -202,8 +202,8 @@ void nssc::application::CLI::CLIFunc()
         }
         else if (strcmp(cmd[0], "exit") == 0)
         {
-            this->cli_running = false;
             this->executor->exit();
+            this->cli_running = false;
             break;
         }
         else if (strcmp(cmd[0], "help") == 0)

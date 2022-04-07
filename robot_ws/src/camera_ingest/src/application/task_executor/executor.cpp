@@ -52,6 +52,8 @@ nssc::application::Executor::Executor(std::shared_ptr<ros::NSSC> &node, std::sha
 void nssc::application::Executor::exit()
 {
     if (this->is_closed) { return; }
+    this->is_closed = true;
+
     if (this->node->g_config.ingestConfig.is_running)
     {
         this->ingest->cancelIngest();
@@ -83,7 +85,6 @@ void nssc::application::Executor::exit()
     }
     this->node->printInfo(this->msg_caller, "Shutdown complete");
     this->node_executor->cancel();
-    this->is_closed = true;
 }
 
 void nssc::application::Executor::init()
