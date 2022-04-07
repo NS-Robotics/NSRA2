@@ -114,8 +114,8 @@ void nssc::process::ObjectDetection::_detectionThread()
     std::vector<cv::KeyPoint> keypoints;
 
     cv::Mat kernel = cv::getStructuringElement(0,
-                                               cv::Size(3, 3),
-                                               cv::Point(1, 1));
+                                               cv::Size(5, 5),
+                                               cv::Point(3, 3));
 
     while(this->detection_running.load())
     {
