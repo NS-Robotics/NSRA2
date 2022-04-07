@@ -360,7 +360,7 @@ ament_target_dependencies(main_node rclcpp rclcpp_action)
 target_link_libraries(main_node nssc_api ros_node camera ndi_send nssc_errors camera_manager libndi gxiapi task_executor ingest calibration)
 
 install(
-        TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration nssc_api cli message_handler #nssc_image_transport
+        TARGETS camera ndi_send nssc_errors camera_manager task_executor ingest calibration nssc_api cli message_handler triangulation #nssc_image_transport
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin
