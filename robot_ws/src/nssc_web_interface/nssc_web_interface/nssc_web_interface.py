@@ -24,8 +24,10 @@ class FilterStruct:
     high_h: int
     high_s: int
     high_v: int
+    dilation_element: int
+    dilation_size: int
 
-current_pos = FilterStruct(0, 0, 0, 180, 255, 255)
+current_pos = FilterStruct(0, 0, 0, 180, 255, 255, 0, 2)
 
 @dataclass
 class CameraStruct:
@@ -49,6 +51,8 @@ class WebCommandPublisher(Node):
         msg.high_h = current_pos.high_h
         msg.high_s = current_pos.high_s
         msg.high_v = current_pos.high_v
+        msg.dilation_element = current_pos.dilation_element
+        msg.dilation_size = current_pos.dilation_size
         self.CFpublisher.publish(msg)
         self.get_logger().info('Publishing color filter settings')
     
@@ -77,6 +81,8 @@ def send():
         current_pos.high_h = int(request.form["high_h"])
         current_pos.high_s = int(request.form["high_s"])
         current_pos.high_v = int(request.form["high_v"])
+        current_pos.dilation_element = int(request.form["dilation_element"])
+        current_pos.dilation_size = int(request.form["dilation_size"])
 
         web_command_publisher.sendColorFilter(current_pos)
 

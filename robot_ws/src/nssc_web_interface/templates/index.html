@@ -33,6 +33,16 @@
         <label for="high_v">Higher V - {{current_pos.high_v}}</label>
     </div>
 
+    <div>
+        <input type="range" style="width: 400px;" id="dilation_element" name="dilation_element" min="0" max="2" value={{current_pos.dilation_element}}>
+        <label for="dilation_element">Dilation Element - {{current_pos.dilation_element}}</label>
+    </div>
+
+    <div>
+        <input type="range" style="width: 400px;" id="dilation_size" name="dilation_size" min="0" max="10" value={{current_pos.dilation_size}}>
+        <label for="dilation_size">Dilation Size - {{current_pos.dilation_size}}</label>
+    </div>
+
     <input type="submit" value="submit" />
 </form>
 
