@@ -310,7 +310,7 @@ target_include_directories(
         ${readline_INCLUDES}
 )
 
-target_link_libraries(cli readline ros_node task_executor)
+target_link_libraries(cli readline ros_node task_executor nssc_errors)
 
 ament_target_dependencies(cli rclcpp)
 
@@ -328,7 +328,7 @@ target_include_directories(
         include/application/errors
 )
 
-target_link_libraries(message_handler ros_node task_executor)
+target_link_libraries(message_handler ros_node task_executor nssc_errors)
 
 ament_target_dependencies(message_handler rclcpp)
 
@@ -348,7 +348,7 @@ target_include_directories(
         include/application/cli
 )
 
-target_link_libraries(nssc_api task_executor ros_node cli message_handler)
+target_link_libraries(nssc_api task_executor ros_node cli message_handler nssc_errors)
 
 ament_target_dependencies(nssc_api rclcpp)
 
