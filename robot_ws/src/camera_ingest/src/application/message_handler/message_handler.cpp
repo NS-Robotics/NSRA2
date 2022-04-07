@@ -40,10 +40,13 @@ nssc::application::MessageHandler::MessageHandler(std::shared_ptr<ros::NSSC> &no
     this->executor = executor;
 
     this->color_filter_subscriber = this->node->create_subscription<camera_ingest::msg::ColorFilterParams>(
-            "color_filter_params", 10, std::bind(&MessageHandler::topic_callback, this, std::placeholders::_1));
+            "color_filter_params", 10, std::bind(&MessageHandler::color_filter_callback, this, std::placeholders::_1));
+
+    this->camera_settings_callback = this->node->create_subscription<camera_ingest::msg::CameraSettings>(
+            "camera_settings", 10, std::bind(&MessageHandler::camera_settings_callback, this, std::placeholders::_1));
 }
 
-void nssc::application::MessageHandler::topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const
+void nssc::application::MessageHandler::color_filter_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const
 {
     ColorFilterParams color_filter_params;
     color_filter_params.low_H = msg->low_h;
@@ -54,5 +57,10 @@ void nssc::application::MessageHandler::topic_callback(const camera_ingest::msg:
     color_filter_params.high_V = msg->high_v;
 
     this->executor->setColorFilterParams(color_filter_params);
-    this->node->printInfo(this->msg_caller, "Parameters set!");
+}
+
+void nssc::application::MessageHandler::camera_settings_callback(const camera_ingest::msg::CameraSettings::SharedPtr msg) const
+{
+    this->executor->setGain(float(msg->gain));
+    this->executor->setExposure(float(msg->exposure));
 }
