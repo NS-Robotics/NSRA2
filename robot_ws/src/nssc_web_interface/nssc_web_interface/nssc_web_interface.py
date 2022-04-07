@@ -27,14 +27,14 @@ class FilterStruct:
     dilation_element: int
     dilation_size: int
 
-current_pos = FilterStruct(94, 138, 36, 115, 231, 242, 0, 2)
+current_pos = FilterStruct(86, 94, 22, 125, 229, 131, 0, 2)
 
 @dataclass
 class CameraStruct:
     gain: int
     exposure: int
 
-current_cam = CameraStruct(15, 50000)
+current_cam = CameraStruct(20, 30000)
 
 class WebCommandPublisher(Node):
 
