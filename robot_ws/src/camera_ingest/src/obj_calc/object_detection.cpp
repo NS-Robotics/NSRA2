@@ -102,8 +102,8 @@ void nssc::process::ObjectDetection::setColorFilterParams()
     this->color_filter_params = this->node->g_config.triangulationConfig.color_filter_params;
 
     this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
-                                             cv::Size(2 * this->color_filter_params.dilation_size + 1,
-                                                      2 * this->color_filter_params.dilation_size + 1),
+                                             cv::Size(this->color_filter_params.dilation_size,
+                                                      this->color_filter_params.dilation_size),
                                              cv::Point(this->color_filter_params.dilation_size,
                                                        this->color_filter_params.dilation_size));
 }
@@ -121,8 +121,8 @@ void nssc::process::ObjectDetection::_detectionThread()
     std::vector<cv::KeyPoint> keypoints;
 
     this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
-                                             cv::Size(2 * this->color_filter_params.dilation_size + 1,
-                                                      2 * this->color_filter_params.dilation_size + 1),
+                                             cv::Size(this->color_filter_params.dilation_size,
+                                                      this->color_filter_params.dilation_size),
                                              cv::Point(this->color_filter_params.dilation_size,
                                                        this->color_filter_params.dilation_size));
 
