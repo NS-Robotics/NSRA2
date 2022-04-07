@@ -150,6 +150,7 @@ void nssc::process::ObjectDetection::_detectionThread()
         */
         cv::cvtColor(left_thresh, left_inp, cv::COLOR_GRAY2RGBA);
 
+        /*
         std::vector<cv::Vec3f> circles;
         cv::HoughCircles(left_thresh, circles, cv::HOUGH_GRADIENT, 1, left_thresh.rows / 8, 100, 20, 0, 0);
 
@@ -162,6 +163,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                 cv::circle(left_inp, center, radius, cv::Scalar(0, 255, 0), 2);
             }
         }
+         */
 
         /*
         std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_originMarkers, right_originMarkers);
