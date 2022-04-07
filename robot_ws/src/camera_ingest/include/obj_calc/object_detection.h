@@ -67,6 +67,7 @@ namespace nssc
             std::string msg_caller = "Detection";
 
             ColorFilterParams color_filter_params;
+            cv::Mat kernel;
 
             void _detectionThread();
             void _testDetectionThread();

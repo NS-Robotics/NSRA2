@@ -100,6 +100,12 @@ std::string vectorContent(std::vector<float> v){
 void nssc::process::ObjectDetection::setColorFilterParams()
 {
     this->color_filter_params = this->node->g_config.triangulationConfig.color_filter_params;
+
+    this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
+                                             cv::Size(2 * this->color_filter_params.dilation_size + 1,
+                                                      2 * this->color_filter_params.dilation_size + 1),
+                                             cv::Point(this->color_filter_params.dilation_size,
+                                                       this->color_filter_params.dilation_size));
 }
 
 void nssc::process::ObjectDetection::_detectionThread()
@@ -108,14 +114,17 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
 
-    cv::Mat left_rgb, left_hsv, left_thresh, right_rgb, right_hsv, right_thresh;
+    cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate,
+            right_rgb, right_hsv, right_thresh, right_bitw, right_dilate;
 
     cv::SimpleBlobDetector detector;
     std::vector<cv::KeyPoint> keypoints;
 
-    cv::Mat kernel = cv::getStructuringElement(0,
-                                               cv::Size(5, 5),
-                                               cv::Point(3, 3));
+    this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
+                                             cv::Size(2 * this->color_filter_params.dilation_size + 1,
+                                                      2 * this->color_filter_params.dilation_size + 1),
+                                             cv::Point(this->color_filter_params.dilation_size,
+                                                       this->color_filter_params.dilation_size));
 
     while(this->detection_running.load())
     {
@@ -139,13 +148,14 @@ void nssc::process::ObjectDetection::_detectionThread()
                     cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
                     right_thresh);
 
-        cv::bitwise_not(left_hsv, left_hsv);
-        cv::bitwise_not(right_hsv, right_hsv);
+        cv::bitwise_not(left_thresh, left_bitw);
+        cv::bitwise_not(right_thresh, right_bitw);
 
-        cv::dilate(left_hsv, left_hsv, kernel);
+        cv::dilate(left_bitw, left_dilate, kernel);
+        cv::dilate(right_bitw, right_dilate, kernel);
 
-        cv::cvtColor(left_thresh, left_inp, cv::COLOR_GRAY2RGBA);
-        cv::cvtColor(right_thresh, right_inp, cv::COLOR_GRAY2RGBA);
+        cv::cvtColor(left_dilate, left_inp, cv::COLOR_GRAY2RGBA);
+        cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
 
         /*
         std::vector<cv::Vec3f> circles;

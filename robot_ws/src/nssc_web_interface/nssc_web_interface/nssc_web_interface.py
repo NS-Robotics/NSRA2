@@ -27,7 +27,7 @@ class FilterStruct:
     dilation_element: int
     dilation_size: int
 
-current_pos = FilterStruct(0, 0, 0, 180, 255, 255, 0, 2)
+current_pos = FilterStruct(94, 138, 36, 115, 231, 242, 0, 2)
 
 @dataclass
 class CameraStruct:

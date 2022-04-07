@@ -33,6 +33,8 @@ public:
     int high_H = 50;
     int high_S = 50;
     int high_V = 50;
+    int dilation_element = 0;
+    int dilation_size = 2;
 };
 
 struct frame_config

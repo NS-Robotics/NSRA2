@@ -55,6 +55,8 @@ void nssc::application::MessageHandler::color_filter_callback(const camera_inges
     color_filter_params.high_H = msg->high_h;
     color_filter_params.high_S = msg->high_s;
     color_filter_params.high_V = msg->high_v;
+    color_filter_params.dilation_element = msg->dilation_element;
+    color_filter_params.dilation_size = msg->dilation_size;
 
     this->executor->setColorFilterParams(color_filter_params);
 }
