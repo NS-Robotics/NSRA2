@@ -40,10 +40,10 @@ nssc::application::MessageHandler::MessageHandler(std::shared_ptr<ros::NSSC> &no
     this->executor = executor;
 
     this->color_filter_subscriber = this->node->create_subscription<camera_ingest::msg::ColorFilterParams>(
-            "color_filter_params", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+            "color_filter_params", 10, std::bind(&MessageHandler::topic_callback, this, _1));
 }
 
-void nssc::application::MessageHandler::topic_callback(const tutorial_interfaces::msg::Num::SharedPtr msg)
+void nssc::application::MessageHandler::topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg)
 {
     this->node->printInfo(this->msg_caller, "Message Received!");
 }
