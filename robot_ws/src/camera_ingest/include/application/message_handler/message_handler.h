@@ -38,7 +38,7 @@
 #include "executor.h"
 #include "node.h"
 
-#include "camera_ingest/msg/ColorFilterParams.hpp"
+#include "camera_ingest/msg/color_filter_params.hpp"
 
 namespace nssc
 {
