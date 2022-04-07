@@ -55,7 +55,7 @@ class WebCommandPublisher(Node):
     def sendCameraSettings(self, current_cam):
         msg = CameraSettings()
         msg.gain = current_cam.gain
-        msg.exposure = current_cam.exposure * 5
+        msg.exposure = current_cam.exposure
         self.CSpublisher.publish(msg)
         self.get_logger().info('Publishing camera settings')
 

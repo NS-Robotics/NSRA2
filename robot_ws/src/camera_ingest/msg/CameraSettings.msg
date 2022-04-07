@@ -1,2 +1,2 @@
 int16 gain
-int16 exposure
+int32 exposure
