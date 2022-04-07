@@ -46,7 +46,7 @@ class WebCommandPublisher(Node):
 
 @app.route('/')
 def index():
-    return render_template('index.html', low_h = current_pos.low_h)
+    return render_template('index.html', current_pos=current_pos)
 
 @app.route("/test", methods=["POST", "GET"])
 def test():
@@ -67,7 +67,7 @@ def test():
         return redirect('/')
 
     else:
-        return render_template('index.html', low_h = current_pos.low_h)
+        return render_template('index.html', current_pos=current_pos)
 
 
 def run_page():
