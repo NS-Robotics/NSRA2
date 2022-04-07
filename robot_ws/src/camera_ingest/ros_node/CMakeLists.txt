@@ -25,3 +25,10 @@ target_include_directories(
 ament_target_dependencies(ros_node rclcpp ament_index_cpp)
 
 target_link_libraries(ros_node fastrtps fastcdr foonathan_memory)
+
+install(
+        TARGETS ros_node
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+)
