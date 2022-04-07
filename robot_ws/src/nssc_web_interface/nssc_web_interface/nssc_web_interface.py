@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from camera_ingest.msg import ColorFilterParams
+from camera_ingest.msg import ColorFilterParams, CameraSettings
 import threading
 from dataclasses import dataclass
 
@@ -14,7 +14,7 @@ print(package_share_directory)
 template_dir = os.path.abspath(package_share_directory + '/templates')
 app = Flask(__name__, template_folder=template_dir)
 
-color_filter_params = None
+web_command_publisher = None
 
 @dataclass
 class FilterStruct:
@@ -27,13 +27,21 @@ class FilterStruct:
 
 current_pos = FilterStruct(0, 0, 0, 180, 255, 255)
 
+@dataclass
+class CameraStruct:
+    gain: int
+    exposure: int
+
+current_cam = CameraStruct(15, 50000)
+
 class WebCommandPublisher(Node):
 
     def __init__(self):
         super().__init__('nssc_web_interface')
-        self.publisher_ = self.create_publisher(ColorFilterParams, 'color_filter_params', 10)
+        self.CFpublisher = self.create_publisher(ColorFilterParams, 'color_filter_params', 10)
+        self.CSpublisher = self.create_publisher(CameraSettings, 'camera_settings', 10)
 
-    def sendCommand(self, current_pos):
+    def sendColorFilter(self, current_pos):
         msg = ColorFilterParams()
         msg.low_h = current_pos.low_h
         msg.low_s = current_pos.low_s
@@ -41,17 +49,25 @@ class WebCommandPublisher(Node):
         msg.high_h = current_pos.high_h
         msg.high_s = current_pos.high_s
         msg.high_v = current_pos.high_v
-        self.publisher_.publish(msg)
-        self.get_logger().info('Publishing command')
+        self.CFpublisher.publish(msg)
+        self.get_logger().info('Publishing color filter settings')
+    
+    def sendCameraSettings(self, current_cam):
+        msg = CameraSettings()
+        msg.gain = current_cam.gain
+        msg.exposure = current_cam.exposure
+        self.CSpublisher.publish(msg)
+        self.get_logger().info('Publishing camera settings')
 
 @app.route('/')
 def index():
-    return render_template('index.html', current_pos=current_pos)
+    return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
 
 @app.route("/send", methods=["POST", "GET"])
 def send():
-    global color_filter_params
+    global web_command_publisher
     global current_pos
+    global current_cam
 
     if request.method == 'POST':
 
@@ -62,34 +78,53 @@ def send():
         current_pos.high_s = int(request.form["high_s"])
         current_pos.high_v = int(request.form["high_v"])
 
-        color_filter_params.sendCommand(current_pos)
+        web_command_publisher.sendColorFilter(current_pos)
 
         return redirect('/')
 
     else:
-        return render_template('index.html', current_pos=current_pos)
+        return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
 
 @app.route('/update', methods=['GET', 'POST'])
 def update():
     global current_pos
-    return render_template('index.html', current_pos=current_pos)
+    return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
+
+@app.route('/camera', methods=['GET', 'POST'])
+def camera():
+    global web_command_publisher
+    global current_pos
+    global current_cam
+
+    if request.method == 'POST':
+
+        current_cam.gain = int(request.form["gain"])
+        current_cam.exposure = int(request.form["exposure"])
+
+        web_command_publisher.sendCameraSettings(current_cam)
+
+        return redirect('/')
+
+    else:
+        return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
+
 
 def run_page():
     app.run(host="0.0.0.0")
 
 def main(args=None):
-    global color_filter_params
+    global web_command_publisher
 
     rclpy.init(args=args)
 
-    color_filter_params = WebCommandPublisher()
+    web_command_publisher = WebCommandPublisher()
     
     t = threading.Thread(target=run_page)
     t.start()
 
-    rclpy.spin(color_filter_params)
+    rclpy.spin(web_command_publisher)
 
-    color_filter_params.destroy_node()
+    web_command_publisher.destroy_node()
     rclpy.shutdown()
 
 

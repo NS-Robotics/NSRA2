@@ -39,3 +39,19 @@
 <form method="POST" action="update">
     <input type="submit" value="update" />
 </form>
+
+<p>NSSC Camera Settings:</p>
+
+<form method="POST" action="camera">
+    <div>
+        <input type="range" style="width: 400px;" id="gain" name="gain" min="0" max="180" value={{camera_settings.gain}}>
+        <label for="gain">Lower H - {{camera_settings.gain}}</label>
+    </div>
+
+    <div>
+        <input type="range" style="width: 400px;" id="exposure" name="exposure" min="0" max="255" value={{camera_settings.exposure}}>
+        <label for="exposure">Lower S - {{camera_settings.exposure}}</label>
+    </div>
+
+    <input type="submit" value="submit" />
+</form>
