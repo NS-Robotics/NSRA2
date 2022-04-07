@@ -50,7 +50,7 @@ namespace nssc
             MessageHandler(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor);
 
         private:
-            void topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg);
+            void topic_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const;
 
             std::shared_ptr<ros::NSSC> node;
             std::shared_ptr<Executor> executor;
