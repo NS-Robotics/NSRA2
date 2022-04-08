@@ -126,7 +126,7 @@ std::string type2str(int type) {
     }
 
     r += "C";
-    r += (chans+'0');
+    r += (std::to_string(chans+'0'));
 
     return r;
 }
@@ -218,6 +218,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                 for (auto & i : keypoints_right)
                 {
                     right_coords.push_back(i.pt);
+                }
 
                 std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_coords, right_coords);
 
