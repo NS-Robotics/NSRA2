@@ -173,6 +173,9 @@ void nssc::process::ObjectDetection::_detectionThread()
     std::vector<cv::KeyPoint> keypoints_left;
     std::vector<cv::KeyPoint> keypoints_right;
 
+    std::vector<Eigen::Vector3d> coords_3d;
+    std::vector<cv::Point2f> left_coords, right_coords;
+
     cv::Mat morph_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6,6));
 
     while(this->detection_running.load())
@@ -213,8 +216,6 @@ void nssc::process::ObjectDetection::_detectionThread()
 
             if (!keypoints_left.empty() && !keypoints_right.empty())
             {
-                std::vector<cv::Point2f> left_coords, right_coords;
-
                 for (auto & i : keypoints_left)
                 {
                     left_coords.push_back(i.pt);
@@ -225,12 +226,14 @@ void nssc::process::ObjectDetection::_detectionThread()
                     right_coords.push_back(i.pt);
                 }
 
-                std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_coords, right_coords);
+                coords_3d = this->triangulation_interface->triangulatePoints(left_coords, right_coords);
 
+                /*
                 for (auto & i : coords_3d)
                 {
                     std::cout << i << std::endl;
                 }
+                 */
             }
 
             if (this->color_filter_params.enable_ndi)
@@ -240,6 +243,26 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                 cv::drawKeypoints(right_inp, keypoints_right, right_inp, cv::Scalar(255,0,0),
                                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
+                std::vector<float> text_right = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
+                std::vector<float> text_left = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
+
+                cv::putText(left_inp,
+                            vectorContent(text_right),
+                            cv::Point2f(left_coords[0].x - 100, left_coords[0].y - 30),
+                            cv::FONT_HERSHEY_COMPLEX_SMALL,
+                            1.4,
+                            cv::Scalar(255, 0, 0),
+                            2,
+                            cv::LINE_AA);
+                cv::putText(right_inp,
+                            vectorContent(text_left),
+                            cv::Point2f(right_coords[0].x - 100, right_coords[0].y - 30),
+                            cv::FONT_HERSHEY_COMPLEX_SMALL,
+                            1.4,
+                            cv::Scalar(255, 0, 0),
+                            2,
+                            cv::LINE_AA);
             }
         }
         else if (this->color_filter_params.enable_ndi)
@@ -248,55 +271,6 @@ void nssc::process::ObjectDetection::_detectionThread()
             cv::cvtColor(right_hsv, right_inp, cv::COLOR_GRAY2RGBA);
         }
 
-        /*
-        std::vector<cv::Vec3f> circles;
-        cv::HoughCircles(left_thresh, circles, cv::HOUGH_GRADIENT, 1, left_thresh.rows / 8, 100, 20, 0, 0);
-
-        if (circles.size() > 0)
-        {
-            for(size_t current_circle = 0; current_circle < circles.size(); ++current_circle) {
-                cv::Point center(std::round(circles[current_circle][0]), std::round(circles[current_circle][1]));
-                int radius = std::round(circles[current_circle][2]);
-
-                cv::circle(left_inp, center, radius, cv::Scalar(0, 255, 0), 2);
-            }
-        }
-         */
-
-        /*
-        std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_originMarkers, right_originMarkers);
-
-        std::vector<float> print_v = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
-        //std::cout << vector_content(print_v) << std::endl;
-
-        cv::circle(left_inp, left_originMarkers[0], 10, (0,0,255), 2);
-        cv::circle(right_inp, right_originMarkers[0], 10, (0,0,255), 2);
-        cv::putText(left_inp,
-                    vector_content(print_v),
-                    cv::Point2f(left_originMarkers[0].x - 100, left_originMarkers[0].y - 30),
-                    cv::FONT_HERSHEY_COMPLEX_SMALL,
-                    1.4,
-                    cv::Scalar(255, 0, 0),
-                    2,
-                    cv::LINE_AA);
-        cv::putText(right_inp,
-                    vectorContent(print_v),
-                    cv::Point2f(right_originMarkers[0].x - 100, right_originMarkers[0].y - 30),
-                    cv::FONT_HERSHEY_COMPLEX_SMALL,
-                    1.4,
-                    cv::Scalar(255, 0, 0),
-                    2,
-                    cv::LINE_AA);
-
-        std::vector<cv::Point2f> left_origin, right_origin;
-        std::tie(left_origin, right_origin) = this->triangulation_interface->getOrigin();
-
-        for(int i = 0; i < left_origin.size(); i++)
-        {
-            cv::circle(left_inp, left_origin[i], 10, cv::Scalar(150, 255, 0), 2);
-            cv::circle(right_inp, right_origin[i], 10, cv::Scalar(150, 255, 0), 2);
-        }
-         */
         if (this->color_filter_params.enable_ndi)
         {
             this->triangulation_interface->sendFrame(stereo_frame);
