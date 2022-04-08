@@ -71,6 +71,8 @@ void nssc::application::Executor::runDetection()
         if (this->triangulation_interface->init() != NSSC_STATUS_SUCCESS)
         {
             this->triangulation_initialized = false;
+            this->ndi->endStream();
+            this->ndi_running = false;
             return;
         }
         this->triangulation_initialized = true;

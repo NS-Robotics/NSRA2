@@ -60,9 +60,9 @@ public:
     {
     }
 
-    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
+    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereo_frame) override
     {
-        return this->camManager->returnBuf(stereoFrame);
+        return this->camManager->returnBuf(stereo_frame);
     }
 };
 
@@ -101,15 +101,23 @@ public:
 
     void sendFrame(nssc::framestruct::StereoFrame* stereo_frame) override
     {
-        stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
-        this->buf_filled.enqueue(stereo_frame);
-        this->num_filled++;
+        if (this->node->g_config.frameConfig.stream_on)
+        {
+            stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
+            this->buf_filled.enqueue(stereo_frame);
+            this->num_filled++;
+        }
+        else
+        {
+            this->go_get = true;
+            this->camManager->returnBuf(stereo_frame);
+        }
     }
 
-    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereoFrame) override
+    nssc::NSSC_STATUS returnBuf(nssc::framestruct::StereoFrame* stereo_frame) override
     {
         this->go_get = true;
-        return this->camManager->returnBuf(stereoFrame);
+        return this->camManager->returnBuf(stereo_frame);
     }
 };
 
