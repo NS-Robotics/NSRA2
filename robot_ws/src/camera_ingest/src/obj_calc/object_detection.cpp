@@ -133,6 +133,8 @@ std::string type2str(int type) {
 
 void nssc::process::ObjectDetection::_detectionThread()
 {
+    setColorFilterParams();
+
     framestruct::StereoFrame *stereo_frame;
 
     cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
@@ -140,16 +142,7 @@ void nssc::process::ObjectDetection::_detectionThread()
     cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate, left_keyp,
             right_rgb, right_hsv, right_thresh, right_bitw, right_dilate, right_keyp;
 
-    this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
-                                             cv::Size(this->color_filter_params.dilation_size + 1,
-                                                      this->color_filter_params.dilation_size + 1),
-                                             cv::Point(this->color_filter_params.dilation_size,
-                                                       this->color_filter_params.dilation_size));
-
     cv::SimpleBlobDetector::Params params;
-    // Change thresholds
-    //params.minThreshold = 10;
-    //params.maxThreshold = 200;
 
     // Filter by Area.
     params.filterByArea = true;
@@ -241,7 +234,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                     cv::putText(left_inp,
                                 vectorContent(text_right),
-                                cv::Point2f(left_coords[0].x - 100, left_coords[0].y),
+                                cv::Point2f(left_coords[0].x - 100, left_coords[0].y - 70),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
@@ -249,7 +242,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                                 cv::LINE_AA);
                     cv::putText(right_inp,
                                 vectorContent(text_left),
-                                cv::Point2f(right_coords[0].x - 100, right_coords[0].y),
+                                cv::Point2f(right_coords[0].x - 100, right_coords[0].y - 70),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
