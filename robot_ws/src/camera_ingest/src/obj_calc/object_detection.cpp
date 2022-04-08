@@ -138,7 +138,7 @@ void nssc::process::ObjectDetection::_detectionThread()
     cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
 
     cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate, left_keyp,
-            right_rgb, right_hsv, right_thresh, right_bitw, right_dilate;
+            right_rgb, right_hsv, right_thresh, right_bitw, right_dilate, right_keyp;
 
     this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
                                              cv::Size(this->color_filter_params.dilation_size + 1,
@@ -168,7 +168,8 @@ void nssc::process::ObjectDetection::_detectionThread()
     params.minInertiaRatio = 0.01;
 
     cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
-    std::vector<cv::KeyPoint> keypoints;
+    std::vector<cv::KeyPoint> keypoints_left;
+    std::vector<cv::KeyPoint> keypoints_right;
 
     while(this->detection_running.load())
     {
@@ -198,18 +199,17 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
-        detector->detect( left_dilate, keypoints);
+        detector->detect(left_dilate, keypoints_left);
+        detector->detect(right_dilate, keypoints_right);
 
-        std::cout << "detect" << std::endl;
+        cv::drawKeypoints(left_dilate, keypoints_left, left_keyp, cv::Scalar(0,0,255),
+                          cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
-        cv::drawKeypoints( left_dilate, keypoints, left_keyp, cv::Scalar(0,0,255),
-                            cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+        cv::drawKeypoints(right_dilate, keypoints_right, right_keyp, cv::Scalar(0,0,255),
+                          cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
-        std::cout << type2str(left_keyp.type()) << std::endl;
-
-        cv::cvtColor(left_keyp, left_inp, cv::COLOR_GRAY2RGBA);
-        cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
-
+        cv::cvtColor(left_keyp, left_inp, cv::COLOR_RGB2RGBA);
+        cv::cvtColor(right_keyp, right_inp, cv::COLOR_RGB2RGBA);
 
         /*
         std::vector<cv::Vec3f> circles;
