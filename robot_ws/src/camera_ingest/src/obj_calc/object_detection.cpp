@@ -117,14 +117,15 @@ void nssc::process::ObjectDetection::_detectionThread()
     cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate, left_keyp,
             right_rgb, right_hsv, right_thresh, right_bitw, right_dilate;
 
-    cv::SimpleBlobDetector detector;
-    std::vector<cv::KeyPoint> keypoints;
-
     this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
                                              cv::Size(this->color_filter_params.dilation_size + 1,
                                                       this->color_filter_params.dilation_size + 1),
                                              cv::Point(this->color_filter_params.dilation_size,
                                                        this->color_filter_params.dilation_size));
+
+    cv::SimpleBlobDetector::Params params;
+    cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
+    std::vector<cv::KeyPoint> keypoints;
 
     while(this->detection_running.load())
     {
@@ -154,10 +155,7 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
-        cv::SimpleBlobDetector detector;
-
-        std::vector<cv::KeyPoint> keypoints;
-        detector.detect( left_dilate, keypoints);
+        detector->detect( left_dilate, keypoints);
 
         cv::drawKeypoints( left_dilate, keypoints, left_keyp, cv::Scalar(0,0,255),
                             cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
