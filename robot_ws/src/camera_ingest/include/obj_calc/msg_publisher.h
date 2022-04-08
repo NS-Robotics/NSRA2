@@ -62,7 +62,7 @@ namespace nssc
         private:
             std::shared_ptr<ros::NSSC> node;
 
-            rclcpp::Publisher<camera_ingest::msg::ObjectDetecion>::SharedPtr bottle_publisher;
+            rclcpp::Publisher<camera_ingest::msg::ObjectDetection>::SharedPtr bottle_publisher;
         };
     }
 }
