@@ -30,6 +30,8 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ColorFilterParams.msg"
   "msg/CameraSettings.msg"
+  "msg/Bottle.msg"
+  "msg/ObjectDetection.msg"
 )
 
 ament_export_dependencies(rosidl_default_runtime)
@@ -239,6 +241,7 @@ add_library(
         src/obj_calc/triangulation/triangulation.cpp
         src/obj_calc/triangulation/triangulation_interface.cpp
         src/obj_calc/object_detection.cpp
+        src/obj_calc/msg_publisher.cpp
 )
 
 target_include_directories(

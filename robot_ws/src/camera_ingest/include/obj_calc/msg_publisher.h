@@ -32,57 +32,39 @@
 
 // Author: Noa Sendlhofer
 
-#ifndef NSSC_OBJECT_DETECTION_H_
-#define NSSC_OBJECT_DETECTION_H_
+#ifndef CAMERA_INGEST_MSG_PUBLISHER_H_
+#define CAMERA_INGEST_MSG_PUBLISHER_H_
 
 #include "node.h"
 #include "triangulation_interface.h"
-#include "msg_publisher.h"
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/cudaimgproc.hpp>
+#include "camera_ingest/msg/object_detection.hpp"
+#include "camera_ingest/msg/bottle.hpp"
 
 namespace nssc
 {
     namespace process
     {
-        class ObjectDetection
+        struct Bottle
+        {
+            Eigen::Vector3d coord_3d;
+            cv::Point2f left_coord_2d;
+            cv::Point2f right_coord_2d;
+            int id;
+        };
+
+        class DetectionPublisher
         {
         public:
-            ObjectDetection(std::shared_ptr<ros::NSSC> &node,
-                            std::shared_ptr<TriangulationInterface> &triangulation_interface);
-            ~ObjectDetection();
-            void stopDetection();
-            void closeDetection();
-            void runDetection();
-            void setColorFilterParams();
+            DetectionPublisher(std::shared_ptr<ros::NSSC> &node);
+            void publishBottleCoordinates(std::vector<Bottle> bottles);
 
         private:
-            std::shared_ptr<TriangulationInterface> triangulation_interface;
             std::shared_ptr<ros::NSSC> node;
-            std::unique_ptr<DetectionPublisher> detection_publisher;
 
-            std::string msg_caller = "Detection";
-
-            ColorFilterParams color_filter_params;
-            cv::Mat kernel;
-
-            void _detectionThread();
-            void _testDetectionThread();
-
-            std::vector<Bottle> _processBottles(std::vector<cv::KeyPoint> keypoints_left, std::vector<cv::KeyPoint> keypoints_right);
-            static std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> _getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2);
-
-            std::atomic<bool> detection_running{false};
-            std::thread d_thread;
-
-            bool is_closed = false;
+            rclcpp::Publisher<camera_ingest::msg::ObjectDetecion>::SharedPtr bottle_publisher;
         };
     }
 }
 
-#endif //NSSC_OBJECT_DETECTION_H_
+#endif //CAMERA_INGEST_MSG_PUBLISHER_H_

@@ -45,6 +45,8 @@ nssc::process::ObjectDetection::ObjectDetection(std::shared_ptr<ros::NSSC> &node
     this->triangulation_interface = triangulation_interface;
     this->node = node;
 
+    this->detection_publisher = std::make_unique<DetectionPublisher>(this->node);
+
     runDetection();
 }
 
@@ -211,6 +213,8 @@ void nssc::process::ObjectDetection::_detectionThread()
             {
                 bottles = _processBottles(keypoints_left, keypoints_right);
 
+                this->detection_publisher->publishBottleCoordinates(bottles);
+
                 if (this->color_filter_params.enable_ndi)
                 {
                     std::vector<float> text_right = {static_cast<float>(bottles[0].coord_3d[0]), static_cast<float>(bottles[0].coord_3d[1]), static_cast<float>(bottles[0].coord_3d[2])};
@@ -261,7 +265,7 @@ void nssc::process::ObjectDetection::_detectionThread()
     }
 }
 
-std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2) {
+std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> nssc::process::ObjectDetection::_getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2) {
     std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> vPair;
     std::pair<size_t, size_t> indexs;
     std::pair<cv::KeyPoint, cv::KeyPoint> close;
@@ -388,7 +392,7 @@ void nssc::process::ObjectDetection::_testDetectionThread()
 std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottles(std::vector<cv::KeyPoint> keypoints_left,
                                                                                    std::vector<cv::KeyPoint> keypoints_right)
 {
-    std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> coord_pairs = getClosestPairs(std::move(keypoints_left), std::move(keypoints_right));
+    std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> coord_pairs = _getClosestPairs(std::move(keypoints_left), std::move(keypoints_right));
     std::vector<Bottle> bottles;
 
     for (auto & coord_pair : coord_pairs)
@@ -397,7 +401,7 @@ std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottl
         new_bottle.left_coord_2d = coord_pair.first.pt;
         new_bottle.right_coord_2d = coord_pair.second.pt;
         new_bottle.coord_3d = this->triangulation_interface->triangulatePoints(new_bottle.left_coord_2d, new_bottle.right_coord_2d);
-        new_bottle.id = 0;
+        new_bottle.id = coord_pair - coord_pairs.begin();
         bottles.push_back(new_bottle);
     }
 

@@ -32,57 +32,29 @@
 
 // Author: Noa Sendlhofer
 
-#ifndef NSSC_OBJECT_DETECTION_H_
-#define NSSC_OBJECT_DETECTION_H_
-
-#include "node.h"
-#include "triangulation_interface.h"
 #include "msg_publisher.h"
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/aruco.hpp>
-#include <opencv2/cudaimgproc.hpp>
-
-namespace nssc
+nssc::process::DetectionPublisher::DetectionPublisher(std::shared_ptr<ros::NSSC> &node)
 {
-    namespace process
-    {
-        class ObjectDetection
-        {
-        public:
-            ObjectDetection(std::shared_ptr<ros::NSSC> &node,
-                            std::shared_ptr<TriangulationInterface> &triangulation_interface);
-            ~ObjectDetection();
-            void stopDetection();
-            void closeDetection();
-            void runDetection();
-            void setColorFilterParams();
-
-        private:
-            std::shared_ptr<TriangulationInterface> triangulation_interface;
-            std::shared_ptr<ros::NSSC> node;
-            std::unique_ptr<DetectionPublisher> detection_publisher;
-
-            std::string msg_caller = "Detection";
-
-            ColorFilterParams color_filter_params;
-            cv::Mat kernel;
-
-            void _detectionThread();
-            void _testDetectionThread();
-
-            std::vector<Bottle> _processBottles(std::vector<cv::KeyPoint> keypoints_left, std::vector<cv::KeyPoint> keypoints_right);
-            static std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> _getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2);
-
-            std::atomic<bool> detection_running{false};
-            std::thread d_thread;
-
-            bool is_closed = false;
-        };
-    }
+    this->node = node;
+    this->bottle_publisher = this->node->create_publisher<camera_ingest::msg::ObjectDetecion>("nssc/bottle_coordinates", 10);
 }
 
-#endif //NSSC_OBJECT_DETECTION_H_
+void nssc::process::DetectionPublisher::publishBottleCoordinates(std::vector<Bottle> bottles)
+{
+    std::vector<camera_ingest::msg::Bottle> bottles_msg;
+    for (auto & bottle : bottles)
+    {
+        auto bottle_msg = camera_ingest::msg::Bottle();
+        bottle_msg.coord_3d = bottle.coord_3d;
+        bottle_msg.left_coord_2d = bottle.left_coord_2d;
+        bottle_msg.right_coord_2d = bottle.right_coord_2d;
+        bottle_msg.id = bottle.id;
+
+        bottles_msg.push_back(bottle_msg);
+    }
+
+    auto msg = camera_ingest::msg::ObjectDetecion();
+    msg.bottles = bottles_msg;
+    bottle_publisher->publish(msg);
+}
