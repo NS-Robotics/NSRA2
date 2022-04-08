@@ -259,6 +259,9 @@ target_link_libraries(triangulation ros_node camera_manager frame_manager)
 
 ament_target_dependencies(triangulation rclcpp OpenCV Eigen3)
 
+rosidl_target_interfaces(triangulation
+        ${PROJECT_NAME} "rosidl_typesupport_cpp")
+
 #add_library(
 #  nssc_image_transport
 #  src/image_transport/image_transport.cpp
