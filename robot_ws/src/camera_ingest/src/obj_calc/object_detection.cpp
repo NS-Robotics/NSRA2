@@ -217,7 +217,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                     cv::putText(left_inp,
                                 vectorContent(text_right),
-                                cv::Point2f(bottles[0].left_coord_2d.x - 100, bottles[0].right_coord_2d.y - 70),
+                                cv::Point2f(bottles[0].left_coord_2d.x - 100, bottles[0].left_coord_2d.y - 70),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
@@ -225,7 +225,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                                 cv::LINE_AA);
                     cv::putText(right_inp,
                                 vectorContent(text_left),
-                                cv::Point2f(bottles[0].left_coord_2d.x - 100, bottles[0].right_coord_2d.y - 70),
+                                cv::Point2f(bottles[0].right_coord_2d.x - 100, bottles[0].right_coord_2d.y - 70),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
