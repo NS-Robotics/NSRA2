@@ -232,7 +232,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                                     cv::LINE_AA);
                         cv::putText(right_inp,
                                     "id: " + std::to_string(bottle.id) + " " + vectorContent(text_left),
-                                    cv::Point2f(bottles[0].right_coord_2d.x - 120, bottles[0].right_coord_2d.y - 70),
+                                    cv::Point2f(bottle.right_coord_2d.x - 120, bottle.right_coord_2d.y - 70),
                                     cv::FONT_HERSHEY_COMPLEX_SMALL,
                                     1.4,
                                     cv::Scalar(255, 0, 0),
