@@ -56,7 +56,7 @@ namespace nssc
         class DetectionPublisher
         {
         public:
-            DetectionPublisher(std::shared_ptr<ros::NSSC> &node);
+            explicit DetectionPublisher(std::shared_ptr<ros::NSSC> &node);
             void publishBottleCoordinates(std::vector<Bottle> bottles);
 
         private:

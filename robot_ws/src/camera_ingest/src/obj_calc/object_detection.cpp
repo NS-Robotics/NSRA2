@@ -217,25 +217,28 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                 if (this->color_filter_params.enable_ndi)
                 {
-                    std::vector<float> text_right = {static_cast<float>(bottles[0].coord_3d[0]), static_cast<float>(bottles[0].coord_3d[1]), static_cast<float>(bottles[0].coord_3d[2])};
-                    std::vector<float> text_left = {static_cast<float>(bottles[0].coord_3d[0]), static_cast<float>(bottles[0].coord_3d[1]), static_cast<float>(bottles[0].coord_3d[2])};
+                    for (auto & bottle: bottles)
+                    {
+                        std::vector<float> text_right = {static_cast<float>(bottle.coord_3d[0]), static_cast<float>(bottle.coord_3d[1]), static_cast<float>(bottle.coord_3d[2])};
+                        std::vector<float> text_left = {static_cast<float>(bottle.coord_3d[0]), static_cast<float>(bottle.coord_3d[1]), static_cast<float>(bottle.coord_3d[2])};
 
-                    cv::putText(left_inp,
-                                vectorContent(text_right),
-                                cv::Point2f(bottles[0].left_coord_2d.x - 100, bottles[0].left_coord_2d.y - 70),
-                                cv::FONT_HERSHEY_COMPLEX_SMALL,
-                                1.4,
-                                cv::Scalar(255, 0, 0),
-                                2,
-                                cv::LINE_AA);
-                    cv::putText(right_inp,
-                                vectorContent(text_left),
-                                cv::Point2f(bottles[0].right_coord_2d.x - 100, bottles[0].right_coord_2d.y - 70),
-                                cv::FONT_HERSHEY_COMPLEX_SMALL,
-                                1.4,
-                                cv::Scalar(255, 0, 0),
-                                2,
-                                cv::LINE_AA);
+                        cv::putText(left_inp,
+                                    "id: " + std::to_string(bottle.id) + " " + vectorContent(text_right),
+                                    cv::Point2f(bottle.left_coord_2d.x - 120, bottle.left_coord_2d.y - 70),
+                                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+                                    1.4,
+                                    cv::Scalar(255, 0, 0),
+                                    2,
+                                    cv::LINE_AA);
+                        cv::putText(right_inp,
+                                    "id: " + std::to_string(bottle.id) + " " + vectorContent(text_left),
+                                    cv::Point2f(bottles[0].right_coord_2d.x - 120, bottles[0].right_coord_2d.y - 70),
+                                    cv::FONT_HERSHEY_COMPLEX_SMALL,
+                                    1.4,
+                                    cv::Scalar(255, 0, 0),
+                                    2,
+                                    cv::LINE_AA);
+                    }
                 }
             }
 
@@ -394,6 +397,7 @@ std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottl
 {
     std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> coord_pairs = _getClosestPairs(std::move(keypoints_left), std::move(keypoints_right));
     std::vector<Bottle> bottles;
+    int id_idx = 0;
 
     for (auto & coord_pair : coord_pairs)
     {
@@ -401,7 +405,8 @@ std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottl
         new_bottle.left_coord_2d = coord_pair.first.pt;
         new_bottle.right_coord_2d = coord_pair.second.pt;
         new_bottle.coord_3d = this->triangulation_interface->triangulatePoints(new_bottle.left_coord_2d, new_bottle.right_coord_2d);
-        new_bottle.id = coord_pair - coord_pairs.begin();
+        new_bottle.id = id_idx;
+        id_idx++;
         bottles.push_back(new_bottle);
     }
 
