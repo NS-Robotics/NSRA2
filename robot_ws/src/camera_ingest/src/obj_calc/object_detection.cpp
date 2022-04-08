@@ -198,14 +198,14 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
-        std::cout << type2str(left_dilate.type()) << std::endl;
-
         detector->detect( left_dilate, keypoints);
 
         std::cout << "detect" << std::endl;
 
         cv::drawKeypoints( left_dilate, keypoints, left_keyp, cv::Scalar(0,0,255),
                             cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
+        std::cout << type2str(left_keyp.type()) << std::endl;
 
         cv::cvtColor(left_keyp, left_inp, cv::COLOR_GRAY2RGBA);
         cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
