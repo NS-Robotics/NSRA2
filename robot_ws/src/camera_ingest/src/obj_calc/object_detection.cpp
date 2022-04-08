@@ -234,6 +234,28 @@ void nssc::process::ObjectDetection::_detectionThread()
                     std::cout << i << std::endl;
                 }
                  */
+                if (this->color_filter_params.enable_ndi)
+                {
+                    std::vector<float> text_right = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
+                    std::vector<float> text_left = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
+
+                    cv::putText(left_inp,
+                                vectorContent(text_right),
+                                cv::Point2f(left_coords[0].x - 100, left_coords[0].y - 30),
+                                cv::FONT_HERSHEY_COMPLEX_SMALL,
+                                1.4,
+                                cv::Scalar(255, 0, 0),
+                                2,
+                                cv::LINE_AA);
+                    cv::putText(right_inp,
+                                vectorContent(text_left),
+                                cv::Point2f(right_coords[0].x - 100, right_coords[0].y - 30),
+                                cv::FONT_HERSHEY_COMPLEX_SMALL,
+                                1.4,
+                                cv::Scalar(255, 0, 0),
+                                2,
+                                cv::LINE_AA);
+                }
             }
 
             if (this->color_filter_params.enable_ndi)
@@ -243,26 +265,6 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                 cv::drawKeypoints(right_inp, keypoints_right, right_inp, cv::Scalar(255,0,0),
                                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-
-                std::vector<float> text_right = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
-                std::vector<float> text_left = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
-
-                cv::putText(left_inp,
-                            vectorContent(text_right),
-                            cv::Point2f(left_coords[0].x - 100, left_coords[0].y - 30),
-                            cv::FONT_HERSHEY_COMPLEX_SMALL,
-                            1.4,
-                            cv::Scalar(255, 0, 0),
-                            2,
-                            cv::LINE_AA);
-                cv::putText(right_inp,
-                            vectorContent(text_left),
-                            cv::Point2f(right_coords[0].x - 100, right_coords[0].y - 30),
-                            cv::FONT_HERSHEY_COMPLEX_SMALL,
-                            1.4,
-                            cv::Scalar(255, 0, 0),
-                            2,
-                            cv::LINE_AA);
             }
         }
         else if (this->color_filter_params.enable_ndi)
