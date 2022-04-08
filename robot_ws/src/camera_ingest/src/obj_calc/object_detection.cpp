@@ -154,11 +154,20 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
+        cv::SimpleBlobDetector detector;
+
+        std::vector<cv::KeyPoint> keypoints;
+        detector.detect( left_dilate, keypoints);
+        cv::drawKeypoints( left_dilate, keypoints, left_dilate, cv::Scalar(0,0,255),
+                            cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
         cv::cvtColor(left_dilate, left_inp, cv::COLOR_GRAY2RGBA);
         cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
 
+
+        /*
         std::vector<cv::Vec3f> circles;
-        cv::HoughCircles(left_dilate, circles, cv::HOUGH_GRADIENT, 1, left_dilate.rows / 8, 100, 20, 0, 0);
+        cv::HoughCircles(left_thresh, circles, cv::HOUGH_GRADIENT, 1, left_thresh.rows / 8, 100, 20, 0, 0);
 
         if (circles.size() > 0)
         {
@@ -169,6 +178,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                 cv::circle(left_inp, center, radius, cv::Scalar(0, 255, 0), 2);
             }
         }
+         */
 
         /*
         std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_originMarkers, right_originMarkers);

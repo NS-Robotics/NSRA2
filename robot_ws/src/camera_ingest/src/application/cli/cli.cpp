@@ -50,8 +50,11 @@ nssc::application::CLI::~CLI()
 
 void nssc::application::CLI::closeCLI()
 {
-    this->cli_running = false;
-    this->cli_thread.join();
+    if (this->cli_running.load())
+    {
+        this->cli_running = false;
+        this->cli_thread.join();
+    }
 }
 
 void nssc::application::CLI::CLIFunc()
@@ -200,7 +203,6 @@ void nssc::application::CLI::CLIFunc()
         else if (strcmp(cmd[0], "exit") == 0)
         {
             this->executor->exit();
-            this->cli_running = false;
             break;
         }
         else if (strcmp(cmd[0], "help") == 0)
@@ -224,6 +226,7 @@ void nssc::application::CLI::CLIFunc()
 
         free(buf);
     }
+    this->cli_running = false;
 }
 
 void nssc::application::CLI::printError(const char *message)
