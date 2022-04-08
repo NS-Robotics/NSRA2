@@ -173,6 +173,8 @@ void nssc::process::ObjectDetection::_detectionThread()
     std::vector<cv::KeyPoint> keypoints_left;
     std::vector<cv::KeyPoint> keypoints_right;
 
+    cv::Mat morph_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6,6));
+
     while(this->detection_running.load())
     {
         stereo_frame = this->triangulation_interface->getFrame();
@@ -201,8 +203,8 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::bitwise_not(left_hsv, left_hsv);
         cv::bitwise_not(right_hsv, right_hsv);
 
-        cv::Mat morph_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5,5));
         cv::morphologyEx(left_hsv, left_hsv, cv::MORPH_OPEN, morph_kernel);
+        cv::morphologyEx(right_hsv, right_hsv, cv::MORPH_OPEN, morph_kernel);
 
         if (this->color_filter_params.enable_detection)
         {
