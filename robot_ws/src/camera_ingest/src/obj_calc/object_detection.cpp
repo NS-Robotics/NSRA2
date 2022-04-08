@@ -147,6 +147,26 @@ void nssc::process::ObjectDetection::_detectionThread()
                                                        this->color_filter_params.dilation_size));
 
     cv::SimpleBlobDetector::Params params;
+    // Change thresholds
+    params.minThreshold = 10;
+    params.maxThreshold = 200;
+
+    // Filter by Area.
+    params.filterByArea = true;
+    params.minArea = 1500;
+
+    // Filter by Circularity
+    params.filterByCircularity = true;
+    params.minCircularity = 0.1;
+
+    // Filter by Convexity
+    params.filterByConvexity = true;
+    params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    params.filterByInertia = true;
+    params.minInertiaRatio = 0.01;
+
     cv::Ptr<cv::SimpleBlobDetector> detector = cv::SimpleBlobDetector::create(params);
     std::vector<cv::KeyPoint> keypoints;
 
@@ -178,11 +198,11 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
-        cv::cvtColor(left_inp, left_dilate, cv::COLOR_RGBA2GRAY);
-
         std::cout << type2str(left_dilate.type()) << std::endl;
 
         detector->detect( left_dilate, keypoints);
+
+        std::cout << "detect" << std::endl;
 
         cv::drawKeypoints( left_dilate, keypoints, left_keyp, cv::Scalar(0,0,255),
                             cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
