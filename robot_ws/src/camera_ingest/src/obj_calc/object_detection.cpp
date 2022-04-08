@@ -114,7 +114,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
 
-    cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate,
+    cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate, left_keyp,
             right_rgb, right_hsv, right_thresh, right_bitw, right_dilate;
 
     cv::SimpleBlobDetector detector;
@@ -158,10 +158,11 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         std::vector<cv::KeyPoint> keypoints;
         detector.detect( left_dilate, keypoints);
-        cv::drawKeypoints( left_dilate, keypoints, left_dilate, cv::Scalar(0,0,255),
+
+        cv::drawKeypoints( left_dilate, keypoints, left_keyp, cv::Scalar(0,0,255),
                             cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
-        cv::cvtColor(left_dilate, left_inp, cv::COLOR_GRAY2RGBA);
+        cv::cvtColor(left_keyp, left_inp, cv::COLOR_GRAY2RGBA);
         cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
 
 
