@@ -27,8 +27,8 @@ namespace nssc
             NSSC_STATUS findOrigin();
 
         protected:
-            std::vector<Eigen::Vector3d> _transform_coordinates(const std::vector<Eigen::Vector3d>& inp);
-            Eigen::Vector3d _transform_coordinates(const Eigen::Vector3d& inp);
+            std::vector<Eigen::Vector3d> _transformCoordinates(const std::vector<Eigen::Vector3d>& inp);
+            Eigen::Vector3d _transformCoordinates(const Eigen::Vector3d& inp);
 
             std::shared_ptr<ros::NSSC> node;
             std::unique_ptr<send::FrameManager>* frame_manager;

@@ -90,7 +90,7 @@ nssc::NSSC_STATUS nssc::process::Triangulation::init()
     }
 }
 
-std::string vector_content(std::vector<int> v){
+std::string vectorContent(std::vector<int> v){
     std::string s;
     s += '[';
     for (int i = 0; i < v.size(); i++){
@@ -220,7 +220,7 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
     return NSSC_STATUS_SUCCESS;
 }
 
-std::vector<Eigen::Vector3d> nssc::process::Triangulation::_transform_coordinates(const std::vector<Eigen::Vector3d>& inp)
+std::vector<Eigen::Vector3d> nssc::process::Triangulation::_transformCoordinates(const std::vector<Eigen::Vector3d>& inp)
 {
     Eigen::Vector3d obj_vec, mtrx_ret, obj;
     std::vector<Eigen::Vector3d> objects;
@@ -238,7 +238,7 @@ std::vector<Eigen::Vector3d> nssc::process::Triangulation::_transform_coordinate
     return objects;
 }
 
-Eigen::Vector3d nssc::process::Triangulation::_transform_coordinates(const Eigen::Vector3d &inp)
+Eigen::Vector3d nssc::process::Triangulation::_transformCoordinates(const Eigen::Vector3d &inp)
 {
     Eigen::Vector3d obj_vec, mtrx_ret, obj;
 

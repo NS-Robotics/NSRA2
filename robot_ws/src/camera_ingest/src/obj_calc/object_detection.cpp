@@ -33,6 +33,7 @@
 // Author: Noa Sendlhofer
 
 #include <iostream>
+#include <utility>
 #include "object_detection.h"
 #include "node.h"
 #include "stereo_frame.h"
@@ -206,7 +207,7 @@ void nssc::process::ObjectDetection::_detectionThread()
             detector->detect(left_hsv, keypoints_left);
             detector->detect(right_hsv, keypoints_right);
 
-            if (!keypoints_left.empty() && !keypoints_right.empty() && keypoints_left.size() == keypoints_right.size())
+            if (!keypoints_left.empty() && !keypoints_right.empty())
             {
                 bottles = _processBottles(keypoints_left, keypoints_right);
 
@@ -258,6 +259,40 @@ void nssc::process::ObjectDetection::_detectionThread()
             this->triangulation_interface->returnBuf(stereo_frame);
         }
     }
+}
+
+std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2) {
+    std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> vPair;
+    std::pair<size_t, size_t> indexs;
+    std::pair<cv::KeyPoint, cv::KeyPoint> close;
+
+    size_t i = 0, j = 0;
+    float minDiff = std::numeric_limits<float>::max();
+
+    while(!v1.empty() && !v2.empty()) {
+        while(i < v1.size() && j < v2.size()) {
+            float diff = v1[i].pt.x < v2[j].pt.x ? v2[j].pt.x - v1[i].pt.x : v1[i].pt.x - v2[j].pt.x;
+            if(diff < minDiff) {
+                minDiff = diff;
+                indexs = {i, j};
+                close = {v1[i], v2[j]};
+            } else {
+                break;
+            }
+
+            if(v1[i].pt.x < v2[j].pt.x) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        vPair.push_back(close);
+        v1.erase(v1.begin() + indexs.first);
+        v2.erase(v2.begin() + indexs.second);
+        i = j = 0;
+        minDiff = std::numeric_limits<float>::max();
+    }
+    return vPair;
 }
 
 void nssc::process::ObjectDetection::_testDetectionThread()
@@ -353,15 +388,16 @@ void nssc::process::ObjectDetection::_testDetectionThread()
 std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottles(std::vector<cv::KeyPoint> keypoints_left,
                                                                                    std::vector<cv::KeyPoint> keypoints_right)
 {
+    std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> coord_pairs = getClosestPairs(std::move(keypoints_left), std::move(keypoints_right));
     std::vector<Bottle> bottles;
 
-    for (size_t i = 0; i < keypoints_left.size(); i++)
+    for (auto & coord_pair : coord_pairs)
     {
         Bottle new_bottle;
-        new_bottle.left_coord_2d = keypoints_left[i].pt;
-        new_bottle.right_coord_2d = keypoints_right[i].pt;
+        new_bottle.left_coord_2d = coord_pair.first.pt;
+        new_bottle.right_coord_2d = coord_pair.second.pt;
         new_bottle.coord_3d = this->triangulation_interface->triangulatePoints(new_bottle.left_coord_2d, new_bottle.right_coord_2d);
-        new_bottle.id = i;
+        new_bottle.id = 0;
         bottles.push_back(new_bottle);
     }
 

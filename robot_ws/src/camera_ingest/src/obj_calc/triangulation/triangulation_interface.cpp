@@ -71,7 +71,7 @@ std::vector<Eigen::Vector3d> nssc::process::TriangulationInterface::triangulateP
                                   p_4d_origin.at<float>(2,i) / p_4d_origin.at<float>(3,i) );
     }
 
-    return _transform_coordinates(p_3d_origin);
+    return _transformCoordinates(p_3d_origin);
 }
 
 Eigen::Vector3d nssc::process::TriangulationInterface::triangulatePoints(cv::Point2f &left_2D, cv::Point2f &right_2D)
@@ -89,7 +89,7 @@ Eigen::Vector3d nssc::process::TriangulationInterface::triangulatePoints(cv::Poi
                                  p_4d_origin.at<float>(1,0) / p_4d_origin.at<float>(3,0),
                                  p_4d_origin.at<float>(2,0) / p_4d_origin.at<float>(3,0) );
 
-    return _transform_coordinates(p_3d_origin);
+    return _transformCoordinates(p_3d_origin);
 }
 
 void nssc::process::TriangulationInterface::sendFrame(nssc::framestruct::StereoFrame *stereo_frame)
