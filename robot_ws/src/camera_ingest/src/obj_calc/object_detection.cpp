@@ -201,6 +201,9 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::bitwise_not(left_hsv, left_hsv);
         cv::bitwise_not(right_hsv, right_hsv);
 
+        cv::Mat morph_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3,3));
+        cv::morphologyEx(left_hsv, left_hsv, cv::MORPH_OPEN, morph_kernel);
+
         if (this->color_filter_params.enable_detection)
         {
             detector->detect(left_hsv, keypoints_left);
