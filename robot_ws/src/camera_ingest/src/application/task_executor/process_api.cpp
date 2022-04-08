@@ -119,4 +119,13 @@ void nssc::application::Executor::setColorFilterParams(ColorFilterParams color_f
     {
         this->object_detection->setColorFilterParams();
     }
+    if (color_filter_params.enable_ndi && !this->node->g_config.frameConfig.stream_on)
+    {
+        toggleNDIsource(NDI_SEND_TRIANGULATION);
+    }
+    else if (!color_filter_params.enable_ndi && this->node->g_config.frameConfig.stream_on)
+    {
+        this->ndi->endStream();
+        this->ndi_running = false;
+    }
 }

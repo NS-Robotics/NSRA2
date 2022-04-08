@@ -206,16 +206,17 @@ void nssc::process::ObjectDetection::_detectionThread()
             detector->detect(left_dilate, keypoints_left);
             detector->detect(right_dilate, keypoints_right);
 
-            cv::drawKeypoints(left_dilate, keypoints_left, left_keyp, cv::Scalar(0,0,255),
-                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-
-            cv::drawKeypoints(right_dilate, keypoints_right, right_keyp, cv::Scalar(0,0,255),
-                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
-
             if (this->color_filter_params.enable_ndi)
             {
+                cv::drawKeypoints(left_inp, keypoints_left, left_inp, cv::Scalar(0,0,255),
+                                  cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
+                cv::drawKeypoints(right_inp, keypoints_right, right_inp, cv::Scalar(0,0,255),
+                                  cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+                /*
                 cv::cvtColor(left_keyp, left_inp, cv::COLOR_RGB2RGBA);
                 cv::cvtColor(right_keyp, right_inp, cv::COLOR_RGB2RGBA);
+                 */
             }
         }
         else if (this->color_filter_params.enable_ndi)
