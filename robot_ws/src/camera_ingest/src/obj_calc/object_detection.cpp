@@ -241,7 +241,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                     cv::putText(left_inp,
                                 vectorContent(text_right),
-                                cv::Point2f(left_coords[0].x - 100, left_coords[0].y - 30),
+                                cv::Point2f(left_coords[0].x - 100, left_coords[0].y),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
@@ -249,7 +249,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                                 cv::LINE_AA);
                     cv::putText(right_inp,
                                 vectorContent(text_left),
-                                cv::Point2f(right_coords[0].x - 100, right_coords[0].y - 30),
+                                cv::Point2f(right_coords[0].x - 100, right_coords[0].y),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
