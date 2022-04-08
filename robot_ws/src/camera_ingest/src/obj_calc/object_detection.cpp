@@ -195,8 +195,8 @@ void nssc::process::ObjectDetection::_detectionThread()
                     cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
                     right_hsv);
 
-        cv::dilate(left_hsv, left_hsv, kernel);
-        cv::dilate(right_hsv, right_hsv, kernel);
+        cv::erode(left_hsv, left_hsv, kernel);
+        cv::erode(right_hsv, right_hsv, kernel);
 
         cv::bitwise_not(left_hsv, left_hsv);
         cv::bitwise_not(right_hsv, right_hsv);
