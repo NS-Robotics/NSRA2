@@ -155,6 +155,8 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
+        std::cout << left_dilate.size << std::endl;
+
         detector->detect( left_dilate, keypoints);
 
         cv::drawKeypoints( left_dilate, keypoints, left_keyp, cv::Scalar(0,0,255),
