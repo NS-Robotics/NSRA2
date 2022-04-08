@@ -25,25 +25,19 @@ int main(int argc, char** argv)
     std::thread([&executor]()
                 { executor.spin(); }).detach();
 
-    RCLCPP_INFO(LOGGER, "Test1");
-
     static const std::string PLANNING_GROUP = "nsra";
 
     moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
-    RCLCPP_INFO(LOGGER, "Test2");
 
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
     const moveit::core::JointModelGroup* joint_model_group =
             move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
 
-    RCLCPP_INFO(LOGGER, "Test3");
-
     namespace rvt = rviz_visual_tools;
     moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "base_link", "nsra_planning",
                                                         move_group.getRobotModel());
 
-    RCLCPP_INFO(LOGGER, "Test4");
     visual_tools.deleteAllMarkers();
 
     visual_tools.loadRemoteControl();
@@ -57,15 +51,17 @@ int main(int argc, char** argv)
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
     geometry_msgs::msg::Pose target_pose1;
-    target_pose1.orientation.w = 1.0;
-    target_pose1.position.x = 0.28;
-    target_pose1.position.y = -0.2;
-    target_pose1.position.z = 0.5;
+    target_pose1.orientation.w = 0.0;
+    target_pose1.position.x = 0.2;
+    target_pose1.position.y = 0.2;
+    target_pose1.position.z = 0.2;
     move_group.setPoseTarget(target_pose1);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
     bool success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+
+    move_group.move();
 
     RCLCPP_INFO(LOGGER, "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
 
@@ -75,6 +71,28 @@ int main(int argc, char** argv)
     visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
+
+    moveit::core::RobotStatePtr current_state = move_group.getCurrentState(10);
+
+    std::vector<double> joint_group_positions;
+    current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
+
+    joint_group_positions[0] = -1.0;  // radians
+    move_group.setJointValueTarget(joint_group_positions);
+
+    move_group.setMaxVelocityScalingFactor(0.05);
+    move_group.setMaxAccelerationScalingFactor(0.05);
+
+    success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    RCLCPP_INFO(LOGGER, "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
+
+    visual_tools.deleteAllMarkers();
+    visual_tools.publishText(text_pose, "Joint_Space_Goal", rvt::WHITE, rvt::XLARGE);
+    visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
+    visual_tools.trigger();
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
+
+
 
 
 }

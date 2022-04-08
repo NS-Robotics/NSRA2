@@ -24,7 +24,7 @@
   </gazebo>
 
   <xacro:nsra2 parent="world" prefix="$(arg prefix)">
-    <origin xyz="0.220772 -0.475604 0.5" rpy="1.5708 0 3.1415" />
+    <origin xyz="-0.47 0.27 0.38" rpy="1.5708 0 0" />
   </xacro:nsra2>
 
   <xacro:nsra2_system_position

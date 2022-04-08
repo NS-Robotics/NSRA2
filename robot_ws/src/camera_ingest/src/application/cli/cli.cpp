@@ -50,11 +50,8 @@ nssc::application::CLI::~CLI()
 
 void nssc::application::CLI::closeCLI()
 {
-    if (this->cli_running.load())
-    {
-        this->cli_running = false;
-        this->cli_thread.join();
-    }
+    this->cli_running = false;
+    this->cli_thread.join();
 }
 
 void nssc::application::CLI::CLIFunc()
