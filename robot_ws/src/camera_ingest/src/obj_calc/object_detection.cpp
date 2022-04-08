@@ -206,23 +206,25 @@ void nssc::process::ObjectDetection::_detectionThread()
             detector->detect(left_dilate, keypoints_left);
             detector->detect(right_dilate, keypoints_right);
 
-            std::vector<cv::Point2f> left_coords, right_coords;
-
-            for (auto & i : keypoints_left)
+            if (!keypoints_left.empty() && !keypoints_right.empty())
             {
-                left_coords.push_back(i.pt);
-            }
+                std::vector<cv::Point2f> left_coords, right_coords;
 
-            for (auto & i : keypoints_right)
-            {
-                right_coords.push_back(i.pt);
-            }
+                for (auto & i : keypoints_left)
+                {
+                    left_coords.push_back(i.pt);
+                }
 
-            std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_coords, right_coords);
+                for (auto & i : keypoints_right)
+                {
+                    right_coords.push_back(i.pt);
 
-            for (auto & i : coords_3d)
-            {
-                std::cout << i << std::endl;
+                std::vector<Eigen::Vector3d> coords_3d = this->triangulation_interface->triangulatePoints(left_coords, right_coords);
+
+                for (auto & i : coords_3d)
+                {
+                    std::cout << i << std::endl;
+                }
             }
 
             if (this->color_filter_params.enable_ndi)
