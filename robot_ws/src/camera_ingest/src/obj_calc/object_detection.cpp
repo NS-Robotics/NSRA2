@@ -167,7 +167,6 @@ void nssc::process::ObjectDetection::_detectionThread()
     std::vector<cv::KeyPoint> keypoints_right;
 
     std::vector<Eigen::Vector3d> coords_3d;
-    std::vector<cv::Point2f> left_coords, right_coords;
 
     cv::Mat morph_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6,6));
 
@@ -204,6 +203,8 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         if (this->color_filter_params.enable_detection)
         {
+            std::vector<cv::Point2f> left_coords, right_coords;
+
             detector->detect(left_hsv, keypoints_left);
             detector->detect(right_hsv, keypoints_right);
 
