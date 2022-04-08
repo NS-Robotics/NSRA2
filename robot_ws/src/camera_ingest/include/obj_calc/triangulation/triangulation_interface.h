@@ -58,6 +58,7 @@ namespace nssc
             TriangulationInterface(std::shared_ptr<ros::NSSC> &node, std::unique_ptr<send::FrameManager>* frameManager, const char *setName);
             framestruct::StereoFrame *getFrame();
             void sendFrame(framestruct::StereoFrame *stereo_frame);
+            void returnBuf(framestruct::StereoFrame *stereo_frame);
             std::vector<Eigen::Vector3d> triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D);
             std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> getOrigin();
 

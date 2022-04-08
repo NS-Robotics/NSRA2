@@ -6,3 +6,5 @@ int16 high_s
 int16 high_v
 int16 dilation_element
 int16 dilation_size
+bool enable_detection
+bool enable_ndi

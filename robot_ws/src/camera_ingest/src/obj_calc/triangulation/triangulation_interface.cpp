@@ -79,6 +79,11 @@ void nssc::process::TriangulationInterface::sendFrame(nssc::framestruct::StereoF
     (*this->frame_manager)->sendFrame(stereo_frame);
 }
 
+void nssc::process::TriangulationInterface::returnBuf(nssc::framestruct::StereoFrame *stereo_frame)
+{
+    (*this->frame_manager)->returnBuf(stereo_frame);
+}
+
 std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> nssc::process::TriangulationInterface::getOrigin()
 {
     return std::make_tuple(this->left_origin_pts, this->right_origin_pts);

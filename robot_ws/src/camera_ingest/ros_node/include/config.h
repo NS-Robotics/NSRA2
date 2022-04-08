@@ -35,6 +35,8 @@ public:
     int high_V = 50;
     int dilation_element = 0;
     int dilation_size = 2;
+    bool enable_detection = true;
+    bool enable_ndi = true;
 };
 
 struct frame_config

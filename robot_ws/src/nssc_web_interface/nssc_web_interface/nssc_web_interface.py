@@ -26,8 +26,10 @@ class FilterStruct:
     high_v: int
     dilation_element: int
     dilation_size: int
+    enable_detection: bool
+    enable_ndi: bool
 
-current_pos = FilterStruct(86, 94, 22, 125, 229, 131, 0, 2)
+current_pos = FilterStruct(86, 94, 22, 125, 229, 131, 0, 2, True, True)
 
 @dataclass
 class CameraStruct:
@@ -53,6 +55,8 @@ class WebCommandPublisher(Node):
         msg.high_v = current_pos.high_v
         msg.dilation_element = current_pos.dilation_element
         msg.dilation_size = current_pos.dilation_size
+        msg.enable_detection = current_pos.enable_detection
+        msg.enable_ndi = current_pos.enable_ndi
         self.CFpublisher.publish(msg)
         self.get_logger().info('Publishing color filter settings')
     
@@ -114,6 +118,39 @@ def camera():
     else:
         return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
 
+@app.route('/detection', methods=['GET', 'POST'])
+def detection():
+    global web_command_publisher
+    global current_pos
+    global current_cam
+
+    if request.method == 'POST':
+
+        current_pos.enable_detection = not current_pos.enable_detection
+
+        web_command_publisher.sendColorFilter(current_pos)
+
+        return redirect('/')
+
+    else:
+        return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
+
+@app.route('/ndi', methods=['GET', 'POST'])
+def ndi():
+    global web_command_publisher
+    global current_pos
+    global current_cam
+
+    if request.method == 'POST':
+
+        current_pos.enable_ndi = not current_pos.enable_ndi
+
+        web_command_publisher.sendColorFilter(current_pos)
+
+        return redirect('/')
+
+    else:
+        return render_template('index.html', current_pos=current_pos, current_cam=current_cam)
 
 def run_page():
     app.run(host="0.0.0.0")

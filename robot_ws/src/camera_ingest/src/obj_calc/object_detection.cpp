@@ -201,17 +201,28 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::dilate(left_bitw, left_dilate, kernel);
         cv::dilate(right_bitw, right_dilate, kernel);
 
-        detector->detect(left_dilate, keypoints_left);
-        detector->detect(right_dilate, keypoints_right);
+        if (this->color_filter_params.enable_detection)
+        {
+            detector->detect(left_dilate, keypoints_left);
+            detector->detect(right_dilate, keypoints_right);
 
-        cv::drawKeypoints(left_dilate, keypoints_left, left_keyp, cv::Scalar(0,0,255),
-                          cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+            cv::drawKeypoints(left_dilate, keypoints_left, left_keyp, cv::Scalar(0,0,255),
+                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
-        cv::drawKeypoints(right_dilate, keypoints_right, right_keyp, cv::Scalar(0,0,255),
-                          cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+            cv::drawKeypoints(right_dilate, keypoints_right, right_keyp, cv::Scalar(0,0,255),
+                              cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
-        cv::cvtColor(left_keyp, left_inp, cv::COLOR_RGB2RGBA);
-        cv::cvtColor(right_keyp, right_inp, cv::COLOR_RGB2RGBA);
+            if (this->color_filter_params.enable_ndi)
+            {
+                cv::cvtColor(left_keyp, left_inp, cv::COLOR_RGB2RGBA);
+                cv::cvtColor(right_keyp, right_inp, cv::COLOR_RGB2RGBA);
+            }
+        }
+        else if (this->color_filter_params.enable_ndi)
+        {
+            cv::cvtColor(left_dilate, left_inp, cv::COLOR_GRAY2RGBA);
+            cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
+        }
 
         /*
         std::vector<cv::Vec3f> circles;
@@ -262,8 +273,14 @@ void nssc::process::ObjectDetection::_detectionThread()
             cv::circle(right_inp, right_origin[i], 10, cv::Scalar(150, 255, 0), 2);
         }
          */
-
-        this->triangulation_interface->sendFrame(stereo_frame);
+        if (this->color_filter_params.enable_ndi)
+        {
+            this->triangulation_interface->sendFrame(stereo_frame);
+        }
+        else
+        {
+            this->triangulation_interface->returnBuf(stereo_frame);
+        }
     }
 }
 
