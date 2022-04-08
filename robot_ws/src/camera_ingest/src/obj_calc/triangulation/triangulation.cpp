@@ -238,6 +238,19 @@ std::vector<Eigen::Vector3d> nssc::process::Triangulation::_transform_coordinate
     return objects;
 }
 
+Eigen::Vector3d nssc::process::Triangulation::_transform_coordinates(const Eigen::Vector3d &inp)
+{
+    Eigen::Vector3d obj_vec, mtrx_ret, obj;
+
+    obj_vec = inp - this->origin;
+    mtrx_ret = this->rotation_mtrx.colPivHouseholderQr().solve(obj_vec);
+    obj <<  (this->origin_vec[0] * mtrx_ret[0]).norm(),
+            (this->origin_vec[1] * mtrx_ret[1]).norm(),
+            (this->origin_vec[2] * mtrx_ret[2]).norm();
+
+    return obj;
+}
+
 bool nssc::process::Triangulation::__originMarkersExist(std::vector<int> ids)
 {
     std::vector<int>& req_ids = this->node->g_config.triangulationConfig.origin_ids;
