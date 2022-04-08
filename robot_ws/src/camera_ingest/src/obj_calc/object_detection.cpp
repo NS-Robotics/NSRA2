@@ -189,22 +189,22 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::inRange(left_hsv,
                     cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
                     cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
-                    left_thresh);
+                    left_hsv);
         cv::inRange(right_hsv,
                     cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
                     cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
-                    right_thresh);
+                    right_hsv);
 
-        cv::bitwise_not(left_thresh, left_bitw);
-        cv::bitwise_not(right_thresh, right_bitw);
+        cv::dilate(left_hsv, left_hsv, kernel);
+        cv::dilate(right_hsv, right_hsv, kernel);
 
-        cv::dilate(left_bitw, left_dilate, kernel);
-        cv::dilate(right_bitw, right_dilate, kernel);
+        cv::bitwise_not(left_hsv, left_hsv);
+        cv::bitwise_not(right_hsv, right_hsv);
 
         if (this->color_filter_params.enable_detection)
         {
-            detector->detect(left_dilate, keypoints_left);
-            detector->detect(right_dilate, keypoints_right);
+            detector->detect(left_hsv, keypoints_left);
+            detector->detect(right_hsv, keypoints_right);
 
             if (!keypoints_left.empty() && !keypoints_right.empty())
             {
@@ -239,8 +239,8 @@ void nssc::process::ObjectDetection::_detectionThread()
         }
         else if (this->color_filter_params.enable_ndi)
         {
-            cv::cvtColor(left_dilate, left_inp, cv::COLOR_GRAY2RGBA);
-            cv::cvtColor(right_dilate, right_inp, cv::COLOR_GRAY2RGBA);
+            cv::cvtColor(left_hsv, left_inp, cv::COLOR_GRAY2RGBA);
+            cv::cvtColor(right_hsv, right_inp, cv::COLOR_GRAY2RGBA);
         }
 
         /*
