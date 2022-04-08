@@ -60,6 +60,7 @@ namespace nssc
             void sendFrame(framestruct::StereoFrame *stereo_frame);
             void returnBuf(framestruct::StereoFrame *stereo_frame);
             std::vector<Eigen::Vector3d> triangulatePoints(std::vector<cv::Point2f> &left_2D, std::vector<cv::Point2f> &right_2D);
+            Eigen::Vector3d triangulatePoints(cv::Point2f &left_2D, cv::Point2f &right_2D);
             std::tuple<std::vector<cv::Point2f>, std::vector<cv::Point2f>> getOrigin();
 
         private:

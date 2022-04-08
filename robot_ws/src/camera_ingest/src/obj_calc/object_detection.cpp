@@ -203,31 +203,14 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         if (this->color_filter_params.enable_detection)
         {
-            std::vector<cv::Point2f> left_coords, right_coords;
-
             detector->detect(left_hsv, keypoints_left);
             detector->detect(right_hsv, keypoints_right);
 
-            if (!keypoints_left.empty() && !keypoints_right.empty())
+            if (!keypoints_left.empty() && !keypoints_right.empty() && keypoints_left.size() == keypoints_right.size())
             {
-                for (auto & i : keypoints_left)
-                {
-                    left_coords.push_back(i.pt);
-                }
+                std::vector<Bottle> bottles;
+                bottles = _processBottles(keypoints_left, keypoints_right);
 
-                for (auto & i : keypoints_right)
-                {
-                    right_coords.push_back(i.pt);
-                }
-
-                coords_3d = this->triangulation_interface->triangulatePoints(left_coords, right_coords);
-
-                /*
-                for (auto & i : coords_3d)
-                {
-                    std::cout << i << std::endl;
-                }
-                 */
                 if (this->color_filter_params.enable_ndi)
                 {
                     std::vector<float> text_right = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
@@ -235,7 +218,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                     cv::putText(left_inp,
                                 vectorContent(text_right),
-                                cv::Point2f(left_coords[0].x - 100, left_coords[0].y - 70),
+                                cv::Point2f(bottles[0].left_coord_2d.x - 100, bottles[0].right_coord_2d.y - 70),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
@@ -243,7 +226,7 @@ void nssc::process::ObjectDetection::_detectionThread()
                                 cv::LINE_AA);
                     cv::putText(right_inp,
                                 vectorContent(text_left),
-                                cv::Point2f(right_coords[0].x - 100, right_coords[0].y - 70),
+                                cv::Point2f(bottles[0].left_coord_2d.x - 100, bottles[0].right_coord_2d.y - 70),
                                 cv::FONT_HERSHEY_COMPLEX_SMALL,
                                 1.4,
                                 cv::Scalar(255, 0, 0),
@@ -366,4 +349,22 @@ void nssc::process::ObjectDetection::_testDetectionThread()
 
         this->triangulation_interface->sendFrame(stereo_frame);
     }
+}
+
+std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottles(std::vector<cv::KeyPoint> keypoints_left,
+                                                                                   std::vector<cv::KeyPoint> keypoints_right)
+{
+    std::vector<Bottle> bottles;
+
+    for (size_t i = 0; i < keypoints_left.size(); i++)
+    {
+        Bottle new_bottle;
+        new_bottle.left_coord_2d = keypoints_left[i].pt;
+        new_bottle.right_coord_2d = keypoints_right[i].pt;
+        new_bottle.coord_3d = this->triangulation_interface->triangulatePoints(new_bottle.left_coord_2d, new_bottle.right_coord_2d);
+        new_bottle.id = i;
+        bottles.push_back(new_bottle);
+    }
+
+    return bottles;
 }

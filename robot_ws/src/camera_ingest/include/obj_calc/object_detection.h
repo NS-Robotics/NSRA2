@@ -49,6 +49,14 @@ namespace nssc
 {
     namespace process
     {
+        struct Bottle
+        {
+            Eigen::Vector3d coord_3d;
+            cv::Point2f left_coord_2d;
+            cv::Point2f right_coord_2d;
+            int id;
+        };
+
         class ObjectDetection
         {
         public:
@@ -71,6 +79,8 @@ namespace nssc
 
             void _detectionThread();
             void _testDetectionThread();
+
+            std::vector<Bottle> _processBottles(std::vector<cv::KeyPoint> keypoints_left, std::vector<cv::KeyPoint> keypoints_right);
 
             std::atomic<bool> detection_running{false};
             std::thread d_thread;

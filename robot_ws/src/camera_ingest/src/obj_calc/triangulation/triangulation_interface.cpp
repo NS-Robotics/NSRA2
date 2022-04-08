@@ -74,6 +74,24 @@ std::vector<Eigen::Vector3d> nssc::process::TriangulationInterface::triangulateP
     return _transform_coordinates(p_3d_origin);
 }
 
+Eigen::Vector3d nssc::process::TriangulationInterface::triangulatePoints(cv::Point2f &left_2D, cv::Point2f &right_2D)
+{
+    std::vector<cv::Point2f> left_2D_vec = {left_2D};
+    std::vector<cv::Point2f> right_2D_vec = {right_2D};
+    std::vector<cv::Point2f> left_2D_undistort, right_2D_undistort;
+    cv::undistortPoints(left_2D_vec, left_2D_undistort, this->left_K, this->left_D, this->left_R, this->left_P);
+    cv::undistortPoints(right_2D_vec, right_2D_undistort, this->right_K, this->right_D, this->right_R, this->right_P);
+
+    cv::Mat p_4d_origin(4,1,CV_64F);
+    cv::triangulatePoints(this->left_P, this->right_P, left_2D_undistort, right_2D_undistort, p_4d_origin);
+
+    Eigen::Vector3d p_3d_origin( p_4d_origin.at<float>(0,0) / p_4d_origin.at<float>(3,0),
+                                 p_4d_origin.at<float>(1,0) / p_4d_origin.at<float>(3,0),
+                                 p_4d_origin.at<float>(2,0) / p_4d_origin.at<float>(3,0) );
+
+    return p_3d_origin;
+}
+
 void nssc::process::TriangulationInterface::sendFrame(nssc::framestruct::StereoFrame *stereo_frame)
 {
     (*this->frame_manager)->sendFrame(stereo_frame);
