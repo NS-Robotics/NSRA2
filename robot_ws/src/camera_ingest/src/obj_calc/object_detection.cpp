@@ -166,7 +166,7 @@ void nssc::process::ObjectDetection::_detectionThread()
     std::vector<cv::KeyPoint> keypoints_left;
     std::vector<cv::KeyPoint> keypoints_right;
 
-    std::vector<Eigen::Vector3d> coords_3d;
+    std::vector<Bottle> bottles;
 
     cv::Mat morph_kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(6,6));
 
@@ -208,13 +208,12 @@ void nssc::process::ObjectDetection::_detectionThread()
 
             if (!keypoints_left.empty() && !keypoints_right.empty() && keypoints_left.size() == keypoints_right.size())
             {
-                std::vector<Bottle> bottles;
                 bottles = _processBottles(keypoints_left, keypoints_right);
 
                 if (this->color_filter_params.enable_ndi)
                 {
-                    std::vector<float> text_right = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
-                    std::vector<float> text_left = {static_cast<float>(coords_3d[0][0]), static_cast<float>(coords_3d[0][1]), static_cast<float>(coords_3d[0][2])};
+                    std::vector<float> text_right = {static_cast<float>(bottles[0].coord_3d[0]), static_cast<float>(bottles[0].coord_3d[1]), static_cast<float>(bottles[0].coord_3d[2])};
+                    std::vector<float> text_left = {static_cast<float>(bottles[0].coord_3d[0]), static_cast<float>(bottles[0].coord_3d[1]), static_cast<float>(bottles[0].coord_3d[2])};
 
                     cv::putText(left_inp,
                                 vectorContent(text_right),
