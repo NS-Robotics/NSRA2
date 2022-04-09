@@ -38,6 +38,7 @@
 #include "node.h"
 #include "triangulation_interface.h"
 #include "msg_publisher.h"
+#include "frame_struct.h"
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -48,6 +49,7 @@
 #include <opencv2/cudaimgproc.hpp>
 #include <opencv2/cudawarping.hpp>
 #include <opencv2/cudaarithm.hpp>
+#include "opencv2/cudafilters.hpp"
 
 namespace nssc
 {

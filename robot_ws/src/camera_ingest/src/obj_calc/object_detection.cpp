@@ -142,8 +142,27 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     cv::Size mono_size = cv::Size(this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res);
 
-    cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate, left_keyp,
-            right_rgb, right_hsv, right_thresh, right_bitw, right_dilate, right_keyp;
+    cv::Mat left_rgb, left_thresh, left_bitw, left_dilate, left_keyp,
+            right_rgb, right_thresh, right_bitw, right_dilate, right_keyp;
+
+    cv::cuda::GpuMat left_hsv, right_hsv;
+
+    framestruct::FrameBuffer s_left_filter, s_right_filter;
+    size_t gray_buf_size = this->node->g_config.frame_config.rgb_x_res * this->node->g_config.frame_config.rgb_y_res;
+
+    cudaSetDeviceFlags(cudaDeviceMapHost);
+    cudaHostAlloc((void **)&s_left_filter.hImageBuf, gray_buf_size, cudaHostAllocMapped);
+    cudaHostGetDevicePointer((void **)&s_left_filter.dImageBuf, (void *) s_left_filter.hImageBuf , 0);
+
+    cudaSetDeviceFlags(cudaDeviceMapHost);
+    cudaHostAlloc((void **)&s_right_filter.hImageBuf, gray_buf_size, cudaHostAllocMapped);
+    cudaHostGetDevicePointer((void **)&s_right_filter.dImageBuf, (void *) s_right_filter.hImageBuf , 0);
+
+    cv::Mat h_left_filter(mono_size, CV_8UC1, s_left_filter.hImageBuf);
+    cv::Mat h_right_filter(mono_size, CV_8UC1, s_right_filter.hImageBuf);
+
+    cv::cuda::GpuMat d_left_filter(mono_size, CV_8UC1, s_left_filter.dImageBuf);
+    cv::cuda::GpuMat d_right_filter(mono_size, CV_8UC1, s_right_filter.dImageBuf);
 
     cv::SimpleBlobDetector::Params params;
 
@@ -183,38 +202,30 @@ void nssc::process::ObjectDetection::_detectionThread()
         cv::cuda::GpuMat d_left_inp(mono_size, CV_8UC3, stereo_frame->left_camera->rgb_buf.dImageBuf);
         cv::cuda::GpuMat d_right_inp(mono_size, CV_8UC3, stereo_frame->right_camera->rgb_buf.dImageBuf);
 
-        /*
+        cv::cuda::GpuMat d_left_out(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.dImageBuf);
+        cv::cuda::GpuMat d_right_out(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.dImageBuf);
+
         cv::cuda::cvtColor(d_left_inp, left_hsv, cv::COLOR_RGB2HSV);
         cv::cuda::cvtColor(d_right_inp, right_hsv, cv::COLOR_RGB2HSV);
-         */
 
-        cv::cvtColor(left_inp, left_hsv, cv::COLOR_RGB2HSV);
-        cv::cvtColor(right_inp, right_hsv, cv::COLOR_RGB2HSV);
+        left_hsv = _cudaInRange(left_hsv);
+        left_hsv = _cudaInRange(left_hsv);
 
-        //_cudaInRange(left_hsv);
+        //cv::erode(left_hsv, left_hsv, kernel);
+        //cv::erode(right_hsv, right_hsv, kernel);
 
-        cv::inRange(left_hsv,
-                    cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
-                    cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
-                    left_hsv);
-        cv::inRange(right_hsv,
-                    cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
-                    cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
-                    right_hsv);
+        cv::cuda::bitwise_not(left_hsv, left_hsv);
+        cv::cuda::bitwise_not(right_hsv, right_hsv);
 
-        cv::erode(left_hsv, left_hsv, kernel);
-        cv::erode(right_hsv, right_hsv, kernel);
+        cv::Ptr<cv::cuda::Filter> dilate_filter = cv::cuda::createMorphologyFilter(cv::MORPH_OPEN, left_hsv.type(), morph_kernel);
 
-        cv::bitwise_not(left_hsv, left_hsv);
-        cv::bitwise_not(right_hsv, right_hsv);
-
-        cv::morphologyEx(left_hsv, left_hsv, cv::MORPH_OPEN, morph_kernel);
-        cv::morphologyEx(right_hsv, right_hsv, cv::MORPH_OPEN, morph_kernel);
+        dilate_filter->apply(left_hsv, d_left_filter);
+        dilate_filter->apply(right_hsv, d_right_filter);
 
         if (this->color_filter_params.enable_detection)
         {
-            detector->detect(left_hsv, keypoints_left);
-            detector->detect(right_hsv, keypoints_right);
+            detector->detect(h_left_filter, keypoints_left);
+            detector->detect(h_right_filter, keypoints_right);
 
             if (!keypoints_left.empty() && !keypoints_right.empty())
             {
@@ -257,20 +268,14 @@ void nssc::process::ObjectDetection::_detectionThread()
                 cv::drawKeypoints(right_inp, keypoints_right, right_inp, cv::Scalar(255,0,0),
                                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
 
-                cv::cuda::GpuMat d_left_out(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.dImageBuf);
-                cv::cuda::GpuMat d_right_out(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.dImageBuf);
-
                 cv::cuda::cvtColor(d_left_inp, d_left_out, cv::COLOR_RGB2RGBA);
                 cv::cuda::cvtColor(d_right_inp, d_right_out, cv::COLOR_RGB2RGBA);
             }
         }
         else if (this->color_filter_params.enable_ndi)
         {
-            cv::Mat left_out(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.hImageBuf);
-            cv::Mat right_out(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.hImageBuf);
-
-            cv::cvtColor(left_hsv, left_out, cv::COLOR_GRAY2RGBA);
-            cv::cvtColor(right_hsv, right_out, cv::COLOR_GRAY2RGBA);
+            cv::cuda::cvtColor(d_left_filter, d_left_out, cv::COLOR_GRAY2RGBA);
+            cv::cuda::cvtColor(d_right_filter, d_right_out, cv::COLOR_GRAY2RGBA);
         }
 
         if (this->color_filter_params.enable_ndi)
