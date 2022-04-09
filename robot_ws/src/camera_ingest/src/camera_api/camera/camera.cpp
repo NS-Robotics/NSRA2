@@ -150,14 +150,6 @@ nssc::NSSC_STATUS nssc::ingest::Camera::startAcquisition()
 
 void nssc::ingest::Camera::GXDQBufThreadNDI()
 {
-    framestruct::FrameBuffer rgbBuf;
-    cudaSetDeviceFlags(cudaDeviceMapHost);
-    cudaHostAlloc((void **)&rgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
-    cudaHostGetDevicePointer((void **)&rgbBuf.dImageBuf, (void *) rgbBuf.hImageBuf , 0);
-
-    cv::Mat h_rgb(cv::Size(this->node->g_config.frame_config.cam_x_res, this->node->g_config.frame_config.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
-    cv::cuda::GpuMat d_rgb(cv::Size(this->node->g_config.frame_config.cam_x_res, this->node->g_config.frame_config.cam_y_res), CV_8UC3, rgbBuf.dImageBuf);
-
     PGX_FRAME_BUFFER pFrameBuffer = nullptr;
 
     while(this->stream_running.load())
@@ -177,12 +169,12 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
 
             status = GXDQBuf(this->h_device, &pFrameBuffer, 5000);
 
-            status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, rgbBuf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
+            status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, frame->rgb_buf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
 
             status = GXQBuf(this->h_device, pFrameBuffer);
 
-            frame->convert(&rgbBuf);
+            frame->convert();
 
             this->buf_filled.enqueue(frame);
             this->n_filled++;
@@ -202,7 +194,6 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     }
-    cudaFreeHost(rgbBuf.hImageBuf);
 }
 
 bool nssc::ingest::Camera::__checkFrameAge()

@@ -117,14 +117,14 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
             (*this->frame_manager)->returnBuf(stereoFrame);
     }
 
-    cv::Mat left_inp(mono_size,CV_8UC4, stereoFrame->left_camera->rgba_buf.hImageBuf);
-    cv::Mat right_inp(mono_size, CV_8UC4, stereoFrame->right_camera->rgba_buf.hImageBuf);
+    cv::Mat left_inp(mono_size,CV_8UC3, stereoFrame->left_camera->rgb_buf.hImageBuf);
+    cv::Mat right_inp(mono_size, CV_8UC3, stereoFrame->right_camera->rgb_buf.hImageBuf);
 
     cv::Mat left_conv;
     cv::Mat right_conv;
 
-    cv::cvtColor(left_inp, left_conv, cv::COLOR_RGBA2GRAY);
-    cv::cvtColor(right_inp, right_conv, cv::COLOR_RGBA2GRAY);
+    cv::cvtColor(left_inp, left_conv, cv::COLOR_RGB2GRAY);
+    cv::cvtColor(right_inp, right_conv, cv::COLOR_RGB2GRAY);
 
     std::vector<int> left_markerIds, right_markerIds;
     std::vector<std::vector<cv::Point2f>> left_markerCorners, right_markerCorners, left_rejectedCandidates, right_rejectedCandidates;
@@ -204,16 +204,14 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
 
     this->origin = p_3d_origin[0];
 
-    cv::Mat left_out;
-    cv::Mat right_out;
-    cv::cvtColor(left_inp, left_out, cv::COLOR_RGBA2BGR);
-    cv::cvtColor(right_inp, right_out, cv::COLOR_RGBA2BGR);
+    cv::aruco::drawDetectedMarkers(left_inp, left_markerCorners, left_markerIds);
+    cv::aruco::drawDetectedMarkers(right_inp, right_markerCorners, right_markerIds);
 
-    cv::aruco::drawDetectedMarkers(left_out, left_markerCorners, left_markerIds);
-    cv::aruco::drawDetectedMarkers(right_out, right_markerCorners, right_markerIds);
+    cv::Mat left_out(mono_size,CV_8UC4, stereoFrame->left_camera->rgba_buf.hImageBuf);
+    cv::Mat right_out(mono_size, CV_8UC4, stereoFrame->right_camera->rgba_buf.hImageBuf);
 
-    cv::cvtColor(left_out, left_inp, cv::COLOR_BGR2RGBA);
-    cv::cvtColor(right_out, right_inp, cv::COLOR_BGR2RGBA);
+    cv::cvtColor(left_inp, left_out, cv::COLOR_RGB2RGBA);
+    cv::cvtColor(right_inp, right_out, cv::COLOR_RGB2RGBA);
 
     (*this->frame_manager)->sendFrame(stereoFrame);
 

@@ -17,7 +17,7 @@ namespace nssc
         public:
             static StereoFrame *makeFrame(NSSC_FRAME_TYPE type);
 
-            virtual void convert(MonoFrame *leftCamera, MonoFrame *rightCamera, bool resize) = 0;
+            virtual void convert(MonoFrame *leftCamera, MonoFrame *rightCamera) = 0;
 
             virtual void alloc(std::shared_ptr<ros::NSSC> &node) = 0;
 

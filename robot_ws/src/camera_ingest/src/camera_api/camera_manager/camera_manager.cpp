@@ -96,13 +96,17 @@ nssc::NSSC_STATUS nssc::ingest::CameraManager::closeCameras()
 
 nssc::framestruct::StereoFrame *nssc::ingest::CameraManager::getFrame()
 {
-    framestruct::StereoFrame* stereoFrame;
-    this->buf_empty.wait_dequeue(stereoFrame);
+    framestruct::StereoFrame* stereo_frame;
+    this->buf_empty.wait_dequeue(stereo_frame);
     this->num_empty--;
 
-    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), this->node->g_config.frame_config.resize_frame);
+    stereo_frame->convert(this->cam1->getFrame(), this->cam2->getFrame());
+    if (this->node->g_config.frame_config.send_type != NDI_SEND_TRIANGULATION)
+    {
+        stereo_frame->process(this->node->g_config.frame_config.resize_frame);
+    }
 
-    return stereoFrame;
+    return stereo_frame;
 }
 
 nssc::NSSC_STATUS nssc::ingest::CameraManager::returnBuf(framestruct::StereoFrame* stereoFrame)

@@ -177,14 +177,21 @@ void nssc::process::ObjectDetection::_detectionThread()
     {
         stereo_frame = this->triangulation_interface->getFrame();
 
-        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.hImageBuf);
-        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.hImageBuf);
+        cv::Mat left_inp(mono_size, CV_8UC3, stereo_frame->left_camera->rgb_buf.hImageBuf);
+        cv::Mat right_inp(mono_size, CV_8UC3, stereo_frame->right_camera->rgb_buf.hImageBuf);
 
-        cv::cvtColor(left_inp, left_rgb, cv::COLOR_RGBA2RGB);
-        cv::cvtColor(right_inp, right_rgb, cv::COLOR_RGBA2RGB);
+        cv::cuda::GpuMat d_left_inp(mono_size, CV_8UC3, stereo_frame->left_camera->rgb_buf.dImageBuf);
+        cv::cuda::GpuMat d_right_inp(mono_size, CV_8UC3, stereo_frame->right_camera->rgb_buf.dImageBuf);
 
-        cv::cvtColor(left_rgb, left_hsv, cv::COLOR_RGB2HSV);
-        cv::cvtColor(right_rgb, right_hsv, cv::COLOR_RGB2HSV);
+        /*
+        cv::cuda::cvtColor(d_left_inp, left_hsv, cv::COLOR_RGB2HSV);
+        cv::cuda::cvtColor(d_right_inp, right_hsv, cv::COLOR_RGB2HSV);
+         */
+
+        cv::cvtColor(left_inp, left_hsv, cv::COLOR_RGB2HSV);
+        cv::cvtColor(right_inp, right_hsv, cv::COLOR_RGB2HSV);
+
+        //_cudaInRange(left_hsv);
 
         cv::inRange(left_hsv,
                     cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
@@ -249,12 +256,21 @@ void nssc::process::ObjectDetection::_detectionThread()
 
                 cv::drawKeypoints(right_inp, keypoints_right, right_inp, cv::Scalar(255,0,0),
                                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
+                cv::cuda::GpuMat d_left_out(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.dImageBuf);
+                cv::cuda::GpuMat d_right_out(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.dImageBuf);
+
+                cv::cuda::cvtColor(d_left_inp, d_left_out, cv::COLOR_RGB2RGBA);
+                cv::cuda::cvtColor(d_right_inp, d_right_out, cv::COLOR_RGB2RGBA);
             }
         }
         else if (this->color_filter_params.enable_ndi)
         {
-            cv::cvtColor(left_hsv, left_inp, cv::COLOR_GRAY2RGBA);
-            cv::cvtColor(right_hsv, right_inp, cv::COLOR_GRAY2RGBA);
+            cv::Mat left_out(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.hImageBuf);
+            cv::Mat right_out(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.hImageBuf);
+
+            cv::cvtColor(left_hsv, left_out, cv::COLOR_GRAY2RGBA);
+            cv::cvtColor(right_hsv, right_out, cv::COLOR_GRAY2RGBA);
         }
 
         if (this->color_filter_params.enable_ndi)
@@ -411,4 +427,35 @@ std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processKeypo
     }
 
     return bottles;
+}
+
+cv::cuda::GpuMat nssc::process::ObjectDetection::_cudaInRange(const cv::cuda::GpuMat& src)
+{
+    cv::Scalar hsv_low(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V);
+    cv::Scalar hsv_high(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V);
+
+    cv::cuda::GpuMat mat_parts[3];
+    cv::cuda::GpuMat mat_parts_low[3];
+    cv::cuda::GpuMat mat_parts_high[3];
+
+    cv::cuda::split(src, mat_parts);
+
+    cv::cuda::threshold(mat_parts[0], mat_parts_low[0], hsv_low[0], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY);
+    cv::cuda::threshold(mat_parts[0], mat_parts_high[0],  hsv_high[0], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
+    cv::cuda::bitwise_and(mat_parts_high[0], mat_parts_low[0], mat_parts[0]);
+
+    cv::cuda::threshold(mat_parts[1], mat_parts_low[1], hsv_low[1], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY);
+    cv::cuda::threshold(mat_parts[1], mat_parts_high[1],  hsv_high[1], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
+    cv::cuda::bitwise_and(mat_parts_high[1], mat_parts_low[1], mat_parts[1]);
+
+    cv::cuda::threshold(mat_parts[2], mat_parts_low[2], hsv_low[2], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY);
+    cv::cuda::threshold(mat_parts[2], mat_parts_high[2],  hsv_high[2], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
+    cv::cuda::bitwise_and(mat_parts_high[2], mat_parts_low[2], mat_parts[2]);
+
+    cv::cuda::GpuMat tmp1, final_result;
+
+    cv::cuda::bitwise_and(mat_parts[0], mat_parts[1], tmp1);
+    cv::cuda::bitwise_and(tmp1, mat_parts[2], final_result);
+
+    return final_result;
 }

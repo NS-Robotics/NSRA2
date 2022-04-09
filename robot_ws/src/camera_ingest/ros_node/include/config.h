@@ -43,6 +43,7 @@ struct FrameConfig
 {
 public:
     //Frame
+    NSSC_NDI_SEND send_type = NDI_SEND_RAW;
     NSSC_FRAME_TYPE g_type = NSSC_FRAME_RGBA;
     bool resize_frame = false;
 
@@ -96,7 +97,7 @@ public:
         {
         case NSSC_FRAME_RGBA:
             rgb_x_res = cam_x_res;
-            mono_y_res = cam_y_res;
+            rgb_y_res = cam_y_res;
             rgb_buf_size = mono_x_res * mono_y_res * 3;
 
             mono_x_res = cam_x_res;

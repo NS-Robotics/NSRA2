@@ -44,7 +44,10 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/aruco.hpp>
+#include <opencv2/core/cuda.hpp>
 #include <opencv2/cudaimgproc.hpp>
+#include <opencv2/cudawarping.hpp>
+#include <opencv2/cudaarithm.hpp>
 
 namespace nssc
 {
@@ -74,6 +77,7 @@ namespace nssc
             void _detectionThread();
             void _testDetectionThread();
 
+            cv::cuda::GpuMat _cudaInRange(const cv::cuda::GpuMat& src);
             std::vector<Bottle> _processKeypoints(std::vector<cv::KeyPoint> keypoints_left, std::vector<cv::KeyPoint> keypoints_right);
             static std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> _getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2);
 

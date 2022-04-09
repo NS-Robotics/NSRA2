@@ -5,12 +5,10 @@
 class RGBAStereoFrame : public nssc::framestruct::StereoFrame
 {
 public:
-    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera, bool resize) override
+    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera) override
     {
         this->left_camera = leftCamera;
         this->right_camera = rightCamera;
-
-        process(resize);
 
         auto c_timedif = std::chrono::duration_cast<std::chrono::microseconds>(
                 leftCamera->rgba_buf.timestamp - rightCamera->rgba_buf.timestamp);
@@ -85,7 +83,7 @@ public:
 class I420StereoFrame : public nssc::framestruct::StereoFrame
 {
 public:
-    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera, bool resize) override
+    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera) override
     {
         this->left_camera = leftCamera;
         this->right_camera = rightCamera;
@@ -137,7 +135,7 @@ public:
 class UYVYStereoFrame : public nssc::framestruct::StereoFrame
 {
 public:
-    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera, bool resize) override
+    void convert(nssc::framestruct::MonoFrame *leftCamera, nssc::framestruct::MonoFrame *rightCamera) override
     {
         this->left_camera = leftCamera;
         this->right_camera = rightCamera;

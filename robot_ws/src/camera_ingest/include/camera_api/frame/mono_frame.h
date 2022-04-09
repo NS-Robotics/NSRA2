@@ -28,14 +28,14 @@ namespace nssc
           static MonoFrame *makeFrame(NSSC_FRAME_TYPE type);
           void setTimestamp();
 
-          virtual void convert(FrameBuffer *rgbBuf) = 0;
+          virtual void convert() = 0;
           virtual void alloc(std::shared_ptr<ros::NSSC> &node, int id) = 0;
 
           std::shared_ptr<ros::NSSC> node;
           std::string msg_caller = "Mono Frame";
           FrameBuffer rgba_buf;
           FrameBuffer rgb_buf;
-          bool inputFlag = false;
+          bool converted = false;
         };
     }
 }

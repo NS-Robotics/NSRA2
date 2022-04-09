@@ -64,6 +64,8 @@ void nssc::application::Executor::toggleNDI(bool mono_stream)
 
 void nssc::application::Executor::toggleNDIsource(NSSC_NDI_SEND type)
 {
+    this->node->g_config.frame_config.send_type = type;
+
     if (this->ndi_running)
     {
         this->ndi->endStream();
