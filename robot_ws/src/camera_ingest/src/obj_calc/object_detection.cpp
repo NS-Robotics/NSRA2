@@ -163,7 +163,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     cv::cuda::GpuMat d_left_filter(mono_size, CV_8UC1, s_left_filter.dImageBuf);
     cv::cuda::GpuMat d_right_filter(mono_size, CV_8UC1, s_right_filter.dImageBuf);
-
+    std::cout << "local_frames" << std::endl;
     cv::SimpleBlobDetector::Params params;
 
     // Filter by Area.
@@ -195,7 +195,7 @@ void nssc::process::ObjectDetection::_detectionThread()
     while(this->detection_running.load())
     {
         stereo_frame = this->triangulation_interface->getFrame();
-
+        std::cout << "getframe" << std::endl;
         cv::Mat left_inp(mono_size, CV_8UC3, stereo_frame->left_camera->rgb_buf.hImageBuf);
         cv::Mat right_inp(mono_size, CV_8UC3, stereo_frame->right_camera->rgb_buf.hImageBuf);
 
