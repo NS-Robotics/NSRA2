@@ -207,26 +207,26 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         cv::cuda::cvtColor(d_left_inp, left_hsv, cv::COLOR_RGB2HSV);
         cv::cuda::cvtColor(d_right_inp, right_hsv, cv::COLOR_RGB2HSV);
-
+        std::cout << "color" << std::endl;
         left_hsv = _cudaInRange(left_hsv);
         left_hsv = _cudaInRange(left_hsv);
-
+        std::cout << "inrange" << std::endl;
         //cv::erode(left_hsv, left_hsv, kernel);
         //cv::erode(right_hsv, right_hsv, kernel);
 
         cv::cuda::bitwise_not(left_hsv, left_hsv);
         cv::cuda::bitwise_not(right_hsv, right_hsv);
-
+        std::cout << "bitwise" << std::endl;
         cv::Ptr<cv::cuda::Filter> dilate_filter = cv::cuda::createMorphologyFilter(cv::MORPH_OPEN, left_hsv.type(), morph_kernel);
 
         dilate_filter->apply(left_hsv, d_left_filter);
         dilate_filter->apply(right_hsv, d_right_filter);
-
+        std::cout << "morph" << std::endl;
         if (this->color_filter_params.enable_detection)
         {
             detector->detect(h_left_filter, keypoints_left);
             detector->detect(h_right_filter, keypoints_right);
-
+            std::cout << "detect" << std::endl;
             if (!keypoints_left.empty() && !keypoints_right.empty())
             {
                 bottles = _processKeypoints(keypoints_left, keypoints_right);
@@ -287,6 +287,8 @@ void nssc::process::ObjectDetection::_detectionThread()
             this->triangulation_interface->returnBuf(stereo_frame);
         }
     }
+    cudaFreeHost(s_left_filter.hImageBuf);
+    cudaFreeHost(s_right_filter.hImageBuf);
 }
 
 std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> nssc::process::ObjectDetection::_getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2) {
