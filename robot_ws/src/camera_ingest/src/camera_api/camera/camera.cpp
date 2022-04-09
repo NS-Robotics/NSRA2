@@ -162,6 +162,8 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
             this->buf_empty.wait_dequeue(frame);
             this->n_empty--;
 
+            cv::Mat h_rgb(cv::Size(this->node->g_config.frame_config.cam_x_res, this->node->g_config.frame_config.cam_y_res), CV_8UC3, frame->rgb_buf.hImageBuf);
+
             this->cb->Await();
             status = GXSendCommand(this->h_device, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
@@ -175,7 +177,7 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
             std::cout << "raw2rgb" << std::endl;
 
             status = GXQBuf(this->h_device, pFrameBuffer);
-        
+
             frame->convert();
 
             this->buf_filled.enqueue(frame);
