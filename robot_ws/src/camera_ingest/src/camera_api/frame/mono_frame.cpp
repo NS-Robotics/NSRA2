@@ -7,7 +7,6 @@ class RGBAFrame: public nssc::framestruct::MonoFrame
     public:
         void convert() override
         {
-            std::cout << "convert" << std::endl;
             if (this->node->g_config.frame_config.send_type == NDI_SEND_TRIANGULATION) { return; }
             if (CUDA_FAILED(cudaConvertColor(this->rgb_buf.dImageBuf, IMAGE_RGB8, this->rgba_buf.dImageBuf, IMAGE_RGBA8,
                                              this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res)))

@@ -162,19 +162,15 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
             this->buf_empty.wait_dequeue(frame);
             this->n_empty--;
 
-            cv::Mat h_rgb(cv::Size(this->node->g_config.frame_config.cam_x_res, this->node->g_config.frame_config.cam_y_res), CV_8UC3, frame->rgb_buf.hImageBuf);
-
             this->cb->Await();
             status = GXSendCommand(this->h_device, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
             this->last_trigger = std::chrono::high_resolution_clock::now();
-            std::cout << "got frame" << std::endl;
 
             status = GXDQBuf(this->h_device, &pFrameBuffer, 5000);
 
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, frame->rgb_buf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
-            std::cout << "raw2rgb" << std::endl;
 
             status = GXQBuf(this->h_device, pFrameBuffer);
 
@@ -182,8 +178,6 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
 
             this->buf_filled.enqueue(frame);
             this->n_filled++;
-
-            std::cout << "done" << std::endl;
         }
         else if (__checkFrameAge() && this->stop_age_check.load())
         {

@@ -98,7 +98,7 @@ public:
         case NSSC_FRAME_RGBA:
             rgb_x_res = cam_x_res;
             rgb_y_res = cam_y_res;
-            rgb_buf_size = mono_x_res * mono_y_res * 3;
+            rgb_buf_size = rgb_x_res * rgb_y_res * 3;
 
             mono_x_res = cam_x_res;
             mono_y_res = cam_y_res;
