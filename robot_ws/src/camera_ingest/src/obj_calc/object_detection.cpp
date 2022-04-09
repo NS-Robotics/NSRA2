@@ -246,7 +246,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         if (this->color_filter_params.enable_detection)
         {
-            detector->detect(right_dilate, keypoints_left);
+            detector->detect(left_dilate, keypoints_left);
             detector->detect(right_dilate, keypoints_right);
             std::cout << "detect" << std::endl;
             if (!keypoints_left.empty() && !keypoints_right.empty())
