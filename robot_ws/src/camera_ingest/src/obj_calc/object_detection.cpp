@@ -163,7 +163,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     cv::cuda::GpuMat d_left_filter(mono_size, CV_8UC1, s_left_filter.dImageBuf);
     cv::cuda::GpuMat d_right_filter(mono_size, CV_8UC1, s_right_filter.dImageBuf);
-    std::cout << "local_frames" << std::endl;
+
     cv::SimpleBlobDetector::Params params;
 
     // Filter by Area.
@@ -446,6 +446,7 @@ cv::cuda::GpuMat nssc::process::ObjectDetection::_cudaInRange(const cv::cuda::Gp
     cv::cuda::GpuMat mat_parts_high[3];
 
     cv::cuda::split(src, mat_parts);
+    std::cout << "split" << std::endl;
 
     cv::cuda::threshold(mat_parts[0], mat_parts_low[0], hsv_low[0], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY);
     cv::cuda::threshold(mat_parts[0], mat_parts_high[0],  hsv_high[0], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
@@ -459,10 +460,12 @@ cv::cuda::GpuMat nssc::process::ObjectDetection::_cudaInRange(const cv::cuda::Gp
     cv::cuda::threshold(mat_parts[2], mat_parts_high[2],  hsv_high[2], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
     cv::cuda::bitwise_and(mat_parts_high[2], mat_parts_low[2], mat_parts[2]);
 
+    std::cout << "threshold" << std::endl;
     cv::cuda::GpuMat tmp1, final_result;
 
     cv::cuda::bitwise_and(mat_parts[0], mat_parts[1], tmp1);
     cv::cuda::bitwise_and(tmp1, mat_parts[2], final_result);
 
+    std::cout << "bitwise" << std::endl;
     return final_result;
 }
