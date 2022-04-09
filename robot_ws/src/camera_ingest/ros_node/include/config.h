@@ -27,12 +27,12 @@ typedef enum NSSC_NDI_SEND_TYPES
 struct ColorFilterParams
 {
 public:
-    int low_H = 50;
-    int low_S = 50;
-    int low_V = 50;
-    int high_H = 50;
-    int high_S = 50;
-    int high_V = 50;
+    int low_H = 40;
+    int low_S = 94;
+    int low_V = 23;
+    int high_H = 133;
+    int high_S = 218;
+    int high_V = 160;
     int dilation_element = 0;
     int dilation_size = 2;
     bool enable_detection = true;

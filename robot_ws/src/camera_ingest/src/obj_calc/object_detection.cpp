@@ -211,7 +211,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
             if (!keypoints_left.empty() && !keypoints_right.empty())
             {
-                bottles = _processBottles(keypoints_left, keypoints_right);
+                bottles = _processKeypoints(keypoints_left, keypoints_right);
 
                 this->detection_publisher->publishBottleCoordinates(bottles);
 
@@ -392,8 +392,8 @@ void nssc::process::ObjectDetection::_testDetectionThread()
     }
 }
 
-std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processBottles(std::vector<cv::KeyPoint> keypoints_left,
-                                                                                   std::vector<cv::KeyPoint> keypoints_right)
+std::vector<nssc::process::Bottle> nssc::process::ObjectDetection::_processKeypoints(std::vector<cv::KeyPoint> keypoints_left,
+                                                                                     std::vector<cv::KeyPoint> keypoints_right)
 {
     std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> coord_pairs = _getClosestPairs(std::move(keypoints_left), std::move(keypoints_right));
     std::vector<Bottle> bottles;

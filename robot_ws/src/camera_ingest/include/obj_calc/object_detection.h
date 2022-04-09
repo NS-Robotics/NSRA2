@@ -74,7 +74,7 @@ namespace nssc
             void _detectionThread();
             void _testDetectionThread();
 
-            std::vector<Bottle> _processBottles(std::vector<cv::KeyPoint> keypoints_left, std::vector<cv::KeyPoint> keypoints_right);
+            std::vector<Bottle> _processKeypoints(std::vector<cv::KeyPoint> keypoints_left, std::vector<cv::KeyPoint> keypoints_right);
             static std::vector<std::pair<cv::KeyPoint, cv::KeyPoint>> _getClosestPairs(std::vector<cv::KeyPoint> v1, std::vector<cv::KeyPoint> v2);
 
             std::atomic<bool> detection_running{false};

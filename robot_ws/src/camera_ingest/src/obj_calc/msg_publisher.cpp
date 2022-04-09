@@ -46,9 +46,13 @@ void nssc::process::DetectionPublisher::publishBottleCoordinates(std::vector<Bot
     for (auto & bottle : bottles)
     {
         auto bottle_msg = camera_ingest::msg::Bottle();
-        bottle_msg.coord_3d = std::array<float, 3>{static_cast<float>(bottle.coord_3d[0]), static_cast<float>(bottle.coord_3d[1]), static_cast<float>(bottle.coord_3d[2])};
-        bottle_msg.left_coord_2d = std::array<float, 2>{bottle.left_coord_2d.x, bottle.left_coord_2d.y};
-        bottle_msg.right_coord_2d = std::array<float, 2>{bottle.right_coord_2d.x, bottle.right_coord_2d.y};
+        bottle_msg.coord_3d = std::array<float, 3>{static_cast<float>(bottle.coord_3d[0]),
+                                                   static_cast<float>(bottle.coord_3d[1]),
+                                                   static_cast<float>(bottle.coord_3d[2])};
+        bottle_msg.left_coord_2d = std::array<float, 2>{bottle.left_coord_2d.x,
+                                                        bottle.left_coord_2d.y};
+        bottle_msg.right_coord_2d = std::array<float, 2>{bottle.right_coord_2d.x,
+                                                         bottle.right_coord_2d.y};
         bottle_msg.id = bottle.id;
 
         bottles_msg.push_back(bottle_msg);
