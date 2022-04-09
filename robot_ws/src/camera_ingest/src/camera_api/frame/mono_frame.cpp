@@ -30,8 +30,6 @@ class RGBAFrame: public nssc::framestruct::MonoFrame
             cudaHostAlloc((void **)&this->rgb_buf.hImageBuf, this->node->g_config.frame_config.rgb_buf_size, cudaHostAllocMapped);
             cudaHostGetDevicePointer((void **)&this->rgb_buf.dImageBuf, (void *) this->rgb_buf.hImageBuf , 0);
             this->rgb_buf.id = id;
-
-            std::cout << "alloc" << std::endl;
         }
 
         ~RGBAFrame()

@@ -166,14 +166,16 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
             status = GXSendCommand(this->h_device, GX_COMMAND_TRIGGER_SOFTWARE);
             frame->setTimestamp();
             this->last_trigger = std::chrono::high_resolution_clock::now();
+            std::cout << "got frame" << std::endl;
 
             status = GXDQBuf(this->h_device, &pFrameBuffer, 5000);
 
             status = DxRaw8toRGB24((unsigned char*)pFrameBuffer->pImgBuf, frame->rgb_buf.hImageBuf, pFrameBuffer->nWidth, pFrameBuffer->nHeight,
                               RAW2RGB_NEIGHBOUR, DX_PIXEL_COLOR_FILTER(g_i64ColorFilter), false);
+            std::cout << "raw2rgb" << std::endl;
 
             status = GXQBuf(this->h_device, pFrameBuffer);
-
+        
             frame->convert();
 
             this->buf_filled.enqueue(frame);
