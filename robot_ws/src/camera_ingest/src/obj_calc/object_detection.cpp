@@ -158,11 +158,11 @@ void nssc::process::ObjectDetection::_detectionThread()
     cudaHostAlloc((void **)&s_right_filter.hImageBuf, gray_buf_size, cudaHostAllocMapped);
     cudaHostGetDevicePointer((void **)&s_right_filter.dImageBuf, (void *) s_right_filter.hImageBuf , 0);
 
-    cv::Mat h_left_filter(mono_size, CV_8UC1, s_left_filter.hImageBuf);
-    cv::Mat h_right_filter(mono_size, CV_8UC1, s_right_filter.hImageBuf);
+    cv::Mat h_left_filter(mono_size, CV_8UC3, s_left_filter.hImageBuf);
+    cv::Mat h_right_filter(mono_size, CV_8UC3, s_right_filter.hImageBuf);
 
-    cv::cuda::GpuMat d_left_filter(mono_size, CV_8UC1, s_left_filter.dImageBuf);
-    cv::cuda::GpuMat d_right_filter(mono_size, CV_8UC1, s_right_filter.dImageBuf);
+    cv::cuda::GpuMat d_left_filter(mono_size, CV_8UC3, s_left_filter.dImageBuf);
+    cv::cuda::GpuMat d_right_filter(mono_size, CV_8UC3, s_right_filter.dImageBuf);
 
     cv::SimpleBlobDetector::Params params;
 
