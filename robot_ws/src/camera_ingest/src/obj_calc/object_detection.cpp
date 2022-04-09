@@ -195,7 +195,7 @@ void nssc::process::ObjectDetection::_detectionThread()
     while(this->detection_running.load())
     {
         stereo_frame = this->triangulation_interface->getFrame();
-        std::cout << "getframe" << std::endl;
+
         cv::Mat left_inp(mono_size, CV_8UC3, stereo_frame->left_camera->rgb_buf.hImageBuf);
         cv::Mat right_inp(mono_size, CV_8UC3, stereo_frame->right_camera->rgb_buf.hImageBuf);
 
@@ -207,10 +207,10 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         cv::cuda::cvtColor(d_left_inp, left_hsv, cv::COLOR_RGB2HSV);
         cv::cuda::cvtColor(d_right_inp, right_hsv, cv::COLOR_RGB2HSV);
-        std::cout << "color" << std::endl;
+
         left_hsv = _cudaInRange(left_hsv);
-        left_hsv = _cudaInRange(left_hsv);
-        std::cout << "inrange" << std::endl;
+        right_hsv = _cudaInRange(right_hsv);
+
         //cv::erode(left_hsv, left_hsv, kernel);
         //cv::erode(right_hsv, right_hsv, kernel);
 
@@ -446,7 +446,6 @@ cv::cuda::GpuMat nssc::process::ObjectDetection::_cudaInRange(const cv::cuda::Gp
     cv::cuda::GpuMat mat_parts_high[3];
 
     cv::cuda::split(src, mat_parts);
-    std::cout << "split" << std::endl;
 
     cv::cuda::threshold(mat_parts[0], mat_parts_low[0], hsv_low[0], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY);
     cv::cuda::threshold(mat_parts[0], mat_parts_high[0],  hsv_high[0], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
@@ -460,12 +459,10 @@ cv::cuda::GpuMat nssc::process::ObjectDetection::_cudaInRange(const cv::cuda::Gp
     cv::cuda::threshold(mat_parts[2], mat_parts_high[2],  hsv_high[2], std::numeric_limits<unsigned char>::max(), cv::THRESH_BINARY_INV);
     cv::cuda::bitwise_and(mat_parts_high[2], mat_parts_low[2], mat_parts[2]);
 
-    std::cout << "threshold" << std::endl;
     cv::cuda::GpuMat tmp1, final_result;
 
     cv::cuda::bitwise_and(mat_parts[0], mat_parts[1], tmp1);
     cv::cuda::bitwise_and(tmp1, mat_parts[2], final_result);
 
-    std::cout << "bitwise" << std::endl;
     return final_result;
 }
