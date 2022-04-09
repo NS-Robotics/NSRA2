@@ -102,7 +102,7 @@ std::string vectorContent(std::vector<float> v){
 
 void nssc::process::ObjectDetection::setColorFilterParams()
 {
-    this->color_filter_params = this->node->g_config.triangulationConfig.color_filter_params;
+    this->color_filter_params = this->node->g_config.triangulation_config.color_filter_params;
 
     this->kernel = cv::getStructuringElement(this->color_filter_params.dilation_element,
                                              cv::Size(this->color_filter_params.dilation_size + 1,
@@ -140,7 +140,7 @@ void nssc::process::ObjectDetection::_detectionThread()
 
     framestruct::StereoFrame *stereo_frame;
 
-    cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
+    cv::Size mono_size = cv::Size(this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res);
 
     cv::Mat left_rgb, left_hsv, left_thresh, left_bitw, left_dilate, left_keyp,
             right_rgb, right_hsv, right_thresh, right_bitw, right_dilate, right_keyp;
@@ -177,8 +177,8 @@ void nssc::process::ObjectDetection::_detectionThread()
     {
         stereo_frame = this->triangulation_interface->getFrame();
 
-        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
-        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
+        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.hImageBuf);
+        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.hImageBuf);
 
         cv::cvtColor(left_inp, left_rgb, cv::COLOR_RGBA2RGB);
         cv::cvtColor(right_inp, right_rgb, cv::COLOR_RGBA2RGB);
@@ -309,7 +309,7 @@ void nssc::process::ObjectDetection::_testDetectionThread()
     cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
     cv::Ptr<cv::aruco::DetectorParameters> parameters = cv::aruco::DetectorParameters::create();
 
-    cv::Size mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
+    cv::Size mono_size = cv::Size(this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res);
 
     cv::Mat left_conv;
     cv::Mat right_conv;
@@ -318,8 +318,8 @@ void nssc::process::ObjectDetection::_testDetectionThread()
     {
         stereo_frame = this->triangulation_interface->getFrame();
 
-        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
-        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
+        cv::Mat left_inp(mono_size, CV_8UC4, stereo_frame->left_camera->rgba_buf.hImageBuf);
+        cv::Mat right_inp(mono_size, CV_8UC4, stereo_frame->right_camera->rgba_buf.hImageBuf);
 
         cv::cvtColor(left_inp, left_conv, cv::COLOR_RGBA2GRAY);
         cv::cvtColor(right_inp, right_conv, cv::COLOR_RGBA2GRAY);

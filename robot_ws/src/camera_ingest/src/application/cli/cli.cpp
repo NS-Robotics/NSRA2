@@ -84,7 +84,7 @@ void nssc::application::CLI::CLIFunc()
         {
             if(cmd.size() == 1)
             {
-                this->executor->toggleNDI(this->node->g_config.frameConfig.mono_stream);
+                this->executor->toggleNDI(this->node->g_config.frame_config.mono_stream);
                 continue;
             }
             if(cmd.size() == 2)
@@ -128,8 +128,8 @@ void nssc::application::CLI::CLIFunc()
                 this->printError("Bad argument!");
                 continue;
             }
-            this->node->g_config.ingestConfig.set_name = setName;
-            this->node->g_config.ingestConfig.ingest_amount = ingestAmount;
+            this->node->g_config.ingest_config.set_name = setName;
+            this->node->g_config.ingest_config.ingest_amount = ingestAmount;
             this->executor->runIngest();
             delete[] setName;
         }
@@ -150,7 +150,7 @@ void nssc::application::CLI::CLIFunc()
         {
             if (cmd.size() == 1)
             {
-                this->executor->runTriangulation(const_cast<char *>(this->node->g_config.triangulationConfig.standard_config_file));
+                this->executor->runTriangulation(const_cast<char *>(this->node->g_config.triangulation_config.standard_config_file));
                 continue;
             }
             char *setName;

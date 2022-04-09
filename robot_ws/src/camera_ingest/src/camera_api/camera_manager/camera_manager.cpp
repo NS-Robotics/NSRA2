@@ -26,7 +26,7 @@ nssc::NSSC_STATUS nssc::ingest::CameraManager::init()
 
     for (int i = 0; i < 7; i++)
     {
-        framestruct::StereoFrame* frame = framestruct::StereoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
+        framestruct::StereoFrame* frame = framestruct::StereoFrame::makeFrame(this->node->g_config.frame_config.g_type);
         frame->alloc(this->node);
         frame->concatenate_buf.id = i;
 
@@ -100,7 +100,7 @@ nssc::framestruct::StereoFrame *nssc::ingest::CameraManager::getFrame()
     this->buf_empty.wait_dequeue(stereoFrame);
     this->num_empty--;
 
-    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), this->node->g_config.frameConfig.resize_frame);
+    stereoFrame->convert(this->cam1->getFrame(), this->cam2->getFrame(), this->node->g_config.frame_config.resize_frame);
 
     return stereoFrame;
 }

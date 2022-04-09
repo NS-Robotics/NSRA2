@@ -40,8 +40,8 @@ nssc::stereocalibration::Calibration::Calibration(std::shared_ptr<nssc::ros::NSS
 {
     this->node = node;
     this->set_path = this->node->g_config.share_dir + "/" + setName + "/";
-    this->board_width = this->node->g_config.calibConfig.board_width;
-    this->board_height = this->node->g_config.calibConfig.board_height;
+    this->board_width = this->node->g_config.calib_config.board_width;
+    this->board_height = this->node->g_config.calib_config.board_height;
 
     this->_io_service = boost::make_shared<boost::asio::io_service>();
     this->_work = boost::make_shared<boost::asio::io_service::work>(*this->_io_service);

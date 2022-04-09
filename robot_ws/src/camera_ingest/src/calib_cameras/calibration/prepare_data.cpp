@@ -8,7 +8,7 @@ void nssc::stereocalibration::Calibration::_prepareDataSet()
 
     for (int k = 0; k < this->board_height; k++)
         for (int j = 0; j < this->board_width; j++)
-            this->obj.push_back(cv::Point3f((float)j * this->node->g_config.calibConfig.square_size, (float)k * this->node->g_config.calibConfig.square_size, 0));
+            this->obj.push_back(cv::Point3f((float)j * this->node->g_config.calib_config.square_size, (float)k * this->node->g_config.calib_config.square_size, 0));
 
     cv::FileStorage data_config((this->set_path + "config.xml").c_str(), cv::FileStorage::READ);
     if (!data_config.isOpened())
@@ -53,8 +53,8 @@ void nssc::stereocalibration::Calibration::__CBCthreadTask(int img_num)
     std::vector<cv::Point2f> right_img_points;
     char in_file1[100];
     char out_file1[100];
-    sprintf(in_file1, "%s%s%d.png", (this->set_path).c_str(), this->node->g_config.ingestConfig.right_img_name, img_num);
-    sprintf(out_file1, "%s%s%s%d.png", (this->set_path).c_str(), "corners_", this->node->g_config.ingestConfig.right_img_name, img_num);
+    sprintf(in_file1, "%s%s%d.png", (this->set_path).c_str(), this->node->g_config.ingest_config.right_img_name, img_num);
+    sprintf(out_file1, "%s%s%s%d.png", (this->set_path).c_str(), "corners_", this->node->g_config.ingest_config.right_img_name, img_num);
     std::string s_img_file1(in_file1);
 
     std::tie(right_status, right_img_points) = __findCBC(in_file1, out_file1);
@@ -73,8 +73,8 @@ void nssc::stereocalibration::Calibration::__CBCthreadTask(int img_num)
     std::vector<cv::Point2f> left_img_points;
     char in_file2[100];
     char out_file2[100];
-    sprintf(in_file2, "%s%s%d.png", (this->set_path).c_str(), this->node->g_config.ingestConfig.left_img_name, img_num);
-    sprintf(out_file2, "%s%s%s%d.png", (this->set_path).c_str(), "corners_", this->node->g_config.ingestConfig.left_img_name, img_num);
+    sprintf(in_file2, "%s%s%d.png", (this->set_path).c_str(), this->node->g_config.ingest_config.left_img_name, img_num);
+    sprintf(out_file2, "%s%s%s%d.png", (this->set_path).c_str(), "corners_", this->node->g_config.ingest_config.left_img_name, img_num);
     std::string s_img_file2(in_file2);
 
     std::tie(left_status, left_img_points) = __findCBC(in_file2, out_file2);

@@ -44,7 +44,7 @@ nssc::stereocalibration::Ingest::Ingest(std::shared_ptr<nssc::ros::NSSC> &node,
     this->node = node;
     this->frame_manager = frame_manager;
 
-    this->set_path = this->node->g_config.share_dir + "/" + this->node->g_config.ingestConfig.set_name + "/";
+    this->set_path = this->node->g_config.share_dir + "/" + this->node->g_config.ingest_config.set_name + "/";
     std::system(("mkdir -p " + this->set_path).c_str());
 
     std::ifstream xmlFile(this->set_path + "config.xml");
@@ -55,13 +55,13 @@ nssc::stereocalibration::Ingest::Ingest(std::shared_ptr<nssc::ros::NSSC> &node,
     else
     {
         cv::FileStorage config_file(this->set_path + "config.xml", cv::FileStorage::WRITE);
-        config_file << "setName" << this->node->g_config.ingestConfig.set_name;
-        config_file << "ingestAmount" << this->node->g_config.ingestConfig.ingest_amount;
+        config_file << "setName" << this->node->g_config.ingest_config.set_name;
+        config_file << "ingestAmount" << this->node->g_config.ingest_config.ingest_amount;
 
         this->run_ingest = true;
         this->i_thread = std::thread(&nssc::stereocalibration::Ingest::ingestThread, this);
 
-        this->node->g_config.ingestConfig.is_running = true;
+        this->node->g_config.ingest_config.is_running = true;
         this->node->printInfo(this->msg_caller, "Ingest!");
     }
 }
@@ -80,8 +80,8 @@ __attribute__((unused)) void Ingest::saveConfig()
     new_doc.append_node(root);
 
     rapidxml::xml_node<> *config = new_doc.allocate_node(rapidxml::node_element, "Config");
-    config->append_attribute(new_doc.allocate_attribute("setName", this->node->g_config.ingestConfig.set_name));
-    std::string s = std::to_string(this->node->g_config.ingestConfig.ingest_amount);
+    config->append_attribute(new_doc.allocate_attribute("setName", this->node->g_config.ingest_config.set_name));
+    std::string s = std::to_string(this->node->g_config.ingest_config.ingest_amount);
     config->append_attribute(new_doc.allocate_attribute("ingestAmount", s.c_str()));
     root->append_node(config);
 
@@ -107,7 +107,7 @@ __attribute__((unused)) void Ingest::editConfig()
 
     root_node = doc.first_node("NSSC");
 
-    std::string s = std::to_string(this->node->g_config.ingestConfig.current_frame_idx);
+    std::string s = std::to_string(this->node->g_config.ingest_config.current_frame_idx);
     root_node->first_node("Config")->first_attribute("ingestAmount")->value(s.c_str());
 
     std::ofstream file_stored(this->set_path + "config.xml");
@@ -118,20 +118,20 @@ __attribute__((unused)) void Ingest::editConfig()
 */
 void nssc::stereocalibration::Ingest::ingestThread()
 {
-    this->node->g_config.ingestConfig.current_frame_idx = 0;
+    this->node->g_config.ingest_config.current_frame_idx = 0;
 
     while (this->run_ingest.load() &&
-            this->node->g_config.ingestConfig.current_frame_idx < this->node->g_config.ingestConfig.ingest_amount)
+           this->node->g_config.ingest_config.current_frame_idx < this->node->g_config.ingest_config.ingest_amount)
     {
         auto now = std::chrono::high_resolution_clock::now();
-        std::chrono::milliseconds difference = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
-        std::chrono::milliseconds duration = std::chrono::milliseconds(this->node->g_config.ingestConfig.wait_duration);
+        std::chrono::milliseconds difference = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingest_config.sleep_timestamp);
+        std::chrono::milliseconds duration = std::chrono::milliseconds(this->node->g_config.ingest_config.wait_duration);
         if (difference >= duration) { Ingest::_takeImage(); }
 
         if (this->run_ingest.load()) { Ingest::_sendImage(); }
     }
 
-    this->node->g_config.ingestConfig.is_running = false;
+    this->node->g_config.ingest_config.is_running = false;
     this->run_ingest = false;
 }
 
@@ -140,9 +140,9 @@ void nssc::stereocalibration::Ingest::_sendImage()
     nssc::framestruct::StereoFrame *stereo_frame;
     stereo_frame = (*this->frame_manager)->getCameraFrame();
 
-    cv::Mat sendFrame(cv::Size(this->node->g_config.frameConfig.stream_x_res, this->node->g_config.frameConfig.stream_y_res), CV_8UC4, stereo_frame->stereo_buf->hImageBuf);
+    cv::Mat sendFrame(cv::Size(this->node->g_config.frame_config.stream_x_res, this->node->g_config.frame_config.stream_y_res), CV_8UC4, stereo_frame->stereo_buf->hImageBuf);
 
-    cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingestConfig.ingest_amount),
+    cv::putText(sendFrame, "Image idx: " + std::to_string(this->node->g_config.ingest_config.current_frame_idx) + " out of: " + std::to_string(this->node->g_config.ingest_config.ingest_amount),
                 cv::Point(25, 60), //top-left position
                 cv::FONT_HERSHEY_DUPLEX,
                 2.0,
@@ -150,13 +150,13 @@ void nssc::stereocalibration::Ingest::_sendImage()
                 2);
 
     auto now = std::chrono::high_resolution_clock::now();
-    auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingestConfig.sleep_timestamp);
-    int countdown_i = this->node->g_config.ingestConfig.wait_duration - time_left.count();
+    auto time_left = std::chrono::duration_cast<std::chrono::milliseconds>(now - this->node->g_config.ingest_config.sleep_timestamp);
+    int countdown_i = this->node->g_config.ingest_config.wait_duration - time_left.count();
     if(countdown_i < 0) { countdown_i = 0; }
 
     std::string countdown = "Next image in " + std::to_string(countdown_i) + " ms";
 
-    if(countdown_i == 0 && this->node->g_config.ingestConfig.image_taken)
+    if(countdown_i == 0 && this->node->g_config.ingest_config.image_taken)
     {
         countdown = "Image taken!";
     }
@@ -175,10 +175,10 @@ void nssc::stereocalibration::Ingest::_takeImage()
 {
     nssc::framestruct::StereoFrame *stereo_frame;
 
-    while (this->node->g_config.frameConfig.stream_on && this->run_ingest.load())
+    while (this->node->g_config.frame_config.stream_on && this->run_ingest.load())
     {
         stereo_frame = (*this->frame_manager)->getCameraFrame();
-        if (stereo_frame->timedif < this->node->g_config.ingestConfig.max_frame_time_diff)
+        if (stereo_frame->timedif < this->node->g_config.ingest_config.max_frame_time_diff)
             break;
         else
             (*this->frame_manager)->returnBuf(stereo_frame);
@@ -186,12 +186,12 @@ void nssc::stereocalibration::Ingest::_takeImage()
 
     if (!this->run_ingest.load()) { return; }
 
-    this->node->g_config.ingestConfig.image_taken = true;
+    this->node->g_config.ingest_config.image_taken = true;
 
-    cv::Mat leftFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
-                      CV_8UC4, stereo_frame->left_camera->frame_buf.hImageBuf);
-    cv::Mat rightFrame(cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res),
-                       CV_8UC4, stereo_frame->right_camera->frame_buf.hImageBuf);
+    cv::Mat leftFrame(cv::Size(this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res),
+                      CV_8UC4, stereo_frame->left_camera->rgba_buf.hImageBuf);
+    cv::Mat rightFrame(cv::Size(this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res),
+                       CV_8UC4, stereo_frame->right_camera->rgba_buf.hImageBuf);
 
     cv::Mat left_conv;
     cv::Mat right_conv;
@@ -199,27 +199,27 @@ void nssc::stereocalibration::Ingest::_takeImage()
     cv::cvtColor(leftFrame, left_conv, cv::COLOR_RGBA2BGRA);
     cv::cvtColor(rightFrame, right_conv, cv::COLOR_RGBA2BGRA);
 
-    std::string right_name(this->node->g_config.ingestConfig.right_img_name);
-    cv::imwrite(this->set_path + right_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", right_conv);
-    std::string left_name(this->node->g_config.ingestConfig.left_img_name);
-    cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingestConfig.current_frame_idx) + ".png", left_conv);
+    std::string right_name(this->node->g_config.ingest_config.right_img_name);
+    cv::imwrite(this->set_path + right_name + std::to_string(this->node->g_config.ingest_config.current_frame_idx) + ".png", right_conv);
+    std::string left_name(this->node->g_config.ingest_config.left_img_name);
+    cv::imwrite(this->set_path + left_name + std::to_string(this->node->g_config.ingest_config.current_frame_idx) + ".png", left_conv);
 
     (*this->frame_manager)->returnBuf(stereo_frame);
 
-    this->node->g_config.ingestConfig.current_frame_idx++;
-    this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingestConfig.current_frame_idx));
+    this->node->g_config.ingest_config.current_frame_idx++;
+    this->node->printInfo(this->msg_caller, "Ingest frame nr: " + std::to_string(this->node->g_config.ingest_config.current_frame_idx));
 
-    this->node->g_config.ingestConfig.sleep_timestamp = std::chrono::high_resolution_clock::now();
-    this->node->g_config.ingestConfig.image_taken = false;
+    this->node->g_config.ingest_config.sleep_timestamp = std::chrono::high_resolution_clock::now();
+    this->node->g_config.ingest_config.image_taken = false;
 }
 
 void nssc::stereocalibration::Ingest::cancelIngest()
 {
     cv::FileStorage config_file(this->set_path + "config.xml", cv::FileStorage::WRITE);
-    config_file << "ingestAmount" << this->node->g_config.ingestConfig.current_frame_idx;
+    config_file << "ingestAmount" << this->node->g_config.ingest_config.current_frame_idx;
 
     this->run_ingest = false;
-    this->node->g_config.ingestConfig.is_running = false;
+    this->node->g_config.ingest_config.is_running = false;
     this->i_thread.join();
     this->node->printInfo(this->msg_caller, "Ingest canceled");
 }

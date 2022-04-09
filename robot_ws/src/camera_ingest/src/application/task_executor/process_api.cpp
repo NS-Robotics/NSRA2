@@ -67,7 +67,7 @@ void nssc::application::Executor::runDetection()
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
 
-        this->triangulation_interface = std::make_shared<process::TriangulationInterface>(this->node, &this->frame_manager, this->node->g_config.triangulationConfig.standard_config_file);
+        this->triangulation_interface = std::make_shared<process::TriangulationInterface>(this->node, &this->frame_manager, this->node->g_config.triangulation_config.standard_config_file);
         if (this->triangulation_interface->init() != NSSC_STATUS_SUCCESS)
         {
             this->triangulation_initialized = false;
@@ -114,16 +114,16 @@ void nssc::application::Executor::findTriangulationOrigin()
 
 void nssc::application::Executor::setColorFilterParams(ColorFilterParams color_filter_params)
 {
-    this->node->g_config.triangulationConfig.color_filter_params = color_filter_params;
+    this->node->g_config.triangulation_config.color_filter_params = color_filter_params;
     if (this->detection_running)
     {
         this->object_detection->setColorFilterParams();
     }
-    if (color_filter_params.enable_ndi && !this->node->g_config.frameConfig.stream_on)
+    if (color_filter_params.enable_ndi && !this->node->g_config.frame_config.stream_on)
     {
         toggleNDIsource(NDI_SEND_TRIANGULATION);
     }
-    else if (!color_filter_params.enable_ndi && this->node->g_config.frameConfig.stream_on)
+    else if (!color_filter_params.enable_ndi && this->node->g_config.frame_config.stream_on)
     {
         this->ndi->endStream();
         this->ndi_running = false;

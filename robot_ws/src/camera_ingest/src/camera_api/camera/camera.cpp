@@ -136,7 +136,7 @@ nssc::NSSC_STATUS nssc::ingest::Camera::startAcquisition()
 
     for (int i = 0; i < 7; i++)
     {
-        framestruct::MonoFrame* frame = framestruct::MonoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
+        framestruct::MonoFrame* frame = framestruct::MonoFrame::makeFrame(this->node->g_config.frame_config.g_type);
         frame->alloc(this->node, i);
 
         this->buf_empty.enqueue(frame);
@@ -155,8 +155,8 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
     cudaHostAlloc((void **)&rgbBuf.hImageBuf, this->g_nPayloadSize * 3, cudaHostAllocMapped);
     cudaHostGetDevicePointer((void **)&rgbBuf.dImageBuf, (void *) rgbBuf.hImageBuf , 0);
 
-    cv::Mat h_rgb(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
-    cv::cuda::GpuMat d_rgb(cv::Size(this->node->g_config.frameConfig.cam_x_res, this->node->g_config.frameConfig.cam_y_res), CV_8UC3, rgbBuf.dImageBuf);
+    cv::Mat h_rgb(cv::Size(this->node->g_config.frame_config.cam_x_res, this->node->g_config.frame_config.cam_y_res), CV_8UC3, rgbBuf.hImageBuf);
+    cv::cuda::GpuMat d_rgb(cv::Size(this->node->g_config.frame_config.cam_x_res, this->node->g_config.frame_config.cam_y_res), CV_8UC3, rgbBuf.dImageBuf);
 
     PGX_FRAME_BUFFER pFrameBuffer = nullptr;
 

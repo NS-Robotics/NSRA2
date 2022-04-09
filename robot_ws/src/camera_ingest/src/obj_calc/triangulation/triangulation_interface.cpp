@@ -41,7 +41,7 @@
 nssc::process::TriangulationInterface::TriangulationInterface(std::shared_ptr<nssc::ros::NSSC> &node, std::unique_ptr<nssc::send::FrameManager> *frameManager,
                                                               const char *setName) : Triangulation(node, frameManager, setName)
 {
-    this->rectified_frame = nssc::framestruct::StereoFrame::makeFrame(this->node->g_config.frameConfig.g_type);
+    this->rectified_frame = nssc::framestruct::StereoFrame::makeFrame(this->node->g_config.frame_config.g_type);
     this->rectified_frame->alloc(this->node);
 }
 

@@ -88,7 +88,7 @@ public:
     nssc::framestruct::StereoFrame *getFrame() override
     {
         nssc::framestruct::StereoFrame* stereo_frame;
-        while(this->node->g_config.frameConfig.stream_on)
+        while(this->node->g_config.frame_config.stream_on)
         {
             if (this->buf_filled.wait_dequeue_timed(stereo_frame, std::chrono::seconds(1)))
             {
@@ -101,9 +101,9 @@ public:
 
     void sendFrame(nssc::framestruct::StereoFrame* stereo_frame) override
     {
-        if (this->node->g_config.frameConfig.stream_on)
+        if (this->node->g_config.frame_config.stream_on)
         {
-            stereo_frame->process(this->node->g_config.frameConfig.resize_frame);
+            stereo_frame->process(this->node->g_config.frame_config.resize_frame);
             this->buf_filled.enqueue(stereo_frame);
             this->num_filled++;
         }
@@ -143,7 +143,7 @@ public:
     nssc::framestruct::StereoFrame *getFrame() override
     {
         nssc::framestruct::StereoFrame* stereo_frame;
-        while(this->node->g_config.frameConfig.stream_on)
+        while(this->node->g_config.frame_config.stream_on)
         {
             if (this->buf_filled.wait_dequeue_timed(stereo_frame, std::chrono::seconds(1)))
             {

@@ -3,14 +3,14 @@
 
 nssc::NSSC_STATUS nssc::ingest::Camera::setExposure(float exposure_time)
 {
-    this->node->g_config.frameConfig.cam_exposure_time = exposure_time;
-    return GXSetFloat(this->h_device, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.frameConfig.cam_exposure_time);
+    this->node->g_config.frame_config.cam_exposure_time = exposure_time;
+    return GXSetFloat(this->h_device, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.frame_config.cam_exposure_time);
 }
 
 nssc::NSSC_STATUS nssc::ingest::Camera::setGain(float gain)
 {
-    this->node->g_config.frameConfig.cam_gain = gain;
-    return GXSetFloat(this->h_device, GX_FLOAT_GAIN, this->node->g_config.frameConfig.cam_gain);
+    this->node->g_config.frame_config.cam_gain = gain;
+    return GXSetFloat(this->h_device, GX_FLOAT_GAIN, this->node->g_config.frame_config.cam_gain);
 }
 
 nssc::NSSC_STATUS nssc::ingest::Camera::loadCamera(char device_serial_number[])
@@ -75,10 +75,10 @@ nssc::NSSC_STATUS nssc::ingest::Camera::loadCamera(char device_serial_number[])
     status = GXSetEnum(this->h_device, GX_ENUM_PIXEL_FORMAT, nPixelFormat);
     _GX_VERIFY_EXIT(status);
 
-    status = GXSetFloat(this->h_device, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.frameConfig.cam_exposure_time);
+    status = GXSetFloat(this->h_device, GX_FLOAT_EXPOSURE_TIME, this->node->g_config.frame_config.cam_exposure_time);
     _GX_VERIFY_EXIT(status);
 
-    status = GXSetFloat(this->h_device, GX_FLOAT_GAIN, this->node->g_config.frameConfig.cam_gain);
+    status = GXSetFloat(this->h_device, GX_FLOAT_GAIN, this->node->g_config.frame_config.cam_gain);
     _GX_VERIFY_EXIT(status);
 
     status = GXSetEnum(this->h_device, GX_ENUM_TRIGGER_MODE, GX_TRIGGER_MODE_ON);

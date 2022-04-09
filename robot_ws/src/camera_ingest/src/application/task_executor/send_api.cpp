@@ -41,7 +41,7 @@ void nssc::application::Executor::toggleNDI(bool mono_stream)
         this->ndi->endStream();
         this->ndi_running = false;
     }
-    else if (mono_stream == this->node->g_config.frameConfig.mono_stream)
+    else if (mono_stream == this->node->g_config.frame_config.mono_stream)
     {
         toggleNDIsource(NDI_SEND_RAW);
     }
@@ -52,8 +52,8 @@ void nssc::application::Executor::toggleNDI(bool mono_stream)
             this->ndi->closeNDI();
             this->ndi_initialized = false;
         }
-        this->node->g_config.frameConfig.mono_stream = mono_stream;
-        this->node->g_config.frameConfig.calculate_params();
+        this->node->g_config.frame_config.mono_stream = mono_stream;
+        this->node->g_config.frame_config.calculate_params();
 
         this->ndi->init();
         this->ndi_initialized = true;

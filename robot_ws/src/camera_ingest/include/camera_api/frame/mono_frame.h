@@ -33,7 +33,8 @@ namespace nssc
 
           std::shared_ptr<ros::NSSC> node;
           std::string msg_caller = "Mono Frame";
-          FrameBuffer frame_buf;
+          FrameBuffer rgba_buf;
+          FrameBuffer rgb_buf;
           bool inputFlag = false;
         };
     }

@@ -67,7 +67,7 @@ namespace nssc
 
             std::string     cam_serial;
             std::string     msg_caller;
-            int64_t   g_i64ColorFilter = GX_COLOR_FILTER_NONE;
+            int64_t         g_i64ColorFilter = GX_COLOR_FILTER_NONE;
             int64_t         g_nPayloadSize = 0;
             uint64_t        nBufferNum = ACQ_BUFFER_NUM;
             bool            bStreamTransferSize = false;

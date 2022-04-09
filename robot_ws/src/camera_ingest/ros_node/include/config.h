@@ -39,7 +39,7 @@ public:
     bool enable_ndi = true;
 };
 
-struct frame_config
+struct FrameConfig
 {
 public:
     //Frame
@@ -54,6 +54,11 @@ public:
     float cam_gain = 15.0;
 
     int max_frame_time_diff = 5000; //microseconds
+
+    //rgb
+    short rgb_x_res;
+    short rgb_y_res;
+    NSSC_BUF_SIZE rgb_buf_size;
 
     //mono
     short mono_x_res;
@@ -80,7 +85,7 @@ public:
     NDIlib_FourCC_video_type_e FourCC;    
     int ndi_line_stride;
 
-    frame_config()
+    FrameConfig()
     {
         calculate_params();
     }
@@ -90,6 +95,10 @@ public:
         switch (g_type)
         {
         case NSSC_FRAME_RGBA:
+            rgb_x_res = cam_x_res;
+            mono_y_res = cam_y_res;
+            rgb_buf_size = mono_x_res * mono_y_res * 3;
+
             mono_x_res = cam_x_res;
             mono_y_res = cam_y_res;
             mono_buf_size = mono_x_res * mono_y_res * 4;
@@ -158,7 +167,7 @@ public:
     }
 };
 
-struct ingest_config
+struct IngestConfig
 {
 public:
     short max_frame_time_diff = 1000; //microseconds
@@ -174,7 +183,7 @@ public:
     std::chrono::high_resolution_clock::time_point sleep_timestamp;
 };
 
-struct calib_config
+struct CalibConfig
 {
 public:
     bool is_running   = false;
@@ -184,7 +193,7 @@ public:
     float square_size = 30.5; //millimeters
 };
 
-struct triangulation_config
+struct TriangulationConfig
 {
 public:
     short max_origin_frame_time_diff = 1000; //microseconds
@@ -193,18 +202,18 @@ public:
     ColorFilterParams color_filter_params;
 };
 
-struct globalConfig : public frame_config, public ingest_config, public calib_config, public triangulation_config
+struct GlobalConfig : public FrameConfig, public IngestConfig, public CalibConfig, public TriangulationConfig
 {
 public:
     std::string package_name = "camera_ingest";
     std::string share_dir;
 
-    frame_config frameConfig;
-    ingest_config ingestConfig;
-    calib_config calibConfig;
-    triangulation_config triangulationConfig;
+    FrameConfig frame_config;
+    IngestConfig ingest_config;
+    CalibConfig calib_config;
+    TriangulationConfig triangulation_config;
 
-    globalConfig()
+    GlobalConfig()
     {
         share_dir = ament_index_cpp::get_package_share_directory(package_name);
     }

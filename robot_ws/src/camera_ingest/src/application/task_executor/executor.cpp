@@ -54,7 +54,7 @@ void nssc::application::Executor::exit()
     if (this->is_closed) { return; }
     this->is_closed = true;
 
-    if (this->node->g_config.ingestConfig.is_running)
+    if (this->node->g_config.ingest_config.is_running)
     {
         this->ingest->cancelIngest();
     }
@@ -104,7 +104,7 @@ void nssc::application::Executor::init()
 
 void nssc::application::Executor::cancel()
 {
-    if (this->node->g_config.ingestConfig.is_running)
+    if (this->node->g_config.ingest_config.is_running)
     {
         this->ingest->cancelIngest();
     }

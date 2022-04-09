@@ -72,7 +72,7 @@ nssc::NSSC_STATUS nssc::process::Triangulation::init()
         this->dictionary = cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_50);
         this->parameters = cv::aruco::DetectorParameters::create();
 
-        this->mono_size = cv::Size(this->node->g_config.frameConfig.mono_x_res, this->node->g_config.frameConfig.mono_y_res);
+        this->mono_size = cv::Size(this->node->g_config.frame_config.mono_x_res, this->node->g_config.frame_config.mono_y_res);
 
         cv::initUndistortRectifyMap(this->left_K, this->left_D, this->left_R, this->left_P,
                                     mono_size, CV_32FC1, this->left_map1, this->left_map2);
@@ -108,17 +108,17 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
 {
     nssc::framestruct::StereoFrame* stereoFrame;
 
-    while (this->node->g_config.frameConfig.stream_on)
+    while (this->node->g_config.frame_config.stream_on)
     {
         stereoFrame = (*this->frame_manager)->getCameraFrame();
-        if (stereoFrame->timedif < this->node->g_config.triangulationConfig.max_origin_frame_time_diff)
+        if (stereoFrame->timedif < this->node->g_config.triangulation_config.max_origin_frame_time_diff)
             break;
         else
             (*this->frame_manager)->returnBuf(stereoFrame);
     }
 
-    cv::Mat left_inp(mono_size,CV_8UC4, stereoFrame->left_camera->frame_buf.hImageBuf);
-    cv::Mat right_inp(mono_size, CV_8UC4, stereoFrame->right_camera->frame_buf.hImageBuf);
+    cv::Mat left_inp(mono_size,CV_8UC4, stereoFrame->left_camera->rgba_buf.hImageBuf);
+    cv::Mat right_inp(mono_size, CV_8UC4, stereoFrame->right_camera->rgba_buf.hImageBuf);
 
     cv::Mat left_conv;
     cv::Mat right_conv;
@@ -146,9 +146,9 @@ nssc::NSSC_STATUS nssc::process::Triangulation::findOrigin()
     for(int i = 0; i < 3; i++)
     {
         int left_idx, right_idx;
-        auto left_element = std::find(left_markerIds.begin(), left_markerIds.end(), this->node->g_config.triangulationConfig.origin_ids[i]);
+        auto left_element = std::find(left_markerIds.begin(), left_markerIds.end(), this->node->g_config.triangulation_config.origin_ids[i]);
         left_idx = left_element - left_markerIds.begin();
-        auto right_element = std::find(right_markerIds.begin(), right_markerIds.end(), this->node->g_config.triangulationConfig.origin_ids[i]);
+        auto right_element = std::find(right_markerIds.begin(), right_markerIds.end(), this->node->g_config.triangulation_config.origin_ids[i]);
         right_idx = right_element - right_markerIds.begin();
         left_originMarkers.push_back(left_markerCorners[left_idx][0]);
         right_originMarkers.push_back(right_markerCorners[right_idx][0]);
@@ -253,7 +253,7 @@ Eigen::Vector3d nssc::process::Triangulation::_transformCoordinates(const Eigen:
 
 bool nssc::process::Triangulation::__originMarkersExist(std::vector<int> ids)
 {
-    std::vector<int>& req_ids = this->node->g_config.triangulationConfig.origin_ids;
+    std::vector<int>& req_ids = this->node->g_config.triangulation_config.origin_ids;
 
     return std::all_of(req_ids.begin(), req_ids.end(), [&ids](int a_elt) {
         return std::find(ids.begin(), ids.end(), a_elt) != ids.end();

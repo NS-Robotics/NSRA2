@@ -16,7 +16,7 @@ namespace nssc
                 void printWarning(std::string caller, std::string msg);
                 void printError(std::string caller, std::string msg);
                 void printFatal(std::string caller, std::string msg);
-                globalConfig g_config;
+                GlobalConfig g_config;
             private:
                 std::string msgCaller = "Node";
         };
