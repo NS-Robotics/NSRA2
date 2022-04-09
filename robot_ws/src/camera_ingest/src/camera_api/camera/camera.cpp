@@ -178,6 +178,8 @@ void nssc::ingest::Camera::GXDQBufThreadNDI()
 
             this->buf_filled.enqueue(frame);
             this->n_filled++;
+
+            std::cout << "done" << std::endl;
         }
         else if (__checkFrameAge() && this->stop_age_check.load())
         {
