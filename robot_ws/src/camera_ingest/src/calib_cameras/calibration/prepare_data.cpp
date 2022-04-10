@@ -120,10 +120,10 @@ std::tuple<nssc::NSSC_STATUS, std::vector<cv::Point2f>> nssc::stereocalibration:
     cv::cornerSubPix(gray, corners, cv::Size(5, 5), cv::Size(-1, -1),
                      cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1));
     cv::drawChessboardCorners(img, this->board_size, corners, found);
-
+    /*
     std::string file_name(out_file);
     cv::imwrite(file_name, img);
-
+    */
     return std::make_tuple(NSSC_STATUS_SUCCESS, corners);
 }
 
