@@ -210,11 +210,6 @@ void nssc::process::ObjectDetection::_detectionThread()
 
         cv::cuda::cvtColor(d_left_inp, d_left_filter, cv::COLOR_RGB2HSV);
         cv::cuda::cvtColor(d_right_inp, d_right_filter, cv::COLOR_RGB2HSV);
-        std::cout << "color" << std::endl;
-        /*
-        left_hsv = _cudaInRange(left_hsv);
-        right_hsv = _cudaInRange(right_hsv);
-         */
 
         cv::inRange(h_left_filter,
                     cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
@@ -224,31 +219,21 @@ void nssc::process::ObjectDetection::_detectionThread()
                     cv::Scalar(this->color_filter_params.low_H, this->color_filter_params.low_S, this->color_filter_params.low_V),
                     cv::Scalar(this->color_filter_params.high_H, this->color_filter_params.high_S, this->color_filter_params.high_V),
                     right_dilate);
-        std::cout << "inrange" << std::endl;
+
         cv::erode(left_dilate, left_dilate, kernel);
         cv::erode(right_dilate, right_dilate, kernel);
-        std::cout << "erode" << std::endl;
+
         cv::bitwise_not(left_dilate, left_dilate);
         cv::bitwise_not(right_dilate, right_dilate);
-        std::cout << "bitwise" << std::endl;
+
         cv::morphologyEx(left_dilate, left_dilate, cv::MORPH_OPEN, morph_kernel);
         cv::morphologyEx(right_dilate, right_dilate, cv::MORPH_OPEN, morph_kernel);
-        std::cout << "morph" << std::endl;
-        /*
-        cv::cuda::bitwise_not(left_hsv, left_hsv);
-        cv::cuda::bitwise_not(right_hsv, right_hsv);
-
-        cv::Ptr<cv::cuda::Filter> dilate_filter = cv::cuda::createMorphologyFilter(cv::MORPH_OPEN, left_hsv.type(), morph_kernel);
-
-        dilate_filter->apply(left_hsv, d_left_filter);
-        dilate_filter->apply(right_hsv, d_right_filter);
-        */
 
         if (this->color_filter_params.enable_detection)
         {
             detector->detect(left_dilate, keypoints_left);
             detector->detect(right_dilate, keypoints_right);
-            std::cout << "detect" << std::endl;
+
             if (!keypoints_left.empty() && !keypoints_right.empty())
             {
                 bottles = _processKeypoints(keypoints_left, keypoints_right);
