@@ -25,16 +25,7 @@ find_package(jetson-utils REQUIRED)
 find_package(jetson-inference REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread)
 find_package(Eigen3 REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/ColorFilterParams.msg"
-  "msg/CameraSettings.msg"
-  "msg/Bottle.msg"
-  "msg/ObjectDetection.msg"
-)
-
-ament_export_dependencies(rosidl_default_runtime)
+find_package(nssc_interface REQUIRED)
 
 add_subdirectory(ros_node)
 
@@ -257,10 +248,7 @@ target_include_directories(
 
 target_link_libraries(triangulation ros_node camera_manager frame_manager)
 
-ament_target_dependencies(triangulation rclcpp OpenCV Eigen3)
-
-rosidl_target_interfaces(triangulation
-        ${PROJECT_NAME} "rosidl_typesupport_cpp")
+ament_target_dependencies(triangulation nssc_interface rclcpp OpenCV Eigen3)
 
 #add_library(
 #  nssc_image_transport
@@ -343,10 +331,7 @@ target_include_directories(
 
 target_link_libraries(message_handler ros_node task_executor nssc_errors)
 
-ament_target_dependencies(message_handler rclcpp)
-
-rosidl_target_interfaces(message_handler
-        ${PROJECT_NAME} "rosidl_typesupport_cpp")
+ament_target_dependencies(message_handler nssc_interface rclcpp)
 
 
 add_library(

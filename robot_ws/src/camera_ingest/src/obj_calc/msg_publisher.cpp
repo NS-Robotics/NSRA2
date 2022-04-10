@@ -37,15 +37,15 @@
 nssc::process::DetectionPublisher::DetectionPublisher(std::shared_ptr<ros::NSSC> &node)
 {
     this->node = node;
-    this->bottle_publisher = this->node->create_publisher<camera_ingest::msg::ObjectDetection>("nssc/bottle_coordinates", 10);
+    this->bottle_publisher = this->node->create_publisher<nssc_interface::msg::ObjectDetection>("nssc/bottle_coordinates", 10);
 }
 
 void nssc::process::DetectionPublisher::publishBottleCoordinates(std::vector<Bottle> bottles)
 {
-    std::vector<camera_ingest::msg::Bottle> bottles_msg;
+    std::vector<nssc_interface::msg::Bottle> bottles_msg;
     for (auto & bottle : bottles)
     {
-        auto bottle_msg = camera_ingest::msg::Bottle();
+        auto bottle_msg = nssc_interface::msg::Bottle();
         bottle_msg.coord_3d = std::array<float, 3>{static_cast<float>(bottle.coord_3d[0]),
                                                    static_cast<float>(bottle.coord_3d[1]),
                                                    static_cast<float>(bottle.coord_3d[2])};
@@ -58,7 +58,7 @@ void nssc::process::DetectionPublisher::publishBottleCoordinates(std::vector<Bot
         bottles_msg.push_back(bottle_msg);
     }
 
-    auto msg = camera_ingest::msg::ObjectDetection();
+    auto msg = nssc_interface::msg::ObjectDetection();
     msg.bottles = bottles_msg;
     this->bottle_publisher->publish(msg);
 }

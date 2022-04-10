@@ -38,8 +38,8 @@
 #include "executor.h"
 #include "node.h"
 
-#include "camera_ingest/msg/color_filter_params.hpp"
-#include "camera_ingest/msg/camera_settings.hpp"
+#include "nssc_interface/msg/color_filter_params.hpp"
+#include "nssc_interface/msg/camera_settings.hpp"
 
 namespace nssc
 {
@@ -51,14 +51,14 @@ namespace nssc
             MessageHandler(std::shared_ptr<ros::NSSC> &node, std::shared_ptr<Executor> &executor);
 
         private:
-            void color_filter_callback(const camera_ingest::msg::ColorFilterParams::SharedPtr msg) const;
-            void camera_settings_callback(const camera_ingest::msg::CameraSettings::SharedPtr msg) const;
+            void color_filter_callback(const nssc_interface::msg::ColorFilterParams::SharedPtr msg) const;
+            void camera_settings_callback(const nssc_interface::msg::CameraSettings::SharedPtr msg) const;
 
             std::shared_ptr<ros::NSSC> node;
             std::shared_ptr<Executor> executor;
 
-            rclcpp::Subscription<camera_ingest::msg::ColorFilterParams>::SharedPtr color_filter_subscriber;
-            rclcpp::Subscription<camera_ingest::msg::CameraSettings>::SharedPtr camera_settings_subscriber;
+            rclcpp::Subscription<nssc_interface::msg::ColorFilterParams>::SharedPtr color_filter_subscriber;
+            rclcpp::Subscription<nssc_interface::msg::CameraSettings>::SharedPtr camera_settings_subscriber;
 
             std::string msg_caller = "MessageHandler";
         };

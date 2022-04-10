@@ -38,8 +38,8 @@
 #include "node.h"
 #include "triangulation_interface.h"
 
-#include "camera_ingest/msg/object_detection.hpp"
-#include "camera_ingest/msg/bottle.hpp"
+#include "nssc_interface/msg/object_detection.hpp"
+#include "nssc_interface/msg/bottle.hpp"
 
 namespace nssc
 {
@@ -62,7 +62,7 @@ namespace nssc
         private:
             std::shared_ptr<ros::NSSC> node;
 
-            rclcpp::Publisher<camera_ingest::msg::ObjectDetection>::SharedPtr bottle_publisher;
+            rclcpp::Publisher<nssc_interface::msg::ObjectDetection>::SharedPtr bottle_publisher;
         };
     }
 }

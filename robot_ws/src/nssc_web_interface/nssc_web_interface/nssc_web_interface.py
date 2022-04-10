@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from camera_ingest.msg import ColorFilterParams, CameraSettings
+from nssc_interface.msg import ColorFilterParams, CameraSettings
 import threading
 from dataclasses import dataclass
 
