@@ -246,15 +246,9 @@ Eigen::Vector3d nssc::process::Triangulation::_transformCoordinates(const Eigen:
             (this->origin_vec[1] * mtrx_ret[1]).norm(),
             (this->origin_vec[2] * mtrx_ret[2]).norm();
 
-    for (int i = 0; i < 3; i++)
-    {
-        if (mtrx_ret[i] < 0.0)
-        {
-            obj[i] = - obj[i];
-        }
-    }
-
-    std::cout << mtrx_ret << std::endl;
+    obj[0] = (mtrx_ret[0] < 0.0) ? - obj[0] : obj[0];
+    obj[1] = (mtrx_ret[1] < 0.0) ? obj[1] : - obj[1];
+    obj[2] = (mtrx_ret[2] < 0.0) ? - obj[2] : obj[2];
 
     return obj;
 }
