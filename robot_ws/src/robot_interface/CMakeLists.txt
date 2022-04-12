@@ -37,6 +37,7 @@ find_package(pluginlib REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(nssc_interface REQUIRED)
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
         ament_cmake
@@ -60,7 +61,72 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
 
 include_directories(${THIS_PACKAGE_INCLUDE_DIRS})
 
+add_library(
+        moveit_interface
+        nsra2/src/moveit_interface/moveit_interface.cpp
+)
+
+target_include_directories(
+        moveit_interface
+        PUBLIC
+        nsra2/include/moveit_interface
+)
+
+target_link_libraries(
+        moveit_interface
+)
+
+ament_target_dependencies(
+        moveit_interface
+        rclcpp
+        rclcpp_action
+        tf2_geometry_msgs
+        tf2_ros
+        moveit_core
+        rviz_visual_tools
+        moveit_visual_tools
+        moveit_ros_planning_interface
+        interactive_markers
+        tf2_geometry_msgs
+        moveit_ros_planning
+        pluginlib
+        Eigen3
+        Boost
+        control_msgs
+        moveit_servo
+        Boost
+)
+
+add_library(
+        message_handler
+        nsra2/src/message_handler/message_handler.cpp
+)
+
+target_include_directories(
+        message_handler
+        PUBLIC
+        nsra2/include/message_handler
+        nsra2/include/moveit_interface
+)
+
+target_link_libraries(
+        message_handler
+        moveit_interface
+)
+
+ament_target_dependencies(
+        message_handler
+        Eigen3
+        rclcpp
+        nssc_interface
+)
+
 add_executable(nsra2_interface nsra2/src/nsra2_interface.cpp)
+
+target_link_libraries(
+        nsra2_interface
+        message_handler
+)
 
 ament_target_dependencies(nsra2_interface
         ament_cmake
@@ -88,7 +154,7 @@ ament_target_dependencies(
 )
 
 install(
-        TARGETS nsra2_interface
+        TARGETS nsra2_interface message_handler
         RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

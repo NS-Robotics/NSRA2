@@ -25,22 +25,6 @@ int main(int argc, char** argv)
     std::thread([&executor]()
                 { executor.spin(); }).detach();
 
-    static const std::string PLANNING_GROUP = "nsra";
-
-    moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
-
-    moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
-
-    const moveit::core::JointModelGroup* joint_model_group =
-            move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
-
-    namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools(move_group_node, "base_link", "nsra_planning",
-                                                        move_group.getRobotModel());
-
-    visual_tools.deleteAllMarkers();
-
-    visual_tools.loadRemoteControl();
 
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
     text_pose.translation().z() = 1.0;
