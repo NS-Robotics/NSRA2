@@ -20,6 +20,8 @@ int main(int argc, char** argv)
     auto moveit_interface = std::make_shared<MoveItInterface>(move_group_node);
     MessageHandler message_handler(move_group_node, moveit_interface);
 
+    moveit_interface->graspObject(0);
+
     executor_thread.join();
 
     /*
@@ -36,13 +38,13 @@ int main(int argc, char** argv)
     target_pose1.position.x = 0.2;
     target_pose1.position.y = 0.2;
     target_pose1.position.z = 0.2;
-    move_group.setPoseTarget(target_pose1);
+    nsra_move_group.setPoseTarget(target_pose1);
 
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-    bool success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    bool success = (nsra_move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
-    move_group.move();
+    nsra_move_group.move();
 
     RCLCPP_INFO(LOGGER, "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
 
@@ -53,18 +55,18 @@ int main(int argc, char** argv)
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
 
-    moveit::core::RobotStatePtr current_state = move_group.getCurrentState(10);
+    moveit::core::RobotStatePtr current_state = nsra_move_group.getCurrentState(10);
 
     std::vector<double> joint_group_positions;
     current_state->copyJointGroupPositions(joint_model_group, joint_group_positions);
 
     joint_group_positions[0] = -1.0;  // radians
-    move_group.setJointValueTarget(joint_group_positions);
+    nsra_move_group.setJointValueTarget(joint_group_positions);
 
-    move_group.setMaxVelocityScalingFactor(0.05);
-    move_group.setMaxAccelerationScalingFactor(0.05);
+    nsra_move_group.setMaxVelocityScalingFactor(0.05);
+    nsra_move_group.setMaxAccelerationScalingFactor(0.05);
 
-    success = (move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
+    success = (nsra_move_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
     RCLCPP_INFO(LOGGER, "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
 
     visual_tools.deleteAllMarkers();

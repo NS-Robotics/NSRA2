@@ -63,17 +63,32 @@ class MoveItInterface
 public:
     explicit MoveItInterface(std::shared_ptr<rclcpp::Node> node);
     void updateScene(std::vector<Bottle> bottles);
+    void graspObject(int id);
 
 private:
+    void _placeTable();
+    bool _grasp(moveit_msgs::msg::CollisionObject object);
+    void _openGripper();
+    void _closeGripper();
+    bool _pick(moveit_msgs::msg::CollisionObject object);
+    void _place(moveit_msgs::msg::CollisionObject object);
+
+    geometry_msgs::msg::Quaternion __toMsg(tf2::Quaternion tf2_quat);
+
     std::shared_ptr<rclcpp::Node> node;
 
-    std::unique_ptr<moveit::planning_interface::MoveGroupInterface> move_group;
+    std::unique_ptr<moveit::planning_interface::MoveGroupInterface> nsra_move_group;
     moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
     const moveit::core::JointModelGroup* joint_model_group;
 
+    std::unique_ptr<moveit::planning_interface::MoveGroupInterface> hand_move_group;
+    const moveit::core::JointModelGroup* hand_joint_model_group;
+
     std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools;
 
-    std::vector<std::string> object_ids;
+    std::vector<moveit_msgs::msg::CollisionObject> objects;
+
+    bool update_scene;
 };
 
 #endif //ROBOT_INTERFACE_MOVEIT_INTERFACE_H_

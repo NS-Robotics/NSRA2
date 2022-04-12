@@ -50,7 +50,7 @@ void MessageHandler::bottle_callback(const nssc_interface::msg::ObjectDetection:
     for (auto & bottle_m : msg->bottles)
     {
         Bottle new_bottle;
-        new_bottle.coord_3d << bottle_m.coord_3d[0], bottle_m.coord_3d[1], bottle_m.coord_3d[2];
+        new_bottle.coord_3d << bottle_m.coord_3d[1], bottle_m.coord_3d[0], bottle_m.coord_3d[2];
         new_bottle.right_coord_2d << bottle_m.right_coord_2d[0], bottle_m.right_coord_2d[1];
         new_bottle.left_coord_2d << bottle_m.left_coord_2d[0], bottle_m.left_coord_2d[1];
         new_bottle.id = bottle_m.id;
