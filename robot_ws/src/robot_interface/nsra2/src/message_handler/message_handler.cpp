@@ -45,7 +45,6 @@ MessageHandler::MessageHandler(std::shared_ptr<rclcpp::Node> node, std::shared_p
 
 void MessageHandler::bottle_callback(const nssc_interface::msg::ObjectDetection::SharedPtr msg) const
 {
-    RCLCPP_INFO(this->node->get_logger(), "Message received");
     std::vector<Bottle> bottles;
     for (auto & bottle_m : msg->bottles)
     {

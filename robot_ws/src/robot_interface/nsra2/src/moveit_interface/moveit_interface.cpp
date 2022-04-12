@@ -53,6 +53,10 @@ MoveItInterface::MoveItInterface(std::shared_ptr<rclcpp::Node> node)
     nsra_move_group->setMaxVelocityScalingFactor(1.0);
     nsra_move_group->setMaxAccelerationScalingFactor(1.0);
 
+    this->place_pos.position.x = 0.4;
+    this->place_pos.position.y = 0.6;
+    this->place_pos.position.z = 0.12;
+
     this->update_scene = true;
 }
 
@@ -62,115 +66,173 @@ void MoveItInterface::updateScene(std::vector<Bottle> bottles)
 
     std::vector<moveit_msgs::msg::CollisionObject> new_objects;
 
-    moveit_msgs::msg::CollisionObject object_to_attach;
-    object_to_attach.header.frame_id = nsra_move_group->getPlanningFrame();
-    object_to_attach.id = std::to_string(bottles[0].id);
-    new_objects.push_back(object_to_attach);
+    for (auto & bottle : bottles)
+    {
+        moveit_msgs::msg::CollisionObject object_to_attach;
+        object_to_attach.header.frame_id = nsra_move_group->getPlanningFrame();
+        object_to_attach.id = std::to_string(bottle.id);
 
-    shape_msgs::msg::SolidPrimitive cylinder_primitive;
-    cylinder_primitive.type = cylinder_primitive.CYLINDER;
-    cylinder_primitive.dimensions.resize(2);
-    cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_HEIGHT] = 0.22;
-    cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_RADIUS] = 0.03;
+        shape_msgs::msg::SolidPrimitive cylinder_primitive;
+        cylinder_primitive.type = cylinder_primitive.CYLINDER;
+        cylinder_primitive.dimensions.resize(2);
+        cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_HEIGHT] = 0.22;
+        cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_RADIUS] = 0.03;
 
-    geometry_msgs::msg::Pose grab_pose;
-    grab_pose.orientation.w = 1.0;
-    grab_pose.position.x = bottles[0].coord_3d.x() / 1000.0;
-    grab_pose.position.y = bottles[0].coord_3d.y() / 1000.0;
-    grab_pose.position.z = bottles[0].coord_3d.z() / 1000.0 - 0.11;
+        geometry_msgs::msg::Pose grab_pose;
+        grab_pose.orientation.w = 1.0;
+        grab_pose.position.x = bottle.coord_3d.x() / 1000.0;
+        grab_pose.position.y = bottle.coord_3d.y() / 1000.0;
+        grab_pose.position.z = bottle.coord_3d.z() / 1000.0 - 0.10;
 
-    object_to_attach.primitives.push_back(cylinder_primitive);
-    object_to_attach.primitive_poses.push_back(grab_pose);
-    object_to_attach.operation = object_to_attach.ADD;
+        object_to_attach.primitives.push_back(cylinder_primitive);
+        object_to_attach.primitive_poses.push_back(grab_pose);
+        object_to_attach.operation = object_to_attach.ADD;
+
+        new_objects.push_back(object_to_attach);
+    }
 
     this->objects = new_objects;
-    planning_scene_interface.applyCollisionObject(object_to_attach);
+    planning_scene_interface.applyCollisionObjects(new_objects);
     RCLCPP_INFO(this->node->get_logger(), "Scene updated");
 }
 
 void MoveItInterface::graspObject(int id)
 {
-    visual_tools->prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
-
-    this->update_scene = false;
-    moveit_msgs::msg::CollisionObject object;
-
-    bool found = false;
-    for (auto & bottle : this->objects)
+    while (true)
     {
-        if (bottle.id == std::to_string(id))
+        visual_tools->prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
+
+        this->update_scene = false;
+        moveit_msgs::msg::CollisionObject object;
+
+        bool found = false;
+        for (auto & bottle : this->objects)
         {
-            object = bottle;
-            found = true;
+            if (bottle.id == std::to_string(id))
+            {
+                object = bottle;
+                found = true;
+            }
+        }
+
+        if (!found) {
+            RCLCPP_ERROR(this->node->get_logger(), "Given Object ID not found");
+            return;
+        }
+
+        if (_grasp(object))
+        {
+            RCLCPP_INFO(this->node->get_logger(), "Object grasp successfull!");
         }
     }
-
-    if (!found) {
-        RCLCPP_ERROR(this->node->get_logger(), "Given Object ID not found");
-        return;
-    }
-
-    _grasp(object);
 }
 
-bool MoveItInterface::_grasp(moveit_msgs::msg::CollisionObject object)
+bool MoveItInterface::_grasp(const moveit_msgs::msg::CollisionObject& object)
 {
     _openGripper();
-    if (_pick(object))
+    if (!_pick(object))
     {
-        RCLCPP_WARN(this->node->get_logger(), "Object pick failed!");
+        RCLCPP_ERROR(this->node->get_logger(), "Object pick failed!");
+        if (this->object_attached)
+        {
+            this->hand_move_group->detachObject(object.id);
+            this->object_attached = false;
+            _openGripper();
+        }
+        this->update_scene = true;
         return false;
     }
+
+    if (!_place(object))
+    {
+        RCLCPP_ERROR(this->node->get_logger(), "Object place failed!");
+        if (this->object_attached)
+        {
+            this->hand_move_group->detachObject(object.id);
+            this->object_attached = false;
+            _openGripper();
+        }
+        this->update_scene = true;
+        return false;
+    }
+
     this->update_scene = true;
     return true;
 }
 
-bool MoveItInterface::_pick(moveit_msgs::msg::CollisionObject object)
+bool MoveItInterface::_pick(const moveit_msgs::msg::CollisionObject& object)
 {
     std::vector<std::string> bottle_ids = {object.id};
-    geometry_msgs::msg::Pose object_pos = planning_scene_interface.getObjectPoses(bottle_ids)[0];
-
-    std::cout << object_pos.position.x << std::endl;
-
-    tf2::Quaternion orientation;
-    orientation.setRPY(M_PI / 2, 0, 0);
+    auto object_map = planning_scene_interface.getObjectPoses(bottle_ids);
+    geometry_msgs::msg::Pose object_pos = object_map.find(object.id)->second;
 
     //pre_grasp
     geometry_msgs::msg::Pose pre_grasp_pose = object_pos;
     this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
-    pre_grasp_pose.orientation = __toMsg(orientation);
-    pre_grasp_pose.position.x = object_pos.position.x - 0.3;
+    _calculateOrientation(pre_grasp_pose, 0.25);
     this->nsra_move_group->setPoseTarget(pre_grasp_pose);
     moveit::planning_interface::MoveGroupInterface::Plan pre_grasp_plan;
-    bool success = (this->nsra_move_group->plan(pre_grasp_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    if (!success) { return false; }
-    this->nsra_move_group->move();
-    RCLCPP_INFO(this->node->get_logger(), "Grasp!");
+    if (this->nsra_move_group->plan(pre_grasp_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+    if (this->nsra_move_group->move() != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+
     //grasp
     this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
     geometry_msgs::msg::Pose grasp_pose = object_pos;
-    grasp_pose.orientation = __toMsg(orientation);
-    grasp_pose.position.x = object_pos.position.x - 0.16;
+    _calculateOrientation(grasp_pose, 0.16);
     this->nsra_move_group->setPoseTarget(grasp_pose);
     moveit::planning_interface::MoveGroupInterface::Plan grasp_plan;
-    success = (this->nsra_move_group->plan(grasp_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    if (!success) { return false; }
-    this->nsra_move_group->move();
+    if (this->nsra_move_group->plan(grasp_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+    if (this->nsra_move_group->move() != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
 
     _closeGripper();
-    RCLCPP_INFO(this->node->get_logger(), "Post Grasp!");
-    //post_grasp
+    std::vector<std::string> touch_links;
+    touch_links.push_back("Component7_1");
+    touch_links.push_back("Component8_1");
+    this->hand_move_group->attachObject(object.id, "Component7_1", touch_links);
+    this->object_attached = true;
+
+    //post_grasp_pose
     this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
-    geometry_msgs::msg::Pose post_grasp = object_pos;
-    post_grasp.orientation = __toMsg(orientation);
-    post_grasp.position.x = object_pos.position.x - 0.16;
-    post_grasp.position.z = object_pos.position.z + 0.2;
+    geometry_msgs::msg::Pose post_grasp_pose = object_pos;
+    _calculateOrientation(post_grasp_pose, 0.16);
+    post_grasp_pose.position.z = object_pos.position.z + 0.2;
     this->nsra_move_group->setStartStateToCurrentState();
-    this->nsra_move_group->setPoseTarget(post_grasp);
+    this->nsra_move_group->setPoseTarget(post_grasp_pose);
     moveit::planning_interface::MoveGroupInterface::Plan post_grasp_plan;
-    success = (this->nsra_move_group->plan(post_grasp_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
-    if (!success) { return false; }
-    this->nsra_move_group->move();
+    if (this->nsra_move_group->plan(post_grasp_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+    if (this->nsra_move_group->move() != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+
+    return true;
+}
+
+bool MoveItInterface::_place(const moveit_msgs::msg::CollisionObject& object)
+{
+    std::vector<std::string> bottle_ids = {object.id};
+    auto object_map = planning_scene_interface.getObjectPoses(bottle_ids);
+    geometry_msgs::msg::Pose object_pos = object_map.find(object.id)->second;
+
+    //place
+    geometry_msgs::msg::Pose place_pose = this->place_pos;
+    this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
+    _calculateOrientation(place_pose, 0.0);
+    this->nsra_move_group->setPoseTarget(place_pose);
+    moveit::planning_interface::MoveGroupInterface::Plan place_plan;
+    if (this->nsra_move_group->plan(place_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+    if (this->nsra_move_group->move() != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+
+    this->hand_move_group->detachObject(object.id);
+    this->object_attached = false;
+    _openGripper();
+
+    //post_place
+    geometry_msgs::msg::Pose post_place_pose = this->place_pos;
+    this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
+    _calculateOrientation(post_place_pose, 0.16);
+    post_place_pose.position.z = this->place_pos.position.z + 0.2;
+    this->nsra_move_group->setPoseTarget(post_place_pose);
+    moveit::planning_interface::MoveGroupInterface::Plan post_place_plan;
+    if (this->nsra_move_group->plan(post_place_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
+    if (this->nsra_move_group->move() != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
 
     return true;
 }
@@ -236,7 +298,7 @@ void MoveItInterface::_placeTable()
     RCLCPP_INFO(this->node->get_logger(), "Table placed");
 }
 
-geometry_msgs::msg::Quaternion MoveItInterface::__toMsg(tf2::Quaternion tf2_quat)
+geometry_msgs::msg::Quaternion MoveItInterface::_toMsg(tf2::Quaternion tf2_quat)
 {
     geometry_msgs::msg::Quaternion geom_quat;
     geom_quat.w = tf2_quat.w();
@@ -244,4 +306,39 @@ geometry_msgs::msg::Quaternion MoveItInterface::__toMsg(tf2::Quaternion tf2_quat
     geom_quat.y = tf2_quat.y();
     geom_quat.z = tf2_quat.z();
     return geom_quat;
+}
+
+void MoveItInterface::_calculateOrientation(geometry_msgs::msg::Pose &object_pos, double approach)
+{
+    tf2::Quaternion orientation;
+
+    if (object_pos.position.x < 0 && object_pos.position.y > 0)
+    {
+        orientation.setRPY(M_PI / 2, 0, M_PI / 2);
+        object_pos.position.y = object_pos.position.y - approach;
+    }
+    else if (object_pos.position.x > 0 && object_pos.position.y > 0.4)
+    {
+        orientation.setRPY(M_PI / 2, 0, M_PI / 4);
+        object_pos.position.y = object_pos.position.y - sqrt(approach*approach/2);
+        object_pos.position.x = object_pos.position.x - sqrt(approach*approach/2);
+    }
+    else if (object_pos.position.x > 0 && object_pos.position.y > 0.14)
+    {
+        orientation.setRPY(M_PI / 2, 0, 0);
+        object_pos.position.x = object_pos.position.x - approach;
+    }
+    else if (object_pos.position.x > 0 && object_pos.position.y < 0.14)
+    {
+        orientation.setRPY(M_PI / 2, 0, - M_PI / 4);
+        object_pos.position.y = object_pos.position.y + sqrt(approach*approach/2);
+        object_pos.position.x = object_pos.position.x - sqrt(approach*approach/2);
+    }
+    else if (object_pos.position.x < 0 && object_pos.position.y < 0)
+    {
+        orientation.setRPY(M_PI / 2, 0, - M_PI / 2);
+        object_pos.position.y = object_pos.position.y + approach;
+    }
+
+    object_pos.orientation = _toMsg(orientation);
 }

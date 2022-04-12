@@ -67,13 +67,13 @@ public:
 
 private:
     void _placeTable();
-    bool _grasp(moveit_msgs::msg::CollisionObject object);
+    bool _grasp(const moveit_msgs::msg::CollisionObject& object);
     void _openGripper();
     void _closeGripper();
-    bool _pick(moveit_msgs::msg::CollisionObject object);
-    void _place(moveit_msgs::msg::CollisionObject object);
-
-    geometry_msgs::msg::Quaternion __toMsg(tf2::Quaternion tf2_quat);
+    bool _pick(const moveit_msgs::msg::CollisionObject& object);
+    bool _place(const moveit_msgs::msg::CollisionObject& object);
+    void _calculateOrientation(geometry_msgs::msg::Pose &object_pos, double approach);
+    static geometry_msgs::msg::Quaternion _toMsg(tf2::Quaternion tf2_quat);
 
     std::shared_ptr<rclcpp::Node> node;
 
@@ -87,6 +87,8 @@ private:
     std::unique_ptr<moveit_visual_tools::MoveItVisualTools> visual_tools;
 
     std::vector<moveit_msgs::msg::CollisionObject> objects;
+    geometry_msgs::msg::Pose place_pos;
+    bool object_attached = false;
 
     bool update_scene;
 };
