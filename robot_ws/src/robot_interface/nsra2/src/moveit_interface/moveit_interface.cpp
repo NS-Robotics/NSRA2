@@ -49,30 +49,34 @@ MoveItInterface::MoveItInterface(std::shared_ptr<rclcpp::Node> node)
 
 void MoveItInterface::updateScene(std::vector<Bottle> bottles)
 {
+    RCLCPP_INFO(this->node->get_logger(), "Update Scene");
     planning_scene_interface.removeCollisionObjects(this->object_ids);
 
     std::vector<std::string> object_ids;
 
     moveit_msgs::msg::CollisionObject object_to_attach;
+    object_to_attach.header.frame_id = move_group->getPlanningFrame();
     object_to_attach.id = std::to_string(bottles[0].id);
     object_ids.push_back(std::to_string(bottles[0].id));
 
     shape_msgs::msg::SolidPrimitive cylinder_primitive;
     cylinder_primitive.type = cylinder_primitive.CYLINDER;
     cylinder_primitive.dimensions.resize(2);
-    cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_HEIGHT] = 0.20;
-    cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_RADIUS] = 0.04;
+    cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_HEIGHT] = 0.22;
+    cylinder_primitive.dimensions[cylinder_primitive.CYLINDER_RADIUS] = 0.03;
 
     geometry_msgs::msg::Pose grab_pose;
     grab_pose.orientation.w = 1.0;
     grab_pose.position.x = bottles[0].coord_3d.x() / 1000.0;
     grab_pose.position.y = bottles[0].coord_3d.y() / 1000.0;
-    grab_pose.position.z = bottles[0].coord_3d.z() / 1000.0;
+    grab_pose.position.z = bottles[0].coord_3d.z() / 1000.0 - 0.11;
 
     object_to_attach.primitives.push_back(cylinder_primitive);
     object_to_attach.primitive_poses.push_back(grab_pose);
     object_to_attach.operation = object_to_attach.ADD;
 
+    RCLCPP_INFO(this->node->get_logger(), "Apply Object");
     this->object_ids = object_ids;
     planning_scene_interface.applyCollisionObject(object_to_attach);
+    visual_tools->publishText(grab_pose, std::to_string(bottles[0].id), rvt::WHITE, rvt::MEDIUM);
 }

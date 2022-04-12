@@ -246,6 +246,8 @@ Eigen::Vector3d nssc::process::Triangulation::_transformCoordinates(const Eigen:
             (this->origin_vec[1] * mtrx_ret[1]).norm(),
             (this->origin_vec[2] * mtrx_ret[2]).norm();
 
+    std::cout << mtrx_ret << std::endl;
+
     return obj;
 }
 

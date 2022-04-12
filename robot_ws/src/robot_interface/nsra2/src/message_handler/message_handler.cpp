@@ -40,11 +40,12 @@ MessageHandler::MessageHandler(std::shared_ptr<rclcpp::Node> node, std::shared_p
     this->moveit_interface = moveit_interface;
 
     this->bottle_subscriber = this->node->create_subscription<nssc_interface::msg::ObjectDetection>(
-            "color_filter_params", 10, std::bind(&MessageHandler::bottle_callback, this, std::placeholders::_1));
+            "nssc/bottle_coordinates", 10, std::bind(&MessageHandler::bottle_callback, this, std::placeholders::_1));
 }
 
 void MessageHandler::bottle_callback(const nssc_interface::msg::ObjectDetection::SharedPtr msg) const
 {
+    RCLCPP_INFO(this->node->get_logger(), "Message received");
     std::vector<Bottle> bottles;
     for (auto & bottle_m : msg->bottles)
     {

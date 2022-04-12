@@ -1,15 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 
-#include <moveit/move_group_interface/move_group_interface.h>
-#include <moveit/planning_scene_interface/planning_scene_interface.h>
-
-#include <moveit_msgs/msg/display_robot_state.hpp>
-#include <moveit_msgs/msg/display_trajectory.hpp>
-
-#include <moveit_msgs/msg/attached_collision_object.hpp>
-#include <moveit_msgs/msg/collision_object.hpp>
-
-#include <moveit_visual_tools/moveit_visual_tools.h>
+#include "moveit_interface.h"
+#include "message_handler.h"
 
 static const rclcpp::Logger LOGGER = rclcpp::get_logger("nsra2_interface");
 
@@ -22,10 +14,15 @@ int main(int argc, char** argv)
 
     rclcpp::executors::SingleThreadedExecutor executor;
     executor.add_node(move_group_node);
-    std::thread([&executor]()
-                { executor.spin(); }).detach();
+    std::thread executor_thread([&executor]()
+                                { executor.spin(); });
 
+    auto moveit_interface = std::make_shared<MoveItInterface>(move_group_node);
+    MessageHandler message_handler(move_group_node, moveit_interface);
 
+    executor_thread.join();
+
+    /*
     Eigen::Isometry3d text_pose = Eigen::Isometry3d::Identity();
     text_pose.translation().z() = 1.0;
     visual_tools.publishText(text_pose, "NSRA_Demo", rvt::WHITE, rvt::XLARGE);
@@ -75,8 +72,5 @@ int main(int argc, char** argv)
     visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
-
-
-
-
+    */
 }
