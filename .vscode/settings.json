@@ -129,7 +129,8 @@
         "syncstream": "cpp",
         "valarray": "cpp",
         "stack": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "*.idl": "cpp"
     },
     "C_Cpp.errorSquiggles": "Enabled",
     "cmake.configureOnOpen": false

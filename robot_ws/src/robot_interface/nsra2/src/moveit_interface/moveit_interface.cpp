@@ -49,15 +49,18 @@ MoveItInterface::MoveItInterface(std::shared_ptr<rclcpp::Node> node)
     this->visual_tools->deleteAllMarkers();
     this->visual_tools->loadRemoteControl();
 
-    _placeTable();
     nsra_move_group->setMaxVelocityScalingFactor(1.0);
     nsra_move_group->setMaxAccelerationScalingFactor(1.0);
 
     this->place_pos.position.x = 0.4;
-    this->place_pos.position.y = 0.6;
-    this->place_pos.position.z = 0.12;
+    this->place_pos.position.y = 0.5;
+    this->place_pos.position.z = - 0.12;
 
     this->update_scene = true;
+
+    std::vector<std::string> known_objects = this->planning_scene_interface.getKnownObjectNames();
+    this->planning_scene_interface.removeCollisionObjects(known_objects);
+    _placeTable();
 }
 
 void MoveItInterface::updateScene(std::vector<Bottle> bottles)
@@ -65,6 +68,13 @@ void MoveItInterface::updateScene(std::vector<Bottle> bottles)
     if (!this->update_scene) { return; }
 
     std::vector<moveit_msgs::msg::CollisionObject> new_objects;
+
+    if (bottles.size() != this->objects.size())
+    {
+        std::vector<std::string> known_objects = this->planning_scene_interface.getKnownObjectNames();
+        this->planning_scene_interface.removeCollisionObjects(known_objects);
+        _placeTable();
+    }
 
     for (auto & bottle : bottles)
     {
@@ -166,10 +176,13 @@ bool MoveItInterface::_pick(const moveit_msgs::msg::CollisionObject& object)
     auto object_map = planning_scene_interface.getObjectPoses(bottle_ids);
     geometry_msgs::msg::Pose object_pos = object_map.find(object.id)->second;
 
+    this->nsra_move_group->setSupportSurfaceName("table");
+
     //pre_grasp
     geometry_msgs::msg::Pose pre_grasp_pose = object_pos;
     this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
     _calculateOrientation(pre_grasp_pose, 0.25);
+    pre_grasp_pose.position.z = object_pos.position.z + 0.2;
     this->nsra_move_group->setPoseTarget(pre_grasp_pose);
     moveit::planning_interface::MoveGroupInterface::Plan pre_grasp_plan;
     if (this->nsra_move_group->plan(pre_grasp_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
@@ -179,6 +192,7 @@ bool MoveItInterface::_pick(const moveit_msgs::msg::CollisionObject& object)
     this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
     geometry_msgs::msg::Pose grasp_pose = object_pos;
     _calculateOrientation(grasp_pose, 0.16);
+    grasp_pose.position.z = object_pos.position.z + 0.01;
     this->nsra_move_group->setPoseTarget(grasp_pose);
     moveit::planning_interface::MoveGroupInterface::Plan grasp_plan;
     if (this->nsra_move_group->plan(grasp_plan) != moveit::planning_interface::MoveItErrorCode::SUCCESS) { return false; }
@@ -211,9 +225,12 @@ bool MoveItInterface::_place(const moveit_msgs::msg::CollisionObject& object)
     auto object_map = planning_scene_interface.getObjectPoses(bottle_ids);
     geometry_msgs::msg::Pose object_pos = object_map.find(object.id)->second;
 
+    this->nsra_move_group->setSupportSurfaceName("table");
+
     //place
     geometry_msgs::msg::Pose place_pose = this->place_pos;
     this->nsra_move_group->setStartState(*this->nsra_move_group->getCurrentState());
+    place_pose.position.z = this->place_pos.position.z + 0.05;
     _calculateOrientation(place_pose, 0.0);
     this->nsra_move_group->setPoseTarget(place_pose);
     moveit::planning_interface::MoveGroupInterface::Plan place_plan;
@@ -288,7 +305,7 @@ void MoveItInterface::_placeTable()
     table_pose.orientation.w = 1.0;
     table_pose.position.x = 0.4;
     table_pose.position.y = 0.27;
-    table_pose.position.z = - 0.05;
+    table_pose.position.z = - 0.28;
 
     table_object.primitives.push_back(box_primitive);
     table_object.primitive_poses.push_back(table_pose);
