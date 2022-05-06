@@ -198,7 +198,7 @@ struct TriangulationConfig
 {
 public:
     short max_origin_frame_time_diff = 1000; //microseconds
-    std::vector<int> origin_ids = { 1, 2, 3 };
+    std::vector<int> origin_ids = { 4, 5, 6 };
     char const *standard_config_file = "config1";
     ColorFilterParams color_filter_params;
 };
